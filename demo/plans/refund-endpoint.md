@@ -198,6 +198,6 @@ All checks passed: every citation resolves, every criterion has a condition, and
 
 - Generator: heuristic-baseline (none (rule-based))
 - Context as of: 2026-09-01
-- Context hash: b9266a667153
-- Tool version: 0.1.0
+- Context hash: 8e9b8a22ad94
+- Tool version: 0.2.0
 - Model calls: none (1 attempt(s), no tokens used)

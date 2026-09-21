@@ -153,7 +153,8 @@ def cmd_generate(args: argparse.Namespace) -> int:
     if args.save_context:
         _write(json.dumps(bundle.to_dict(), indent=2, sort_keys=True) + "\n", args.save_context)
     if args.show_context:
-        sys.stdout.write("=== system ===\n" + prompts.system_prompt() + "\n\n")
+        system = prompts.system_prompt(args.max_cases_per_risk)
+        sys.stdout.write("=== system ===\n" + system + "\n\n")
         sys.stdout.write("=== user ===\n" + prompts.user_prompt(bundle) + "\n")
         return 0
 

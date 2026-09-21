@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "testplan-agent"
-version = "0.1.0"
-description = "Turns a code change and its requirements into an evidence-grounded, risk-based test plan. Offline core: collectors, validators, renderer."
+version = "0.2.0"
+description = "Turns a code change and its requirements into an evidence-grounded, risk-based test plan, drafted by a rule-based baseline or by Claude and checked against the facts."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"

@@ -62,7 +62,7 @@ def generate_plan(
     max_repairs: int = 2,
     max_cases_per_risk: int = DEFAULT_MAX_CASES_PER_RISK,
 ) -> PlanResult:
-    system = prompts.system_prompt()
+    system = prompts.system_prompt(max_cases_per_risk)
     turns: List[Turn] = [{"role": "user", "content": prompts.user_prompt(bundle)}]
     result = PlanResult(plan=None)
     best: Optional[Tuple[TestPlan, List[Issue]]] = None

@@ -159,7 +159,9 @@ def test_version_flag(capsys):
     with pytest.raises(SystemExit) as info:
         main(["--version"])
     assert info.value.code == 0
-    assert "0.1.0" in capsys.readouterr().out
+    from testplan_agent import __version__
+
+    assert capsys.readouterr().out.strip() == f"testplan {__version__}"
 
 
 def test_a_docs_only_change_with_criteria_gets_a_clean_plan(tmp_path, capsys):

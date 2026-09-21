@@ -95,7 +95,7 @@ def test_a_callable_reply_sees_the_prompts(discount):
         return json.dumps(discount.plan)
 
     generate_plan(discount.bundle, ScriptedClient([reply]), repo=discount.repo)
-    assert "JSON Schema" in seen["system"]
+    assert "matches this schema" in seen["system"]
     assert "<untrusted-context>" in seen["turns"][0]["content"]
 
 
