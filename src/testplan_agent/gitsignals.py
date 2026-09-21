@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import re
 import subprocess
 from dataclasses import dataclass, field
@@ -35,21 +36,44 @@ def _git(repo: Path, *args: str) -> Optional[str]:
             capture_output=True,
             text=True,
             timeout=30,
-            env={"GIT_OPTIONAL_LOCKS": "0", "PATH": _path(), "HOME": str(repo)},
+            env=_env(),
         )
     except (OSError, subprocess.SubprocessError):
         return None
     return proc.stdout if proc.returncode == 0 else None
 
 
-def _path() -> str:
-    import os
+def _env() -> Dict[str, str]:
+    """A clean environment: no user, system or repository-supplied global git configuration.
 
-    return os.environ.get("PATH", "/usr/bin:/bin")
+    ``HOME`` must not point into the repository being analysed, or git would read a
+    ``.gitconfig`` that the repository's author wrote.
+    """
+    return {
+        "PATH": os.environ.get("PATH", "/usr/bin:/bin"),
+        "HOME": os.devnull,
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_CONFIG_GLOBAL": os.devnull,
+        "GIT_OPTIONAL_LOCKS": "0",
+        "GIT_TERMINAL_PROMPT": "0",
+    }
 
 
 def is_git_repo(repo: Path) -> bool:
-    return _git(repo, "rev-parse", "--is-inside-work-tree") is not None
+    return (_git(repo, "rev-parse", "--is-inside-work-tree") or "").strip() == "true"
+
+
+def parse_git_date(stamp: str) -> Optional[date]:
+    """Date of a strict ISO 8601 git timestamp.
+
+    Newer git writes UTC as ``Z``, which ``datetime.fromisoformat`` accepts only from Python 3.11.
+    """
+    if stamp.endswith("Z"):
+        stamp = stamp[:-1] + "+00:00"
+    try:
+        return datetime.fromisoformat(stamp).date()
+    except ValueError:
+        return None
 
 
 def file_history(repo: Path, paths: Sequence[str], as_of: date) -> Dict[str, FileHistory]:
@@ -65,7 +89,9 @@ def file_history(repo: Path, paths: Sequence[str], as_of: date) -> Dict[str, Fil
             "log",
             f"--since={since}",
             f"--until={until}",
-            f"--format=%H{_SEP}%an{_SEP}%aI{_SEP}%s",
+            "--follow",
+            # %cI: --since and --until filter on the commit date, so count by it too
+            f"--format=%H{_SEP}%an{_SEP}%cI{_SEP}%s",
             "--",
             path,
         )
@@ -75,9 +101,8 @@ def file_history(repo: Path, paths: Sequence[str], as_of: date) -> Dict[str, Fil
             if len(parts) != 4:
                 continue
             _, author, stamp, subject = parts
-            try:
-                when = datetime.fromisoformat(stamp).date()
-            except ValueError:
+            when = parse_git_date(stamp)
+            if when is None:
                 continue
             if hist.last_change is None or when.isoformat() > hist.last_change:
                 hist.last_change = when.isoformat()

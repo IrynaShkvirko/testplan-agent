@@ -179,6 +179,7 @@
               "minLength": 1,
               "type": "string"
             },
+            "minItems": 1,
             "type": "array"
           },
           "id": {
@@ -218,6 +219,7 @@
               "minLength": 1,
               "type": "string"
             },
+            "minItems": 1,
             "type": "array"
           },
           "reason": {
@@ -271,6 +273,7 @@
               "minLength": 1,
               "type": "string"
             },
+            "minItems": 1,
             "type": "array"
           },
           "id": {

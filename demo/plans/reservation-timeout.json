@@ -32,36 +32,11 @@
       "confidence": "medium",
       "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
       "evidence": [
-        "F14",
-        "F7",
-        "shop/inventory.py:43"
-      ],
-      "existing_coverage": "none",
-      "expected": "Confirming a reservation before it expires keeps the stock reserved.",
-      "id": "TC-2",
-      "level": "unit",
-      "priority": "P0",
-      "requirement": "AC-2",
-      "requirement_reason": "",
-      "risk": "R2",
-      "steps": [
-        "Arrange the state that AC-2 describes",
-        "Exercise Inventory.confirm (shop/inventory.py)",
-        "Compare the outcome with the expected result"
-      ],
-      "technique": "equivalence",
-      "title": "AC-2: Confirming a reservation before it expires keeps the stock reserved."
-    },
-    {
-      "automation": "now",
-      "confidence": "medium",
-      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
-      "evidence": [
         "F15"
       ],
       "existing_coverage": "none",
       "expected": "No lost update, double booking or duplicate; totals stay consistent",
-      "id": "TC-3",
+      "id": "TC-2",
       "level": "integration",
       "priority": "P0",
       "requirement": "AC-3",
@@ -84,7 +59,7 @@
       ],
       "existing_coverage": "none",
       "expected": "Every caller works, or is updated in this change",
-      "id": "TC-4",
+      "id": "TC-3",
       "level": "integration",
       "priority": "P0",
       "requirement": "none",
@@ -107,7 +82,7 @@
       ],
       "existing_coverage": "none",
       "expected": "Every caller works, or is updated in this change",
-      "id": "TC-5",
+      "id": "TC-4",
       "level": "integration",
       "priority": "P0",
       "requirement": "none",
@@ -130,7 +105,7 @@
       ],
       "existing_coverage": "none",
       "expected": "Every caller works, or is updated in this change",
-      "id": "TC-6",
+      "id": "TC-5",
       "level": "integration",
       "priority": "P0",
       "requirement": "none",
@@ -155,7 +130,7 @@
       ],
       "existing_coverage": "none",
       "expected": "A reservation that is not confirmed within 15 minutes is released and the stock becomes available again.",
-      "id": "TC-7",
+      "id": "TC-6",
       "level": "unit",
       "priority": "P0",
       "requirement": "AC-1",
@@ -181,7 +156,7 @@
       ],
       "existing_coverage": "none",
       "expected": "The behaviour changes exactly where AC-1 says it does",
-      "id": "TC-8",
+      "id": "TC-7",
       "level": "unit",
       "priority": "P0",
       "requirement": "AC-1",
@@ -207,7 +182,7 @@
       ],
       "existing_coverage": "none",
       "expected": "The input is rejected or handled as the criterion states, with no side effects",
-      "id": "TC-9",
+      "id": "TC-8",
       "level": "unit",
       "priority": "P0",
       "requirement": "AC-1",
@@ -232,7 +207,7 @@
       ],
       "existing_coverage": "none",
       "expected": "The state changes only once the limit has passed",
-      "id": "TC-10",
+      "id": "TC-9",
       "level": "integration",
       "priority": "P0",
       "requirement": "AC-1",
@@ -244,6 +219,31 @@
       ],
       "technique": "state_transition",
       "title": "AC-1: behaviour around the time limit"
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F14",
+        "F7",
+        "shop/inventory.py:43"
+      ],
+      "existing_coverage": "none",
+      "expected": "Confirming a reservation before it expires keeps the stock reserved.",
+      "id": "TC-10",
+      "level": "unit",
+      "priority": "P0",
+      "requirement": "AC-2",
+      "requirement_reason": "",
+      "risk": "R4",
+      "steps": [
+        "Arrange the state that AC-2 describes",
+        "Exercise Inventory.confirm (shop/inventory.py)",
+        "Compare the outcome with the expected result"
+      ],
+      "technique": "equivalence",
+      "title": "AC-2: Confirming a reservation before it expires keeps the stock reserved."
     },
     {
       "automation": "now",
@@ -322,8 +322,31 @@
         "F16"
       ],
       "existing_coverage": "none",
-      "expected": "The state changes only once the limit has passed",
+      "expected": "Expired reservations are cleaned up as needed without slowing checkout.",
       "id": "TC-14",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "AC-4",
+      "requirement_reason": "",
+      "risk": "R4",
+      "steps": [
+        "Arrange the state that AC-4 describes",
+        "Exercise the changed behaviour",
+        "Compare the outcome with the expected result"
+      ],
+      "technique": "equivalence",
+      "title": "AC-4: Expired reservations are cleaned up as needed without slowing checkout."
+    },
+    {
+      "automation": "now",
+      "confidence": "low",
+      "confidence_reason": "the criterion uses vague wording (as needed); the expected result is one reading",
+      "evidence": [
+        "F16"
+      ],
+      "existing_coverage": "none",
+      "expected": "The state changes only once the limit has passed",
+      "id": "TC-15",
       "level": "integration",
       "priority": "P0",
       "requirement": "AC-4",
@@ -347,7 +370,7 @@
       ],
       "existing_coverage": "none",
       "expected": "Results match what the author intended; surprises become questions",
-      "id": "TC-15",
+      "id": "TC-16",
       "level": "unit",
       "priority": "P0",
       "requirement": "none",
@@ -359,29 +382,6 @@
       ],
       "technique": "regression",
       "title": "Characterise the current behaviour of Inventory.expire"
-    },
-    {
-      "automation": "now",
-      "confidence": "low",
-      "confidence_reason": "the criterion uses vague wording (as needed); the expected result is one reading",
-      "evidence": [
-        "F16"
-      ],
-      "existing_coverage": "none",
-      "expected": "Expired reservations are cleaned up as needed without slowing checkout.",
-      "id": "TC-16",
-      "level": "integration",
-      "priority": "P1",
-      "requirement": "AC-4",
-      "requirement_reason": "",
-      "risk": "R6",
-      "steps": [
-        "Arrange the state that AC-4 describes",
-        "Exercise the changed behaviour",
-        "Compare the outcome with the expected result"
-      ],
-      "technique": "equivalence",
-      "title": "AC-4: Expired reservations are cleaned up as needed without slowing checkout."
     }
   ],
   "environment_needs": [
@@ -396,7 +396,7 @@
     "No failing test is quarantined to make this change pass."
   ],
   "meta": {
-    "bundle_sha256": "75a0b309e79a9466549544a534093964869941e5753fac393681608f6d705750",
+    "bundle_sha256": "cfedc1c5803f37ffee097a44efc8bdc398defc3b107e945cdec644ada561bb78",
     "created": "2026-09-01",
     "generator": "heuristic-baseline",
     "model": "none (rule-based)"
@@ -485,7 +485,7 @@
       "id": "R2",
       "impact": 4,
       "likelihood": 5,
-      "title": "Concurrency: wrong behaviour in shop/inventory.py"
+      "title": "Concurrency: wrong behaviour in migrations/0004_add_reservation_expiry.sql, shop/inventory.py"
     },
     {
       "adjustment": {
@@ -564,5 +564,12 @@
     ],
     "text": "Expire stock reservations. 2 file(s) changed, classified as feature. 4 acceptance criteria found. Highest risk: Data loss or migration: wrong behaviour in migrations/0004_add_reservation_expiry.sql (score 25, high)."
   },
-  "validation": []
+  "validation": [
+    {
+      "code": "too_many_cases",
+      "message": "10 cases for one risk; the cap is 8",
+      "severity": "warning",
+      "where": "risk R4"
+    }
+  ]
 }

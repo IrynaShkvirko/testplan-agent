@@ -160,3 +160,34 @@ def test_version_flag(capsys):
         main(["--version"])
     assert info.value.code == 0
     assert "0.1.0" in capsys.readouterr().out
+
+
+def test_a_docs_only_change_with_criteria_gets_a_clean_plan(tmp_path, capsys):
+    (tmp_path / "d.patch").write_text("--- a/README.md\n+++ b/README.md\n@@ -1 +1 @@\n-old\n+new\n")
+    (tmp_path / "s.md").write_text(
+        "# Docs\n\n## Acceptance criteria\n- AC-1: The README must say how to install\n"
+    )
+    argv = ["generate", "--diff", str(tmp_path / "d.patch"), "--spec", str(tmp_path / "s.md")]
+    assert main([*argv, "-o", str(tmp_path / "p.md")]) == 0
+    assert "after 1 attempt(s)" in capsys.readouterr().err
+
+
+@pytest.mark.parametrize(
+    "bundle",
+    ['{"version": 1, "changes": [{"path": "x"}]}', '{"version": 1, "facts": [{}]}', "[1]"],
+)
+def test_a_malformed_saved_bundle_is_a_usage_error(tmp_path, capsys, bundle):
+    (tmp_path / "b.json").write_text(bundle)
+    assert main(["generate", "--context", str(tmp_path / "b.json")]) == 2
+    assert capsys.readouterr().err.startswith("error:")
+
+
+def test_a_planner_that_gives_no_answer_is_reported_not_raised(demo, capsys, monkeypatch):
+    from testplan_agent.llm import HeuristicClient, LLMError
+
+    def fail(self, system, user):
+        raise LLMError("service unavailable")
+
+    monkeypatch.setattr(HeuristicClient, "complete", fail)
+    assert main(["generate", *paths(demo)]) == 2
+    assert "service unavailable" in capsys.readouterr().err

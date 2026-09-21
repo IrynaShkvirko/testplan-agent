@@ -190,16 +190,37 @@ def after_text(change: FileChange, current: Optional[str]) -> Tuple[Optional[str
     if change.hunks and all(_hunk_matches(lines, h, "new") for h in change.hunks):
         return current, "checkout-has-change"
     if change.hunks and all(_hunk_matches(lines, h, "old") for h in change.hunks):
-        out: List[str] = []
-        cursor = 0
-        for hunk in change.hunks:
-            begin = hunk.old_start - 1 if hunk.old_len else hunk.old_start
-            out.extend(lines[cursor:begin])
-            out.extend(t for m, t in hunk.lines if m in (" ", "+"))
-            cursor = begin + sum(1 for m, _ in hunk.lines if m in (" ", "-"))
-        out.extend(lines[cursor:])
-        return "\n".join(out), "applied"
+        return _swap_sides(lines, change.hunks, "old"), "applied"
     return None, "unknown"
+
+
+def before_text(change: FileChange, current: Optional[str], how: str) -> Optional[str]:
+    """The file as it was before the change, when ``after_text`` could place the diff."""
+    if current is None or change.status in (ADDED, DELETED):
+        return None
+    if how == "applied":
+        return current
+    if how == "checkout-has-change":
+        return _swap_sides(current.split("\n"), change.hunks, "new")
+    return None
+
+
+def _swap_sides(lines: Sequence[str], hunks: Sequence[Hunk], side: str) -> str:
+    """Replace each hunk's ``side`` of ``lines`` ("old" or "new") with its other side."""
+    have = (" ", "-") if side == "old" else (" ", "+")
+    want = (" ", "+") if side == "old" else (" ", "-")
+    out: List[str] = []
+    cursor = 0
+    for hunk in hunks:
+        start, length = (
+            (hunk.old_start, hunk.old_len) if side == "old" else (hunk.new_start, hunk.new_len)
+        )
+        begin = start - 1 if length else start
+        out.extend(lines[cursor:begin])
+        out.extend(t for m, t in hunk.lines if m in want)
+        cursor = begin + sum(1 for m, _ in hunk.lines if m in have)
+    out.extend(lines[cursor:])
+    return "\n".join(out)
 
 
 # ---- summaries ----------------------------------------------------------------------------
@@ -213,10 +234,15 @@ def _def_signatures(lines: Sequence[Tuple[int, str]]) -> Dict[str, str]:
 
 
 def _areas_for(text: str) -> Dict[str, List[str]]:
+    # Identifiers are also scanned word by word, so apply_discount and orderTotal count as
+    # "discount" and "total": in the raw text an underscore or a capital hides the word boundary.
+    words = " ".join(
+        " ".join(codeinfo.split_identifier(raw)) for raw in re.findall(r"[A-Za-z_]\w*", text)
+    )
     found: Dict[str, List[str]] = {}
     for key, (_, pattern) in AREAS.items():
         hits: List[str] = []
-        for match in pattern.finditer(text):
+        for match in pattern.finditer(f"{text}\n{words}"):
             term = match.group(0).lower()
             if term not in hits:
                 hits.append(term)
@@ -247,7 +273,8 @@ def summarize(change: FileChange, repo: Optional[Path]) -> ChangeSummary:
         summary.line_count = codeinfo.line_range(text_after)[1]
 
     if kind in ("source", "test") and change.path.endswith(".py"):
-        summary.symbols = _python_symbols(change, text_after, how)
+        text_before = before_text(change, current, how)
+        summary.symbols = _python_symbols(change, text_after, how, text_before)
     elif kind == "source":
         summary.symbols = _section_symbols(change)
 
@@ -277,7 +304,19 @@ def _changed_lines(change: FileChange) -> List[Tuple[int, str]]:
     return lines
 
 
-def _python_symbols(change: FileChange, text_after: Optional[str], how: str) -> List[ChangedSymbol]:
+def _python_symbols(
+    change: FileChange,
+    text_after: Optional[str],
+    how: str,
+    text_before: Optional[str] = None,
+) -> List[ChangedSymbol]:
+    # With both versions of the file, definitions are compared by qualified name, which also
+    # sees signatures written over several lines. Otherwise the diff's def lines are all we have.
+    if text_after is not None and text_before is not None:
+        old_defs = {s.qualname: s for s in codeinfo.definitions(text_before, change.path)}
+        if old_defs or codeinfo.parse_python(text_before) is not None:
+            return _compare_symbols(change, text_after, old_defs)
+
     symbols: List[ChangedSymbol] = []
     removed_sigs = _def_signatures([x for h in change.hunks for x in h.removed_lines()])
     added_sigs = _def_signatures([x for h in change.hunks for x in h.added_lines()])
@@ -322,8 +361,48 @@ def _python_symbols(change: FileChange, text_after: Optional[str], how: str) -> 
             symbols.append(changed)
 
     for name in removed_sigs:
-        if name not in added_sigs and not any(s.qualname.endswith(name) for s in symbols):
+        if name not in added_sigs and not any(
+            s.qualname == name or s.qualname.endswith("." + name) for s in symbols
+        ):
             symbols.append(ChangedSymbol(name, "function", change.path, 0, 0, "removed"))
+    return symbols
+
+
+def _compare_symbols(
+    change: FileChange, text_after: str, old_defs: Dict[str, codeinfo.Symbol]
+) -> List[ChangedSymbol]:
+    new_defs = codeinfo.definitions(text_after, change.path)
+    new_names = {s.qualname for s in new_defs}
+    seen: Dict[str, ChangedSymbol] = {}
+    module_touched = False
+    for line in change.touched_new_lines():
+        sym = codeinfo.innermost(new_defs, line)
+        if sym is None:
+            module_touched = True
+            continue
+        if sym.qualname in seen:
+            continue
+        old = old_defs.get(sym.qualname)
+        changed = ChangedSymbol(
+            qualname=sym.qualname,
+            kind=sym.kind,
+            path=change.path,
+            start=sym.start,
+            end=sym.end,
+            status="added" if old is None else "modified",
+            endpoint=sym.endpoint,
+        )
+        if old is not None and old.args != sym.args:
+            changed.signature_change = f"({old.args}) -> ({sym.args})"
+        seen[sym.qualname] = changed
+    symbols = list(seen.values())
+    if module_touched:
+        symbols.append(ChangedSymbol("<module>", "module", change.path, 1, 1, "modified"))
+    for qualname, old in old_defs.items():
+        parent = qualname.rsplit(".", 1)[0] if "." in qualname else None
+        if qualname in new_names or (parent in old_defs and parent not in new_names):
+            continue  # still there, or inside a definition that is itself reported as removed
+        symbols.append(ChangedSymbol(qualname, old.kind, change.path, 0, 0, "removed"))
     return symbols
 
 

@@ -109,3 +109,21 @@ def test_parse_model_json_accepts_reasonable_wrapping(text):
 def test_parse_model_json_rejects_prose():
     with pytest.raises(ValueError):
         parse_model_json("no json here")
+
+
+def test_a_deterministic_client_is_not_asked_to_repair(discount):
+    class Fixed(ScriptedClient):
+        deterministic = True
+
+    client = Fixed([bad_plan(discount)])
+    result = generate_plan(discount.bundle, client, repo=discount.repo, max_repairs=2)
+    assert result.attempts == 1 and len(client.calls) == 1 and not result.ok
+
+
+def test_the_plan_with_the_fewest_errors_is_kept(discount):
+    worse = bad_plan(discount)
+    worse["cases"][1]["evidence"].append("F998")
+    client = ScriptedClient([bad_plan(discount), worse])
+    result = generate_plan(discount.bundle, client, repo=discount.repo, max_repairs=1)
+    errors = [i for i in result.plan.validation if i["severity"] == "error"]
+    assert len(errors) == 1 and "F999" in errors[0]["message"]

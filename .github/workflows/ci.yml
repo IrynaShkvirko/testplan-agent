@@ -32,3 +32,13 @@ jobs:
         run: |
           python demo/run_demo.py
           git diff --exit-code -- demo/plans demo/changes
+
+  # The one check a ruleset requires, so the matrix can change without editing the ruleset.
+  # It must run even when a test job fails: a skipped required check counts as passing.
+  ci-ok:
+    if: always()
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Every test job passed
+        run: test "${{ needs.test.result }}" = "success"

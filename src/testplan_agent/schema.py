@@ -32,6 +32,7 @@ QUESTION_KINDS = ["ambiguity", "unmapped", "assumption", "missing_info"]
 
 _STR = {"type": "string", "minLength": 1}
 _STR_LIST = {"type": "array", "items": _STR}
+_EVIDENCE = {"type": "array", "items": _STR, "minItems": 1}  # every claim cites something
 
 
 def _obj(
@@ -83,7 +84,7 @@ PLAN_SCHEMA: Dict[str, Any] = _obj(
                             "reason": {"type": "string"},
                         }
                     ),
-                    "evidence": _STR_LIST,
+                    "evidence": _EVIDENCE,
                 }
             ),
         },
@@ -95,7 +96,7 @@ PLAN_SCHEMA: Dict[str, Any] = _obj(
                     "title": _STR,
                     "requirement": _STR,
                     "requirement_reason": {"type": "string"},
-                    "evidence": {"type": "array", "items": _STR, "minItems": 1},
+                    "evidence": _EVIDENCE,
                     "technique": {"type": "string", "enum": TECHNIQUES},
                     "level": {"type": "string", "enum": LEVELS},
                     "priority": {"type": "string", "enum": PRIORITIES},
@@ -111,7 +112,7 @@ PLAN_SCHEMA: Dict[str, Any] = _obj(
         },
         "regression_scope": {
             "type": "array",
-            "items": _obj({"test": _STR, "reason": _STR, "evidence": _STR_LIST}),
+            "items": _obj({"test": _STR, "reason": _STR, "evidence": _EVIDENCE}),
         },
         "open_questions": {
             "type": "array",
@@ -120,7 +121,7 @@ PLAN_SCHEMA: Dict[str, Any] = _obj(
                     "id": {"type": "string", "pattern": r"^Q\d+$"},
                     "kind": {"type": "string", "enum": QUESTION_KINDS},
                     "text": _STR,
-                    "evidence": _STR_LIST,
+                    "evidence": _EVIDENCE,
                 }
             ),
         },

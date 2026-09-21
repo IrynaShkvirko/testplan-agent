@@ -164,7 +164,7 @@ All checks passed: every citation resolves, every criterion has a condition, and
 |---|---|---|
 | F2 | symbol | function apply_discount modified at shop/pricing.py:8-14; signature (price_cents, percent) -> (price_cents, percent, item_count=1) |
 | F3 | symbol | function cart_total modified at shop/pricing.py:17-21 |
-| F4 | sensitive_area | Money and pricing touched in shop/pricing.py (terms: pricing, subtotal) |
+| F4 | sensitive_area | Money and pricing touched in shop/pricing.py (terms: pricing, subtotal, discount, price, cents) |
 | F5 | requirement | AC-1: A cart with 3 or more items gets at most 50% off, however large the coupon is. |
 | F6 | requirement | AC-2: A cart with fewer than 3 items keeps the full coupon discount. |
 | F7 | requirement | AC-3: When the cap reduces a coupon, the customer is shown a reasonable message. |
@@ -181,5 +181,5 @@ All checks passed: every citation resolves, every criterion has a condition, and
 
 - Generator: heuristic-baseline (none (rule-based))
 - Context as of: 2026-09-01
-- Context hash: fad24f4a1a28
+- Context hash: 0f468dca26d0
 - Tool version: 0.1.0

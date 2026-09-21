@@ -12,7 +12,7 @@ from typing import Any, Dict, List, Optional, Sequence
 from . import __version__, prompts
 from .bundle import DEFAULT_CONTEXT_CHARS, ContextBundle, build_bundle
 from .diffparse import DiffError
-from .llm import HeuristicClient, LLMClient, ScriptedClient
+from .llm import HeuristicClient, LLMClient, LLMError, ScriptedClient
 from .planner import generate_plan
 from .render import render_markdown
 from .schema import PLAN_SCHEMA, TestPlan
@@ -76,11 +76,14 @@ def _bundle_from_args(args: argparse.Namespace) -> ContextBundle:
             return ContextBundle.from_dict(json.loads(_read(args.context)))
         except ValueError as exc:
             raise CliError(f"{args.context} is not a usable context bundle: {exc}") from exc
-    if not args.diff and not args.spec:
-        raise CliError("give --diff and/or --spec (or --context with a saved bundle)")
-    diff_text = _read(args.diff) if args.diff else ""
+    if not args.diff:
+        raise CliError(
+            "a diff is required: use --diff change.patch (or - for stdin), optionally with "
+            "--spec story.md, or --context with a saved bundle"
+        )
+    diff_text = _read(args.diff)
     if not diff_text.strip():
-        raise CliError("a diff is required: use --diff change.patch (or - for stdin)")
+        raise CliError(f"the diff in {args.diff} is empty")
     story = _read(args.spec) if args.spec else ""
     try:
         return build_bundle(
@@ -129,13 +132,16 @@ def cmd_generate(args: argparse.Namespace) -> int:
         return 0
 
     repo = Path(args.repo) if args.repo else None
-    result = generate_plan(
-        bundle,
-        _client(args),
-        repo=repo,
-        max_repairs=args.max_repairs,
-        max_cases_per_risk=args.max_cases_per_risk,
-    )
+    try:
+        result = generate_plan(
+            bundle,
+            _client(args),
+            repo=repo,
+            max_repairs=args.max_repairs,
+            max_cases_per_risk=args.max_cases_per_risk,
+        )
+    except LLMError as exc:
+        raise CliError(f"the planner gave no answer: {exc}") from exc
     if result.plan is None:
         for issue in result.issues:
             print(issue, file=sys.stderr)

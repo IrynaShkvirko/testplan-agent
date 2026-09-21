@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import ast
+import fnmatch
+import os
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -187,15 +189,22 @@ def referenced_names(node: ast.AST) -> Set[str]:
     return names
 
 
+def iter_files(root: Path, pattern: str = "*.py") -> List[Path]:
+    """Files under ``root`` matching ``pattern``, in a stable order.
+
+    Caches and virtualenvs are pruned while walking, not filtered afterwards, so a large
+    ``node_modules`` or ``.venv`` is never read (and its files never count as the project's).
+    """
+    found: List[Path] = []
+    for dirpath, dirnames, filenames in os.walk(root):
+        dirnames[:] = [d for d in dirnames if d not in SKIP_DIRS and not d.endswith(".egg-info")]
+        found.extend(Path(dirpath) / name for name in fnmatch.filter(filenames, pattern))
+    return sorted(found)
+
+
 def iter_python_files(root: Path) -> List[Path]:
     """All ``.py`` files under ``root`` in a stable order, skipping caches and virtualenvs."""
-    found: List[Path] = []
-    for path in sorted(root.rglob("*.py")):
-        rel_parts = path.relative_to(root).parts
-        if any(part in SKIP_DIRS or part.endswith(".egg-info") for part in rel_parts[:-1]):
-            continue
-        found.append(path)
-    return found
+    return iter_files(root, "*.py")
 
 
 def read_text(path: Path, limit: int = 2_000_000) -> Optional[str]:

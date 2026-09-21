@@ -45,6 +45,19 @@ def test_schema_error_for_a_value_outside_the_allowed_set(discount):
     assert "schema" in codes(issues)
 
 
+@pytest.mark.parametrize(
+    "mutate",
+    [
+        lambda p: p["risks"][0].update(evidence=[]),
+        lambda p: p["open_questions"][0].update(evidence=[]),
+        lambda p: p["regression_scope"][0].update(evidence=[]),
+    ],
+    ids=["risk", "question", "regression"],
+)
+def test_every_claim_needs_at_least_one_citation(discount, mutate):
+    assert "schema" in codes(run(discount, mutate), "error")
+
+
 def test_duplicate_id(discount):
     def mutate(p):
         case(p, 1)["id"] = case(p, 0)["id"]

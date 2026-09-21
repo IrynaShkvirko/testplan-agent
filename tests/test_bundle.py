@@ -98,7 +98,7 @@ def test_a_small_context_budget_names_what_was_left_out(demo):
     b = build_bundle(diff, story, repo=demo.repo, as_of=DAY, max_context_chars=400)
     notes = [w for w in b.warnings if "budget" in w]
     assert notes
-    assert sum(len(x["patch"]) for x in b.diff_excerpt) < 1200
+    assert sum(len(x["patch"]) for x in b.diff_excerpt) <= 400  # the marker fits inside it
     # the omissions are also facts, so a plan can cite them
     assert len(b.facts.by_kind("warning")) >= len(notes)
 

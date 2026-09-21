@@ -100,3 +100,52 @@ def test_sensitive_areas_are_found_by_word(tmp_path):
     )
     summary = summarize(parse_diff(diff)[0], tmp_path)
     assert "money" in summary.areas
+
+
+@pytest.mark.parametrize("name", ["apply_discount(order_total)", "applyDiscount(orderTotal)"])
+def test_sensitive_areas_are_found_inside_identifiers(tmp_path, name):
+    diff = f"--- /dev/null\n+++ b/lib.py\n@@ -0,0 +1,2 @@\n+def {name}:\n+    return 1\n"
+    summary = summarize(parse_diff(diff)[0], tmp_path)
+    assert set(summary.areas["money"]) >= {"discount", "total"}
+
+
+RENAME_OLD = "def total(x):\n    return x\n"
+RENAME_DIFF = (
+    "--- a/m.py\n+++ b/m.py\n@@ -1,2 +1,2 @@\n-def total(x):\n+def get_total(x):\n     return x\n"
+)
+
+
+@pytest.mark.parametrize("checkout", [RENAME_OLD, None])
+def test_a_removed_function_is_not_hidden_by_a_name_ending_the_same_way(tmp_path, checkout):
+    if checkout is not None:
+        write_files(tmp_path, {"m.py": checkout})
+    summary = summarize(parse_diff(RENAME_DIFF)[0], tmp_path)
+    status = {s.qualname: s.status for s in summary.symbols}
+    assert status == {"get_total": "added", "total": "removed"}
+
+
+MULTI_OLD = "def price(\n    a,\n    b,\n):\n    return a - b\n"
+MULTI_NEW = "def price(\n    a,\n    b,\n    c=0,\n):\n    return a - b - c\n"
+MULTI_DIFF = (
+    "--- a/m.py\n+++ b/m.py\n@@ -1,5 +1,6 @@\n def price(\n     a,\n     b,\n+    c=0,\n ):\n"
+    "-    return a - b\n+    return a - b - c\n"
+)
+
+
+@pytest.mark.parametrize("checkout", [MULTI_OLD, MULTI_NEW])
+def test_a_signature_written_over_several_lines_is_compared(tmp_path, checkout):
+    write_files(tmp_path, {"m.py": checkout})
+    (sym,) = summarize(parse_diff(MULTI_DIFF)[0], tmp_path).symbols
+    assert (sym.qualname, sym.status) == ("price", "modified")
+    assert sym.signature_change == "(a, b) -> (a, b, c=0)"
+
+
+def test_methods_are_matched_by_class_not_by_bare_name(tmp_path):
+    old = "class A:\n    def save(self):\n        return 1\n\n\nclass B:\n    def load(self):\n        return 2\n"
+    diff = (
+        "--- a/m.py\n+++ b/m.py\n@@ -7,2 +7,2 @@ class B:\n-    def load(self):\n"
+        "+    def save(self):\n         return 2\n"
+    )
+    write_files(tmp_path, {"m.py": old})
+    status = {s.qualname: s.status for s in summarize(parse_diff(diff)[0], tmp_path).symbols}
+    assert status == {"B.save": "added", "B.load": "removed"}

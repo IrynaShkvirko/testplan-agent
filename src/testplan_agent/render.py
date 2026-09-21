@@ -6,6 +6,7 @@ import re
 from typing import Iterable, List, Sequence, Set
 
 from .bundle import ContextBundle
+from .risk import HIGH_AT, MEDIUM_AT, level_for
 from .schema import TestCase, TestPlan
 
 _FACT = re.compile(r"^F\d+$")
@@ -25,10 +26,6 @@ def _table(header: Sequence[str], rows: Iterable[Sequence[str]]) -> List[str]:
 def _num(ident: str) -> int:
     digits = re.sub(r"\D", "", ident)
     return int(digits) if digits else 0
-
-
-def _level(score: int) -> str:
-    return "high" if score >= 15 else "medium" if score >= 8 else "low"
 
 
 def _factor(factor) -> str:
@@ -106,7 +103,7 @@ def render_markdown(plan: TestPlan, bundle: ContextBundle) -> str:
                     str(r.likelihood),
                     str(r.impact),
                     str(r.score),
-                    _level(r.score),
+                    level_for(r.score),
                     note,
                     ", ".join(r.evidence[:6]),
                 ]
@@ -126,8 +123,8 @@ def render_markdown(plan: TestPlan, bundle: ContextBundle) -> str:
         )
         out += [
             "",
-            "Likelihood and impact run from 1 to 5. The score is their product: 15 or more is "
-            "high, 8 to 14 medium.",
+            "Likelihood and impact run from 1 to 5. The score is their product: "
+            f"{HIGH_AT} or more is high, {MEDIUM_AT} to {HIGH_AT - 1} medium.",
             "",
             "**How the scores were reached** (computed from facts; each factor adds to a base of 1 "
             "for likelihood)",

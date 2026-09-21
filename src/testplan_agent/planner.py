@@ -7,7 +7,7 @@ import json
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Tuple
 
 from . import prompts
 from .bundle import ContextBundle
@@ -33,6 +33,10 @@ class PlanResult:
 def bundle_hash(bundle: ContextBundle) -> str:
     text = json.dumps(bundle.to_dict(), sort_keys=True)
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def _error_count(issues: List[Issue]) -> int:
+    return sum(i.severity == "error" for i in issues)
 
 
 def parse_model_json(text: str) -> Any:
@@ -61,7 +65,7 @@ def generate_plan(
     original = prompts.user_prompt(bundle)
     user = original
     result = PlanResult(plan=None)
-    best: Optional[tuple] = None
+    best: Optional[Tuple[TestPlan, List[Issue]]] = None
 
     for attempt in range(max_repairs + 1):
         result.attempts = attempt + 1
@@ -87,11 +91,11 @@ def generate_plan(
                     }
                 )
                 issues.extend(validate_plan(plan, bundle, repo, max_cases_per_risk))
-        if plan is not None:
-            best = (plan, issues)  # remember the last well-formed plan and what was wrong with it
+        if plan is not None and (best is None or _error_count(issues) <= _error_count(best[1])):
+            best = (plan, issues)  # the well-formed plan with the fewest errors; later wins ties
         result.issues = issues
-        if not has_errors(issues):
-            break
+        if not has_errors(issues) or getattr(client, "deterministic", False):
+            break  # clean, or asking again would only return the same answer
         if attempt < max_repairs:
             user = prompts.repair_prompt(
                 original, raw, [i for i in issues if i.severity == "error"]
