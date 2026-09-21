@@ -399,7 +399,31 @@
     "bundle_sha256": "cfedc1c5803f37ffee097a44efc8bdc398defc3b107e945cdec644ada561bb78",
     "created": "2026-09-01",
     "generator": "heuristic-baseline",
-    "model": "none (rule-based)"
+    "model": "none (rule-based)",
+    "run": {
+      "attempts": [
+        {
+          "attempt": 1,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.0,
+          "input_tokens": 0,
+          "latency_ms": null,
+          "model": "none (rule-based)",
+          "output_tokens": 0,
+          "request_id": "",
+          "stop_reason": ""
+        }
+      ],
+      "total": {
+        "cache_read_tokens": 0,
+        "cache_write_tokens": 0,
+        "cost_usd": 0.0,
+        "input_tokens": 0,
+        "latency_ms": null,
+        "output_tokens": 0
+      }
+    }
   },
   "open_questions": [
     {

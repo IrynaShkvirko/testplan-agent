@@ -322,3 +322,4 @@ Confidence medium: rule-based template; a reviewer must supply concrete test dat
 - Context as of: 2026-09-01
 - Context hash: cfedc1c5803f
 - Tool version: 0.1.0
+- Model calls: none (1 attempt(s), no tokens used)

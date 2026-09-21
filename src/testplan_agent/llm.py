@@ -3,14 +3,39 @@
 from __future__ import annotations
 
 import json
-from typing import Callable, List, Protocol, Sequence, Union
+from dataclasses import dataclass, field
+from typing import Callable, Dict, List, Optional, Protocol, Sequence, Union
 
 from .bundle import ContextBundle
 from .prompts import extract_context_json
 
+# One message of the conversation: {"role": "user" | "assistant", "content": text}.
+Turn = Dict[str, str]
+
 
 class LLMError(RuntimeError):
     """The client could not produce an answer at all (as opposed to a wrong answer)."""
+
+
+@dataclass
+class Usage:
+    """What one call cost. ``None`` means unknown, which is not the same as zero."""
+
+    model: str = ""  # the model that actually answered (a fallback may differ from the one asked)
+    input_tokens: int = 0
+    output_tokens: int = 0
+    cache_read_tokens: int = 0
+    cache_write_tokens: int = 0
+    latency_ms: Optional[int] = None  # wall-clock time of the call, when a model was called
+    cost_usd: Optional[float] = None  # an estimate from list prices
+    stop_reason: str = ""
+    request_id: str = ""
+
+
+@dataclass
+class Completion:
+    text: str
+    usage: Usage = field(default_factory=Usage)
 
 
 class LLMClient(Protocol):
@@ -19,14 +44,15 @@ class LLMClient(Protocol):
     # True when the same prompt always gives the same answer, so a repair round cannot help.
     deterministic: bool
 
-    def complete(self, system: str, user: str) -> str:
-        """Return the model's answer as text (a JSON object, optionally in a code fence).
+    def complete(self, system: str, turns: Sequence[Turn]) -> Completion:
+        """Answer the conversation. ``turns`` starts and ends with a user turn.
 
-        Raise ``LLMError`` when no answer can be produced.
+        The answer text is a JSON object, optionally in a code fence. Raise ``LLMError`` when
+        no answer can be produced.
         """
 
 
-Reply = Union[str, dict, Callable[[str, str], str]]
+Reply = Union[str, dict, Callable[[str, Sequence[Turn]], str]]
 
 
 class ScriptedClient:
@@ -42,13 +68,15 @@ class ScriptedClient:
         self._replies = list(replies)
         self.calls: List[dict] = []
 
-    def complete(self, system: str, user: str) -> str:
-        self.calls.append({"system": system, "user": user})
+    def complete(self, system: str, turns: Sequence[Turn]) -> Completion:
+        self.calls.append({"system": system, "turns": [dict(t) for t in turns]})
         index = min(len(self.calls) - 1, len(self._replies) - 1)
         reply = self._replies[index]
         if callable(reply):
-            return reply(system, user)
-        return reply if isinstance(reply, str) else json.dumps(reply)
+            text = reply(system, turns)
+        else:
+            text = reply if isinstance(reply, str) else json.dumps(reply)
+        return Completion(text, Usage(model=self.model))
 
 
 class HeuristicClient:
@@ -62,10 +90,11 @@ class HeuristicClient:
     model = "none (rule-based)"
     deterministic = True
 
-    def complete(self, system: str, user: str) -> str:
+    def complete(self, system: str, turns: Sequence[Turn]) -> Completion:
         from .baseline import build_baseline_plan
 
-        raw = extract_context_json(user)
+        raw = extract_context_json(turns[0]["content"]) if turns else None
         if raw is None:
             raise LLMError("no context bundle found in the prompt")
-        return json.dumps(build_baseline_plan(ContextBundle.from_dict(raw)))
+        plan = build_baseline_plan(ContextBundle.from_dict(raw))
+        return Completion(json.dumps(plan), Usage(model=self.model, cost_usd=0.0))

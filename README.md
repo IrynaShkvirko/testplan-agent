@@ -33,7 +33,7 @@ anything. This project treats the model as one stage in a pipeline that can be c
 
 ## Quick start
 
-Python 3.9 or newer, no runtime dependencies.
+Python 3.10 or newer, no runtime dependencies.
 
 ```bash
 git clone <this repository> && cd testplan-agent
@@ -85,7 +85,8 @@ A Markdown plan for people and a JSON plan for tools ([schema](schema/testplan.s
 6. Open questions and assumptions: every vague term and every unmatched requirement or change
 7. Environment and data needs
 8. Exit criteria
-9. Appendix: validator results, every cited fact, run details (generator, context hash)
+9. Appendix: validator results, every cited fact, run details (generator, context hash, and each
+   model call with its tokens, time and estimated cost)
 
 A condensed excerpt from [`demo/plans/discount-cap.md`](demo/plans/discount-cap.md) (synthetic input, rule-based baseline):
 
@@ -161,7 +162,7 @@ does not make a model immune to being nudged, which is why the validators exist.
   input is Cobertura XML. History uses `git log`, with an as-of date so results are reproducible.
 - If the checkout contains a line that was redacted from the diff, the file cannot be rebuilt
   from the working tree and symbol lists are marked approximate.
-- Tested on Python 3.10 to 3.13; 3.9 is in the CI matrix but has not been run by the author.
+- Tested on Python 3.10 to 3.13 (the CI matrix).
 
 ## Roadmap
 

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import copy
 import re
 from dataclasses import asdict, dataclass, field
 from typing import Any, Dict, List, Optional
@@ -33,6 +34,15 @@ QUESTION_KINDS = ["ambiguity", "unmapped", "assumption", "missing_info"]
 _STR = {"type": "string", "minLength": 1}
 _STR_LIST = {"type": "array", "items": _STR}
 _EVIDENCE = {"type": "array", "items": _STR, "minItems": 1}  # every claim cites something
+_COUNT = {"type": "integer", "minimum": 0}
+_USAGE = {
+    "input_tokens": _COUNT,
+    "output_tokens": _COUNT,
+    "cache_read_tokens": _COUNT,
+    "cache_write_tokens": _COUNT,
+    "latency_ms": {"type": ["integer", "null"], "minimum": 0},  # null: no model was called
+    "cost_usd": {"type": ["number", "null"], "minimum": 0},  # null: unknown, not zero
+}
 
 
 def _obj(
@@ -58,6 +68,24 @@ PLAN_SCHEMA: Dict[str, Any] = _obj(
                 "model": {"type": "string"},
                 "created": _STR,
                 "bundle_sha256": {"type": "string"},
+                "run": _obj(
+                    {
+                        "attempts": {
+                            "type": "array",
+                            "items": _obj(
+                                {
+                                    "attempt": {"type": "integer", "minimum": 1},
+                                    "model": {"type": "string"},
+                                    **_USAGE,
+                                    "stop_reason": {"type": "string"},
+                                    "request_id": {"type": "string"},
+                                }
+                            ),
+                        },
+                        "total": _obj(dict(_USAGE)),
+                    },
+                    desc="Every model call the plan took, with tokens, latency and estimated cost.",
+                ),
             },
             required=["generator", "created"],
         ),
@@ -138,6 +166,16 @@ PLAN_SCHEMA: Dict[str, Any] = _obj(
     desc="A draft test plan. Every claim must cite evidence: fact ids (F12) or file:line.",
 )
 PLAN_SCHEMA["required"] = [k for k in PLAN_SCHEMA["required"] if k != "validation"]
+_FILLED_BY_THE_TOOL = ("meta", "validation")
+
+
+def model_schema() -> Dict[str, Any]:
+    """The part of the plan a model writes: everything except what the planner fills in."""
+    schema = copy.deepcopy(PLAN_SCHEMA)
+    for key in _FILLED_BY_THE_TOOL:
+        schema["properties"].pop(key)
+    schema["required"] = [k for k in schema["required"] if k not in _FILLED_BY_THE_TOOL]
+    return schema
 
 
 # ---- a small JSON Schema validator: the subset used above -----------------------------------
@@ -149,9 +187,12 @@ def schema_errors(instance: Any, schema: Dict[str, Any], path: str = "$") -> Lis
         "array": lambda v: isinstance(v, list),
         "string": lambda v: isinstance(v, str),
         "integer": lambda v: isinstance(v, int) and not isinstance(v, bool),
+        "number": lambda v: isinstance(v, (int, float)) and not isinstance(v, bool),
+        "null": lambda v: v is None,
     }
-    if expected and not checks[expected](instance):
-        return [f"{path}: expected {expected}, got {type(instance).__name__}"]
+    allowed = [expected] if isinstance(expected, str) else list(expected or [])
+    if allowed and not any(checks[t](instance) for t in allowed):
+        return [f"{path}: expected {' or '.join(allowed)}, got {type(instance).__name__}"]
     if "enum" in schema and instance not in schema["enum"]:
         errors.append(f"{path}: {instance!r} is not one of {schema['enum']}")
     if isinstance(instance, str):
@@ -160,7 +201,7 @@ def schema_errors(instance: Any, schema: Dict[str, Any], path: str = "$") -> Lis
         pattern = schema.get("pattern")
         if pattern and not re.match(pattern, instance):
             errors.append(f"{path}: {instance!r} does not match {pattern}")
-    if isinstance(instance, int) and not isinstance(instance, bool):
+    if isinstance(instance, (int, float)) and not isinstance(instance, bool):
         if "minimum" in schema and instance < schema["minimum"]:
             errors.append(f"{path}: {instance} is below {schema['minimum']}")
         if "maximum" in schema and instance > schema["maximum"]:
@@ -255,7 +296,7 @@ class Summary:
 @dataclass
 class TestPlan:
     __test__ = False  # not a pytest test class
-    meta: Dict[str, str]
+    meta: Dict[str, Any]
     summary: Summary
     risks: List[PlanRisk]
     cases: List[TestCase]
