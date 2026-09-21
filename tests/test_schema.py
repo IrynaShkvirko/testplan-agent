@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 
 from testplan_agent.cli import main
-from testplan_agent.schema import PLAN_SCHEMA, TestPlan, schema_errors
+from testplan_agent.schema import PLAN_SCHEMA, TestPlan, model_schema, schema_errors
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -63,3 +63,24 @@ def test_a_valid_instance_has_no_errors():
         "properties": {"a": {"type": "array", "items": {"type": "string", "minLength": 1}}},
     }
     assert schema_errors({"a": ["x"]}, schema) == []
+
+
+@pytest.mark.parametrize(
+    "value,errors",
+    [(None, 0), (3, 0), (2.5, 1), ("x", 1)],
+)
+def test_a_type_list_allows_any_of_its_types(value, errors):
+    assert len(schema_errors(value, {"type": ["integer", "null"]})) == errors
+
+
+def test_numbers_accept_floats_and_integers_but_not_booleans():
+    assert schema_errors(0.5, {"type": "number", "minimum": 0}) == []
+    assert schema_errors(-0.5, {"type": "number", "minimum": 0})
+    assert schema_errors(True, {"type": "number"})
+
+
+def test_the_model_schema_leaves_out_what_the_tool_fills_in():
+    schema = model_schema()
+    assert "meta" not in schema["properties"] and "meta" not in schema["required"]
+    assert "validation" not in schema["properties"]
+    assert "meta" in PLAN_SCHEMA["properties"]  # the full plan still has them

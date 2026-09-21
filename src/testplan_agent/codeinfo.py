@@ -58,7 +58,7 @@ def parse_python(text: str) -> Optional[ast.AST]:
 
 def _decorator_text(node: ast.expr) -> str:
     try:
-        return ast.unparse(node)  # type: ignore[attr-defined]  # Python 3.9+
+        return ast.unparse(node)
     except Exception:  # pragma: no cover - defensive
         return ""
 

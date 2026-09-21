@@ -183,3 +183,4 @@ All checks passed: every citation resolves, every criterion has a condition, and
 - Context as of: 2026-09-01
 - Context hash: 0f468dca26d0
 - Tool version: 0.1.0
+- Model calls: none (1 attempt(s), no tokens used)

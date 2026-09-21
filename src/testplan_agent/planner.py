@@ -5,13 +5,13 @@ from __future__ import annotations
 import hashlib
 import json
 import re
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 from . import prompts
 from .bundle import ContextBundle
-from .llm import LLMClient
+from .llm import LLMClient, Turn, Usage
 from .schema import TestPlan
 from .validate import DEFAULT_MAX_CASES_PER_RISK, Issue, check_shape, has_errors, validate_plan
 
@@ -24,6 +24,7 @@ class PlanResult:
     issues: List[Issue] = field(default_factory=list)
     attempts: int = 0
     raw: str = ""
+    usage: List[Usage] = field(default_factory=list)  # one entry per call, in order
 
     @property
     def ok(self) -> bool:
@@ -62,14 +63,15 @@ def generate_plan(
     max_cases_per_risk: int = DEFAULT_MAX_CASES_PER_RISK,
 ) -> PlanResult:
     system = prompts.system_prompt()
-    original = prompts.user_prompt(bundle)
-    user = original
+    turns: List[Turn] = [{"role": "user", "content": prompts.user_prompt(bundle)}]
     result = PlanResult(plan=None)
     best: Optional[Tuple[TestPlan, List[Issue]]] = None
 
     for attempt in range(max_repairs + 1):
         result.attempts = attempt + 1
-        raw = client.complete(system, user)
+        completion = client.complete(system, turns)
+        result.usage.append(completion.usage)
+        raw = completion.text
         result.raw = raw
         issues: List[Issue] = []
         plan: Optional[TestPlan] = None
@@ -78,18 +80,19 @@ def generate_plan(
         except ValueError as exc:
             issues.append(Issue("json", "error", "answer", f"the answer is not valid JSON: {exc}"))
             data = None
+        if isinstance(data, dict):
+            # Written by the tool, never taken from the answer.
+            data["meta"] = {
+                "generator": client.name,
+                "model": client.model,
+                "created": str(bundle.meta.get("as_of", "")),
+                "bundle_sha256": bundle_hash(bundle),
+            }
+            data.pop("validation", None)
         if data is not None:
             issues.extend(check_shape(data))
             if not issues:
                 plan = TestPlan.from_dict(data)
-                plan.meta.update(
-                    {
-                        "generator": client.name,
-                        "model": client.model,
-                        "created": str(bundle.meta.get("as_of", "")),
-                        "bundle_sha256": bundle_hash(bundle),
-                    }
-                )
                 issues.extend(validate_plan(plan, bundle, repo, max_cases_per_risk))
         if plan is not None and (best is None or _error_count(issues) <= _error_count(best[1])):
             best = (plan, issues)  # the well-formed plan with the fewest errors; later wins ties
@@ -97,12 +100,28 @@ def generate_plan(
         if not has_errors(issues) or getattr(client, "deterministic", False):
             break  # clean, or asking again would only return the same answer
         if attempt < max_repairs:
-            user = prompts.repair_prompt(
-                original, raw, [i for i in issues if i.severity == "error"]
-            )
+            errors = [i for i in issues if i.severity == "error"]
+            turns = turns + prompts.repair_turns(raw, errors)
 
     if best is not None:
         # A later answer that was not even valid JSON must not hide the plan we already have.
         result.plan, result.issues = best
         result.plan.validation = [i.to_dict() for i in result.issues]
+        result.plan.meta["run"] = run_details(result.usage)
     return result
+
+
+def run_details(usages: Sequence[Usage]) -> Dict[str, Any]:
+    """Every call the plan took, and the totals. A total is unknown if any part of it is."""
+
+    def total(key: str) -> Any:
+        values = [getattr(u, key) for u in usages]
+        if any(v is None for v in values):
+            return None
+        return round(sum(values), 6) if key == "cost_usd" else sum(values)
+
+    keys = ("input_tokens", "output_tokens", "cache_read_tokens", "cache_write_tokens")
+    return {
+        "attempts": [{"attempt": n, **asdict(u)} for n, u in enumerate(usages, start=1)],
+        "total": {key: total(key) for key in (*keys, "latency_ms", "cost_usd")},
+    }

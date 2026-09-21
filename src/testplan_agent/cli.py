@@ -13,8 +13,8 @@ from . import __version__, prompts
 from .bundle import DEFAULT_CONTEXT_CHARS, ContextBundle, build_bundle
 from .diffparse import DiffError
 from .llm import HeuristicClient, LLMClient, LLMError, ScriptedClient
-from .planner import generate_plan
-from .render import render_markdown
+from .planner import generate_plan, run_details
+from .render import render_markdown, usage_summary
 from .schema import PLAN_SCHEMA, TestPlan
 from .validate import (
     DEFAULT_MAX_CASES_PER_RISK,
@@ -142,9 +142,11 @@ def cmd_generate(args: argparse.Namespace) -> int:
         )
     except LLMError as exc:
         raise CliError(f"the planner gave no answer: {exc}") from exc
+    total = run_details(result.usage)["total"]
     if result.plan is None:
         for issue in result.issues:
             print(issue, file=sys.stderr)
+        _print_usage(total)  # the calls were made, and paid for, even with nothing to show
         raise CliError(f"no usable plan after {result.attempts} attempt(s)")
 
     _write(render_markdown(result.plan, bundle), args.output)
@@ -157,9 +159,15 @@ def cmd_generate(args: argparse.Namespace) -> int:
         f"{len(errors)} error(s), {len(warnings)} warning(s) after {result.attempts} attempt(s)",
         file=sys.stderr,
     )
+    _print_usage(total)
     for issue in errors:
         print(issue, file=sys.stderr)
     return 1 if errors else 0
+
+
+def _print_usage(total: Dict[str, Any]) -> None:
+    if total["input_tokens"] or total["output_tokens"]:
+        print(f"model usage: {usage_summary(total)}", file=sys.stderr)
 
 
 def cmd_validate(args: argparse.Namespace) -> int:

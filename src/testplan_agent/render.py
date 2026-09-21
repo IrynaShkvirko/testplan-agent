@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import re
-from typing import Iterable, List, Sequence, Set
+from typing import Any, Dict, Iterable, List, Sequence, Set
 
 from .bundle import ContextBundle
 from .risk import HIGH_AT, MEDIUM_AT, level_for
@@ -265,6 +265,50 @@ def render_markdown(plan: TestPlan, bundle: ContextBundle) -> str:
         f"- Context hash: {str(meta.get('bundle_sha256', ''))[:12] or 'n/a'}",
         f"- Tool version: {bundle.meta.get('tool_version', '?')}",
     ]
+    out += _run_lines(meta.get("run") or {})
     if bundle.warnings:
         out += ["", "### Collector warnings", ""] + [f"- {w}" for w in bundle.warnings]
     return "\n".join(out) + "\n"
+
+
+def usage_summary(total: Dict[str, Any]) -> str:
+    """One line: tokens, cache reads, time and estimated cost. Unknown values are said to be."""
+    tokens = f"{total.get('input_tokens', 0):,} tokens in, {total.get('output_tokens', 0):,} out"
+    cached = total.get("cache_read_tokens") or 0
+    if cached:
+        tokens += f" ({cached:,} read from cache)"
+    latency = total.get("latency_ms")
+    seconds = f"{latency / 1000:.1f} s" if latency is not None else "no model time"
+    cost = total.get("cost_usd")
+    price = f"about ${cost:.2f}" if cost is not None else "cost unknown"
+    return f"{tokens}; {seconds}; {price}"
+
+
+def _run_lines(run: Dict[str, Any]) -> List[str]:
+    attempts = run.get("attempts") or []
+    if not attempts:
+        return []
+    total = run.get("total") or {}
+    if not total.get("input_tokens") and not total.get("output_tokens"):
+        return [f"- Model calls: none ({len(attempts)} attempt(s), no tokens used)"]
+    lines = [f"- Model calls: {len(attempts)}; {usage_summary(total)}", ""]
+    rows = []
+    for a in attempts:
+        latency, cost = a.get("latency_ms"), a.get("cost_usd")
+        rows.append(
+            [
+                str(a.get("attempt", "?")),
+                a.get("model") or "?",
+                f"{a.get('input_tokens', 0):,}",
+                f"{a.get('output_tokens', 0):,}",
+                f"{a.get('cache_read_tokens', 0):,} / {a.get('cache_write_tokens', 0):,}",
+                f"{latency / 1000:.1f} s" if latency is not None else "-",
+                f"${cost:.4f}" if cost is not None else "unknown",
+                a.get("stop_reason") or "-",
+            ]
+        )
+    lines += _table(
+        ["Attempt", "Model", "Input", "Output", "Cache read / write", "Time", "Cost", "Stop"], rows
+    )
+    lines += ["", "Costs are estimates from list prices, not a bill."]
+    return lines

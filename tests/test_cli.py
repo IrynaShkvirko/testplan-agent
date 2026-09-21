@@ -191,3 +191,15 @@ def test_a_planner_that_gives_no_answer_is_reported_not_raised(demo, capsys, mon
     monkeypatch.setattr(HeuristicClient, "complete", fail)
     assert main(["generate", *paths(demo)]) == 2
     assert "service unavailable" in capsys.readouterr().err
+
+
+def test_model_usage_is_reported_even_when_no_plan_comes_back(demo, capsys, monkeypatch):
+    from testplan_agent.llm import Completion, HeuristicClient, Usage
+
+    def garbage(self, system, turns):
+        return Completion("not json", Usage(input_tokens=5000, output_tokens=100, cost_usd=0.03))
+
+    monkeypatch.setattr(HeuristicClient, "complete", garbage)
+    assert main(["generate", *paths(demo)]) == 2
+    err = capsys.readouterr().err
+    assert "model usage: 5,000 tokens in, 100 out" in err and "about $0.03" in err

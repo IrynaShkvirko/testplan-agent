@@ -589,12 +589,6 @@ class _Builder:
 
         return {
             "schema_version": SCHEMA_VERSION,
-            "meta": {
-                "generator": "heuristic-baseline",
-                "model": "none (rule-based)",
-                "created": str(b.meta.get("as_of", "")),
-                "bundle_sha256": "",
-            },
             "summary": {
                 "change_class": cls,
                 "text": text,

@@ -6,7 +6,7 @@ import json
 from typing import Any, Dict, List, Optional
 
 from .bundle import ContextBundle
-from .schema import PLAN_SCHEMA
+from .schema import model_schema
 from .validate import Issue
 
 OPEN = "<untrusted-context>"
@@ -41,7 +41,7 @@ JSON Schema:
 
 
 def system_prompt() -> str:
-    return SYSTEM + json.dumps(PLAN_SCHEMA, indent=1, sort_keys=True)
+    return SYSTEM + json.dumps(model_schema(), indent=1, sort_keys=True)
 
 
 def _neutralise(text: str) -> str:
@@ -67,14 +67,23 @@ def user_prompt(bundle: ContextBundle) -> str:
     return "\n".join(lines)
 
 
-def repair_prompt(original: str, previous: str, issues: List[Issue], limit: int = 30) -> str:
+def repair_turns(previous: str, issues: List[Issue], limit: int = 30) -> List[Dict[str, str]]:
+    """The two turns that ask for a repair: the answer as given, then what was wrong with it.
+
+    They are appended to the conversation, never rewritten into it, so every earlier turn stays
+    a cacheable prefix: the context bundle is read from cache on each repair.
+    """
     shown = "\n".join(f"- {i}" for i in issues[:limit])
     more = f"\n(and {len(issues) - limit} more)" if len(issues) > limit else ""
-    return (
-        f"{original}\n\nYour previous answer had these problems:\n{shown}{more}\n\n"
-        "Return the complete corrected JSON object. Fix every problem; do not remove content "
-        "that was correct.\n\nPrevious answer:\n" + _neutralise(previous)
-    )
+    return [
+        {"role": "assistant", "content": previous.strip() or "(empty answer)"},
+        {
+            "role": "user",
+            "content": f"Your previous answer had these problems:\n{shown}{more}\n\n"
+            "Return the complete corrected JSON object. Fix every problem; do not remove "
+            "content that was correct.",
+        },
+    ]
 
 
 def extract_context_json(user: str) -> Optional[Dict[str, Any]]:

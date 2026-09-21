@@ -377,7 +377,7 @@ def build_bundle(
             warnings.append(f"coverage data ignored: {exc}")
             facts.add("warning", warnings[-1], "collector")
         else:
-            for c, chg in zip(summaries, changes):
+            for c, chg in zip(summaries, changes, strict=True):
                 if c.kind != "source":
                     continue
                 gaps = coverage.uncovered(cov, c.path, set(chg.added_line_numbers()))
