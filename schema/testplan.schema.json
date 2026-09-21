@@ -1,0 +1,392 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "A draft test plan. Every claim must cite evidence: fact ids (F12) or file:line.",
+  "properties": {
+    "assumptions": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "cases": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "automation": {
+            "enum": [
+              "now",
+              "later",
+              "manual"
+            ],
+            "type": "string"
+          },
+          "confidence": {
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ],
+            "type": "string"
+          },
+          "confidence_reason": {
+            "type": "string"
+          },
+          "evidence": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "minItems": 1,
+            "type": "array"
+          },
+          "existing_coverage": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "expected": {
+            "type": "string"
+          },
+          "id": {
+            "pattern": "^TC-\\d+$",
+            "type": "string"
+          },
+          "level": {
+            "enum": [
+              "unit",
+              "integration",
+              "e2e",
+              "exploratory"
+            ],
+            "type": "string"
+          },
+          "priority": {
+            "enum": [
+              "P0",
+              "P1",
+              "P2"
+            ],
+            "type": "string"
+          },
+          "requirement": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "requirement_reason": {
+            "type": "string"
+          },
+          "risk": {
+            "pattern": "^R\\d+$",
+            "type": "string"
+          },
+          "steps": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "technique": {
+            "enum": [
+              "equivalence",
+              "boundary",
+              "negative",
+              "error_handling",
+              "state_transition",
+              "permission",
+              "idempotency",
+              "concurrency",
+              "compatibility",
+              "migration",
+              "data_validation",
+              "performance",
+              "regression",
+              "exploratory"
+            ],
+            "type": "string"
+          },
+          "title": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "requirement",
+          "requirement_reason",
+          "evidence",
+          "technique",
+          "level",
+          "priority",
+          "risk",
+          "automation",
+          "existing_coverage",
+          "steps",
+          "expected",
+          "confidence",
+          "confidence_reason"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "environment_needs": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "exit_criteria": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "meta": {
+      "additionalProperties": false,
+      "properties": {
+        "bundle_sha256": {
+          "type": "string"
+        },
+        "created": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "generator": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "generator",
+        "created"
+      ],
+      "type": "object"
+    },
+    "open_questions": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "evidence": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "id": {
+            "pattern": "^Q\\d+$",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "ambiguity",
+              "unmapped",
+              "assumption",
+              "missing_info"
+            ],
+            "type": "string"
+          },
+          "text": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "text",
+          "evidence"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "regression_scope": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "evidence": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "reason": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "test": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "test",
+          "reason",
+          "evidence"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "risks": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "adjustment": {
+            "additionalProperties": false,
+            "properties": {
+              "impact_delta": {
+                "maximum": 1,
+                "minimum": -1,
+                "type": "integer"
+              },
+              "likelihood_delta": {
+                "maximum": 1,
+                "minimum": -1,
+                "type": "integer"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "likelihood_delta",
+              "impact_delta",
+              "reason"
+            ],
+            "type": "object"
+          },
+          "evidence": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "id": {
+            "pattern": "^R\\d+$",
+            "type": "string"
+          },
+          "impact": {
+            "maximum": 5,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "likelihood": {
+            "maximum": 5,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "title": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "likelihood",
+          "impact",
+          "adjustment",
+          "evidence"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "schema_version": {
+      "enum": [
+        1
+      ],
+      "type": "integer"
+    },
+    "summary": {
+      "additionalProperties": false,
+      "properties": {
+        "change_class": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "in_scope": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "out_of_scope": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "text": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "change_class",
+        "text",
+        "in_scope",
+        "out_of_scope"
+      ],
+      "type": "object"
+    },
+    "validation": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "message": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "severity": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "where": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "severity",
+          "where",
+          "message"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "meta",
+    "summary",
+    "risks",
+    "cases",
+    "regression_scope",
+    "open_questions",
+    "assumptions",
+    "environment_needs",
+    "exit_criteria"
+  ],
+  "title": "testplan-agent plan",
+  "type": "object"
+}

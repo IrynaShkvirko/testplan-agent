@@ -1,0 +1,29 @@
+diff --git a/shop/pricing.py b/shop/pricing.py
+--- a/shop/pricing.py
++++ b/shop/pricing.py
+@@ -1,18 +1,23 @@
+ """Pricing rules for carts."""
+ 
+ MAX_DISCOUNT_PERCENT = 100
++BUNDLE_MIN_ITEMS = 3
++BUNDLE_MAX_DISCOUNT_PERCENT = 50
+ 
+ 
+-def apply_discount(price_cents, percent):
++def apply_discount(price_cents, percent, item_count=1):
+     """Return price_cents reduced by percent, rounded to the nearest cent."""
+     if not 0 <= percent <= MAX_DISCOUNT_PERCENT:
+         raise ValueError("percent must be between 0 and 100")
++    if item_count >= BUNDLE_MIN_ITEMS:
++        percent = min(percent, BUNDLE_MAX_DISCOUNT_PERCENT)
+     return round(price_cents * (100 - percent) / 100)
+ 
+ 
+ def cart_total(items, coupon_percent=0):
+     """Total in cents for a list of (name, price_cents, quantity) items."""
+     subtotal = sum(price * qty for _, price, qty in items)
+-    return apply_discount(subtotal, coupon_percent)
++    item_count = sum(qty for _, _, qty in items)
++    return apply_discount(subtotal, coupon_percent, item_count)
+ 
+ # changelog: fix: order total ignored coupon

@@ -1,0 +1,87 @@
+diff --git a/migrations/0004_add_reservation_expiry.sql b/migrations/0004_add_reservation_expiry.sql
+new file mode 100644
+--- /dev/null
++++ b/migrations/0004_add_reservation_expiry.sql
+@@ -0,0 +1,4 @@
++ALTER TABLE reservations ADD COLUMN expires_at TIMESTAMP;
++ALTER TABLE reservations ADD COLUMN confirmed BOOLEAN NOT NULL DEFAULT FALSE;
++-- reservations older than the new limit can never be confirmed
++DELETE FROM reservations WHERE created_at < NOW() - INTERVAL '15 minutes';
+diff --git a/shop/inventory.py b/shop/inventory.py
+--- a/shop/inventory.py
++++ b/shop/inventory.py
+@@ -1,5 +1,9 @@
+-"""Stock and reservations."""
++"""Stock and reservations with an expiry."""
++import itertools
+ import threading
++from datetime import datetime, timedelta
++
++RESERVATION_MINUTES = 15
+ 
+ 
+ class OutOfStock(Exception):
+@@ -9,20 +13,55 @@ class OutOfStock(Exception):
+ class Inventory:
+     def __init__(self, stock):
+         self._stock = dict(stock)
+-        self._reserved = {}
++        self._reservations = {}
++        self._ids = itertools.count(1)
+         self._lock = threading.Lock()
+ 
+-    def available(self, sku):
+-        return self._stock.get(sku, 0) - self._reserved.get(sku, 0)
++    def available(self, sku, now=None):
++        now = now or datetime.utcnow()
++        held = sum(
++            r["qty"]
++            for r in self._reservations.values()
++            if r["sku"] == sku and (r["confirmed"] or r["expires_at"] > now)
++        )
++        return self._stock.get(sku, 0) - held
+ 
+-    def reserve(self, sku, qty):
++    def reserve(self, sku, qty, now=None):
++        now = now or datetime.utcnow()
+         with self._lock:
+-            if self.available(sku) < qty:
++            if self.available(sku, now) < qty:
+                 raise OutOfStock(sku)
+-            self._reserved[sku] = self._reserved.get(sku, 0) + qty
++            reservation_id = next(self._ids)
++            self._reservations[reservation_id] = {
++                "sku": sku,
++                "qty": qty,
++                "expires_at": now + timedelta(minutes=RESERVATION_MINUTES),
++                "confirmed": False,
++            }
++            return reservation_id
++
++    def confirm(self, reservation_id, now=None):
++        now = now or datetime.utcnow()
++        with self._lock:
++            reservation = self._reservations.get(reservation_id)
++            if reservation is None or reservation["expires_at"] <= now:
++                raise KeyError(reservation_id)
++            reservation["confirmed"] = True
++
++    def expire(self, now=None):
++        now = now or datetime.utcnow()
++        with self._lock:
++            stale = [
++                rid
++                for rid, r in self._reservations.items()
++                if not r["confirmed"] and r["expires_at"] <= now
++            ]
++            for rid in stale:
++                del self._reservations[rid]
++            return len(stale)
+ 
+-    def release(self, sku, qty):
++    def release(self, reservation_id):
+         with self._lock:
+-            self._reserved[sku] = max(0, self._reserved.get(sku, 0) - qty)
++            self._reservations.pop(reservation_id, None)
+ 
+ # changelog: fix: reservation release could go negative

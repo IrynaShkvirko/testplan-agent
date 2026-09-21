@@ -1,0 +1,568 @@
+{
+  "assumptions": [
+    "Tests are written with pytest.",
+    "The repository checkout matches the diff, either before or after the change."
+  ],
+  "cases": [
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F1"
+      ],
+      "existing_coverage": "none",
+      "expected": "No rows are lost or altered; the schema matches before and after a rollback",
+      "id": "TC-1",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "none",
+      "requirement_reason": "migrations are not described by the acceptance criteria",
+      "risk": "R1",
+      "steps": [
+        "Apply the migration to an empty database",
+        "Apply it to a copy of representative data and compare row counts",
+        "Roll it back and check the schema and data are unchanged"
+      ],
+      "technique": "migration",
+      "title": "Migration migrations/0004_add_reservation_expiry.sql applies to empty and populated data and can be rolled..."
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F14",
+        "F7",
+        "shop/inventory.py:43"
+      ],
+      "existing_coverage": "none",
+      "expected": "Confirming a reservation before it expires keeps the stock reserved.",
+      "id": "TC-2",
+      "level": "unit",
+      "priority": "P0",
+      "requirement": "AC-2",
+      "requirement_reason": "",
+      "risk": "R2",
+      "steps": [
+        "Arrange the state that AC-2 describes",
+        "Exercise Inventory.confirm (shop/inventory.py)",
+        "Compare the outcome with the expected result"
+      ],
+      "technique": "equivalence",
+      "title": "AC-2: Confirming a reservation before it expires keeps the stock reserved."
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F15"
+      ],
+      "existing_coverage": "none",
+      "expected": "No lost update, double booking or duplicate; totals stay consistent",
+      "id": "TC-3",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "AC-3",
+      "requirement_reason": "",
+      "risk": "R2",
+      "steps": [
+        "Start two callers together against the same record",
+        "Check the final state"
+      ],
+      "technique": "concurrency",
+      "title": "AC-3: two callers at the same time"
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F4",
+        "shop/inventory.py:20"
+      ],
+      "existing_coverage": "none",
+      "expected": "Every caller works, or is updated in this change",
+      "id": "TC-4",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "none",
+      "requirement_reason": "signature changed (self, sku) -> (self, sku, now=None); criteria do not cover callers",
+      "risk": "R3",
+      "steps": [
+        "Find callers of Inventory.available (dependents are listed in the evidence)",
+        "Run them against the new signature, including default and keyword arguments"
+      ],
+      "technique": "compatibility",
+      "title": "Existing callers of Inventory.available still work after its signature changed"
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F5",
+        "shop/inventory.py:29"
+      ],
+      "existing_coverage": "none",
+      "expected": "Every caller works, or is updated in this change",
+      "id": "TC-5",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "none",
+      "requirement_reason": "signature changed (self, sku, qty) -> (self, sku, qty, now=None); criteria do not cover callers",
+      "risk": "R3",
+      "steps": [
+        "Find callers of Inventory.reserve (dependents are listed in the evidence)",
+        "Run them against the new signature, including default and keyword arguments"
+      ],
+      "technique": "compatibility",
+      "title": "Existing callers of Inventory.reserve still work after its signature changed"
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F9",
+        "shop/inventory.py:63"
+      ],
+      "existing_coverage": "none",
+      "expected": "Every caller works, or is updated in this change",
+      "id": "TC-6",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "none",
+      "requirement_reason": "signature changed (self, sku, qty) -> (self, reservation_id); criteria do not cover callers",
+      "risk": "R3",
+      "steps": [
+        "Find callers of Inventory.release (dependents are listed in the evidence)",
+        "Run them against the new signature, including default and keyword arguments"
+      ],
+      "technique": "compatibility",
+      "title": "Existing callers of Inventory.release still work after its signature changed"
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F13",
+        "F4",
+        "F7",
+        "shop/inventory.py:20"
+      ],
+      "existing_coverage": "none",
+      "expected": "A reservation that is not confirmed within 15 minutes is released and the stock becomes available again.",
+      "id": "TC-7",
+      "level": "unit",
+      "priority": "P0",
+      "requirement": "AC-1",
+      "requirement_reason": "",
+      "risk": "R4",
+      "steps": [
+        "Arrange the state that AC-1 describes",
+        "Exercise Inventory.available (shop/inventory.py)",
+        "Compare the outcome with the expected result"
+      ],
+      "technique": "equivalence",
+      "title": "AC-1: A reservation that is not confirmed within 15 minutes is released and the stock becomes..."
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F13",
+        "F4",
+        "F7",
+        "shop/inventory.py:20"
+      ],
+      "existing_coverage": "none",
+      "expected": "The behaviour changes exactly where AC-1 says it does",
+      "id": "TC-8",
+      "level": "unit",
+      "priority": "P0",
+      "requirement": "AC-1",
+      "requirement_reason": "",
+      "risk": "R4",
+      "steps": [
+        "Run with a value just below 15",
+        "Run with a value exactly at 15",
+        "Run with a value just above 15"
+      ],
+      "technique": "boundary",
+      "title": "AC-1: boundary at 15"
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F13",
+        "F4",
+        "F7",
+        "shop/inventory.py:20"
+      ],
+      "existing_coverage": "none",
+      "expected": "The input is rejected or handled as the criterion states, with no side effects",
+      "id": "TC-9",
+      "level": "unit",
+      "priority": "P0",
+      "requirement": "AC-1",
+      "requirement_reason": "",
+      "risk": "R4",
+      "steps": [
+        "Provide input that AC-1 rules out",
+        "Exercise Inventory.available (shop/inventory.py)"
+      ],
+      "technique": "negative",
+      "title": "AC-1: the excluded case is refused"
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F13",
+        "F4",
+        "F7",
+        "shop/inventory.py:20"
+      ],
+      "existing_coverage": "none",
+      "expected": "The state changes only once the limit has passed",
+      "id": "TC-10",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "AC-1",
+      "requirement_reason": "",
+      "risk": "R4",
+      "steps": [
+        "Freeze or control the clock",
+        "Check the state just before the limit, at it, and just after it"
+      ],
+      "technique": "state_transition",
+      "title": "AC-1: behaviour around the time limit"
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F14",
+        "F7",
+        "shop/inventory.py:43"
+      ],
+      "existing_coverage": "none",
+      "expected": "The state changes only once the limit has passed",
+      "id": "TC-11",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "AC-2",
+      "requirement_reason": "",
+      "risk": "R4",
+      "steps": [
+        "Freeze or control the clock",
+        "Check the state just before the limit, at it, and just after it"
+      ],
+      "technique": "state_transition",
+      "title": "AC-2: behaviour around the time limit"
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F15"
+      ],
+      "existing_coverage": "none",
+      "expected": "Two customers reserving the last item at the same time must not both succeed.",
+      "id": "TC-12",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "AC-3",
+      "requirement_reason": "",
+      "risk": "R4",
+      "steps": [
+        "Arrange the state that AC-3 describes",
+        "Exercise the changed behaviour",
+        "Compare the outcome with the expected result"
+      ],
+      "technique": "equivalence",
+      "title": "AC-3: Two customers reserving the last item at the same time must not both succeed."
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F15"
+      ],
+      "existing_coverage": "none",
+      "expected": "The input is rejected or handled as the criterion states, with no side effects",
+      "id": "TC-13",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "AC-3",
+      "requirement_reason": "",
+      "risk": "R4",
+      "steps": [
+        "Provide input that AC-3 rules out",
+        "Exercise the changed behaviour"
+      ],
+      "technique": "negative",
+      "title": "AC-3: the excluded case is refused"
+    },
+    {
+      "automation": "now",
+      "confidence": "low",
+      "confidence_reason": "the criterion uses vague wording (as needed); the expected result is one reading",
+      "evidence": [
+        "F16"
+      ],
+      "existing_coverage": "none",
+      "expected": "The state changes only once the limit has passed",
+      "id": "TC-14",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "AC-4",
+      "requirement_reason": "",
+      "risk": "R4",
+      "steps": [
+        "Freeze or control the clock",
+        "Check the state just before the limit, at it, and just after it"
+      ],
+      "technique": "state_transition",
+      "title": "AC-4: behaviour around the time limit"
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F23",
+        "F8",
+        "shop/inventory.py:51"
+      ],
+      "existing_coverage": "none",
+      "expected": "Results match what the author intended; surprises become questions",
+      "id": "TC-15",
+      "level": "unit",
+      "priority": "P0",
+      "requirement": "none",
+      "requirement_reason": "no criterion mentions this change and no existing test calls it",
+      "risk": "R5",
+      "steps": [
+        "Call Inventory.expire with typical, empty and extreme inputs",
+        "Record what it returns"
+      ],
+      "technique": "regression",
+      "title": "Characterise the current behaviour of Inventory.expire"
+    },
+    {
+      "automation": "now",
+      "confidence": "low",
+      "confidence_reason": "the criterion uses vague wording (as needed); the expected result is one reading",
+      "evidence": [
+        "F16"
+      ],
+      "existing_coverage": "none",
+      "expected": "Expired reservations are cleaned up as needed without slowing checkout.",
+      "id": "TC-16",
+      "level": "integration",
+      "priority": "P1",
+      "requirement": "AC-4",
+      "requirement_reason": "",
+      "risk": "R6",
+      "steps": [
+        "Arrange the state that AC-4 describes",
+        "Exercise the changed behaviour",
+        "Compare the outcome with the expected result"
+      ],
+      "technique": "equivalence",
+      "title": "AC-4: Expired reservations are cleaned up as needed without slowing checkout."
+    }
+  ],
+  "environment_needs": [
+    "Existing fixtures that may be reused: inventory.",
+    "A database with representative data, and a copy to roll back on.",
+    "A way to control the clock.",
+    "Two or more concurrent workers against the same data."
+  ],
+  "exit_criteria": [
+    "All P0 and P1 cases have been run and pass.",
+    "Every open question has an answer, or an accepted risk written next to it.",
+    "No failing test is quarantined to make this change pass."
+  ],
+  "meta": {
+    "bundle_sha256": "75a0b309e79a9466549544a534093964869941e5753fac393681608f6d705750",
+    "created": "2026-09-01",
+    "generator": "heuristic-baseline",
+    "model": "none (rule-based)"
+  },
+  "open_questions": [
+    {
+      "evidence": [
+        "F18"
+      ],
+      "id": "Q1",
+      "kind": "ambiguity",
+      "text": "AC-4: what does 'as needed' mean in practice? Give a number, a rule or an example so it can be tested."
+    },
+    {
+      "evidence": [
+        "F26"
+      ],
+      "id": "Q2",
+      "kind": "unmapped",
+      "text": "Inventory.reserve (shop/inventory.py) changed but no criterion mentions it; confirm it is in scope."
+    },
+    {
+      "evidence": [
+        "F27"
+      ],
+      "id": "Q3",
+      "kind": "unmapped",
+      "text": "Inventory.expire (shop/inventory.py) changed but no criterion mentions it; confirm it is in scope."
+    },
+    {
+      "evidence": [
+        "F28"
+      ],
+      "id": "Q4",
+      "kind": "unmapped",
+      "text": "Inventory.release (shop/inventory.py) changed but no criterion mentions it; confirm it is in scope."
+    }
+  ],
+  "regression_scope": [
+    {
+      "evidence": [
+        "F19"
+      ],
+      "reason": "calls available, release from shop/inventory.py",
+      "test": "tests/test_inventory.py::test_release_never_goes_negative"
+    },
+    {
+      "evidence": [
+        "F20"
+      ],
+      "reason": "calls reserve from shop/inventory.py",
+      "test": "tests/test_inventory.py::test_reserve_more_than_available_fails"
+    },
+    {
+      "evidence": [
+        "F21"
+      ],
+      "reason": "calls available, reserve from shop/inventory.py",
+      "test": "tests/test_inventory.py::test_reserve_reduces_available_stock"
+    }
+  ],
+  "risks": [
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F11"
+      ],
+      "id": "R1",
+      "impact": 5,
+      "likelihood": 5,
+      "title": "Data loss or migration: wrong behaviour in migrations/0004_add_reservation_expiry.sql"
+    },
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F10"
+      ],
+      "id": "R2",
+      "impact": 4,
+      "likelihood": 5,
+      "title": "Concurrency: wrong behaviour in shop/inventory.py"
+    },
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F4",
+        "F5",
+        "F9"
+      ],
+      "id": "R3",
+      "impact": 4,
+      "likelihood": 5,
+      "title": "Contract break for callers or API clients"
+    },
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F12"
+      ],
+      "id": "R4",
+      "impact": 3,
+      "likelihood": 5,
+      "title": "Time and scheduling: wrong behaviour in migrations/0004_add_reservation_expiry.sql, shop/inventory.py"
+    },
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F22",
+        "F23"
+      ],
+      "id": "R5",
+      "impact": 3,
+      "likelihood": 5,
+      "title": "Changed behaviour with no direct test (2 definition(s))"
+    },
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F18",
+        "F26",
+        "F27",
+        "F28"
+      ],
+      "id": "R6",
+      "impact": 3,
+      "likelihood": 4,
+      "title": "Requirements misread: vague or unmatched wording"
+    }
+  ],
+  "schema_version": 1,
+  "summary": {
+    "change_class": "feature",
+    "in_scope": [
+      "AC-1: A reservation that is not confirmed within 15 minutes is released and the stock becomes available again.",
+      "AC-2: Confirming a reservation before it expires keeps the stock reserved.",
+      "AC-3: Two customers reserving the last item at the same time must not both succeed.",
+      "AC-4: Expired reservations are cleaned up as needed without slowing checkout."
+    ],
+    "out_of_scope": [
+      "Notifying customers that a reservation expired"
+    ],
+    "text": "Expire stock reservations. 2 file(s) changed, classified as feature. 4 acceptance criteria found. Highest risk: Data loss or migration: wrong behaviour in migrations/0004_add_reservation_expiry.sql (score 25, high)."
+  },
+  "validation": []
+}

@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "testplan-agent"
+version = "0.1.0"
+description = "Turns a code change and its requirements into an evidence-grounded, risk-based test plan. Offline core: collectors, validators, renderer."
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Iryna Shkvirko" }]
+keywords = ["testing", "test plan", "qa", "sdet", "risk-based testing", "llm"]
+classifiers = [
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development :: Testing",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0", "ruff"]
+
+[project.scripts]
+testplan = "testplan_agent.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-p no:cacheprovider"
+pythonpath = ["src", "demo"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+extend-exclude = ["demo/_repo"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["UP006", "UP007", "UP035", "UP045", "E501"]  # the formatter wraps code; long strings are fine

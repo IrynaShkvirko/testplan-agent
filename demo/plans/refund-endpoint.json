@@ -1,0 +1,310 @@
+{
+  "assumptions": [
+    "Tests are written with pytest.",
+    "The repository checkout matches the diff, either before or after the change.",
+    "Some values were redacted before analysis (F1); tests that need them need real test data."
+  ],
+  "cases": [
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F9",
+        "F4",
+        "F5",
+        "shop/api.py:17"
+      ],
+      "existing_coverage": "none",
+      "expected": "Support staff can refund up to the paid amount of an order with POST /refunds.",
+      "id": "TC-1",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "AC-1",
+      "requirement_reason": "",
+      "risk": "R1",
+      "steps": [
+        "Arrange the state that AC-1 describes",
+        "Exercise create_refund (shop/api.py)",
+        "Compare the outcome with the expected result"
+      ],
+      "technique": "equivalence",
+      "title": "AC-1: Support staff can refund up to the paid amount of an order with POST /refunds."
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F10",
+        "F4",
+        "F5",
+        "shop/api.py:17"
+      ],
+      "existing_coverage": "none",
+      "expected": "A refund larger than the amount paid is rejected with status 422.",
+      "id": "TC-2",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "AC-2",
+      "requirement_reason": "",
+      "risk": "R2",
+      "steps": [
+        "Arrange the state that AC-2 describes",
+        "Exercise create_refund (shop/api.py)",
+        "Compare the outcome with the expected result"
+      ],
+      "technique": "equivalence",
+      "title": "AC-2: A refund larger than the amount paid is rejected with status 422."
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F10",
+        "F4",
+        "F5",
+        "shop/api.py:17"
+      ],
+      "existing_coverage": "none",
+      "expected": "The input is rejected or handled as the criterion states, with no side effects",
+      "id": "TC-3",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "AC-2",
+      "requirement_reason": "",
+      "risk": "R2",
+      "steps": [
+        "Provide input that AC-2 rules out",
+        "Exercise create_refund (shop/api.py)"
+      ],
+      "technique": "negative",
+      "title": "AC-2: the excluded case is refused"
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F11",
+        "F4",
+        "F5",
+        "shop/api.py:17"
+      ],
+      "existing_coverage": "none",
+      "expected": "Only users with the support role can issue refunds; everyone else gets 403.",
+      "id": "TC-4",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "AC-3",
+      "requirement_reason": "",
+      "risk": "R1",
+      "steps": [
+        "Arrange the state that AC-3 describes",
+        "Exercise create_refund (shop/api.py)",
+        "Compare the outcome with the expected result"
+      ],
+      "technique": "equivalence",
+      "title": "AC-3: Only users with the support role can issue refunds; everyone else gets 403."
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F11",
+        "F4",
+        "F5",
+        "shop/api.py:17"
+      ],
+      "existing_coverage": "none",
+      "expected": "Only the permitted user succeeds; the other is refused and nothing changes",
+      "id": "TC-5",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "AC-3",
+      "requirement_reason": "",
+      "risk": "R1",
+      "steps": [
+        "Call as a user without the required role",
+        "Call as a user with it"
+      ],
+      "technique": "permission",
+      "title": "AC-3: caller without the right role"
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F12",
+        "F4",
+        "F5",
+        "shop/api.py:17"
+      ],
+      "existing_coverage": "none",
+      "expected": "A refund is recorded once even if the request is retried.",
+      "id": "TC-6",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "AC-4",
+      "requirement_reason": "",
+      "risk": "R2",
+      "steps": [
+        "Arrange the state that AC-4 describes",
+        "Exercise create_refund (shop/api.py)",
+        "Compare the outcome with the expected result"
+      ],
+      "technique": "equivalence",
+      "title": "AC-4: A refund is recorded once even if the request is retried."
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F12",
+        "F4",
+        "F5",
+        "shop/api.py:17"
+      ],
+      "existing_coverage": "none",
+      "expected": "The effect happens once; the repeat is rejected or returns the first result",
+      "id": "TC-7",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "AC-4",
+      "requirement_reason": "",
+      "risk": "R2",
+      "steps": [
+        "Perform the action",
+        "Repeat it exactly, as a retry or double submit would"
+      ],
+      "technique": "idempotency",
+      "title": "AC-4: the same request repeated"
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F4",
+        "shop/api.py:17"
+      ],
+      "existing_coverage": "none",
+      "expected": "A clear client error is returned and no state changes",
+      "id": "TC-8",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "none",
+      "requirement_reason": "input validation for a new or changed endpoint is not in the criteria",
+      "risk": "R3",
+      "steps": [
+        "Send a request with a missing field, a wrong type and an empty body"
+      ],
+      "technique": "negative",
+      "title": "POST /refunds: malformed or incomplete request"
+    }
+  ],
+  "environment_needs": [
+    "Existing fixtures that may be reused: inventory.",
+    "A test client or running app, with users of each relevant role."
+  ],
+  "exit_criteria": [
+    "All P0 and P1 cases have been run and pass.",
+    "Every open question has an answer, or an accepted risk written next to it.",
+    "No failing test is quarantined to make this change pass."
+  ],
+  "meta": {
+    "bundle_sha256": "d310529a708e690ee1ff637d2c89b9dfd9553e4839b4cf85a3426868e0078adb",
+    "created": "2026-09-01",
+    "generator": "heuristic-baseline",
+    "model": "none (rule-based)"
+  },
+  "open_questions": [],
+  "regression_scope": [
+    {
+      "evidence": [
+        "F14"
+      ],
+      "reason": "imports shop.api",
+      "test": "tests/test_api.py::test_create_order_returns_total"
+    }
+  ],
+  "risks": [
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F7"
+      ],
+      "id": "R1",
+      "impact": 5,
+      "likelihood": 5,
+      "title": "Authentication and permissions: wrong behaviour in shop/api.py, shop/refunds.py"
+    },
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F8"
+      ],
+      "id": "R2",
+      "impact": 5,
+      "likelihood": 5,
+      "title": "Money and pricing: wrong behaviour in shop/api.py, shop/refunds.py"
+    },
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F4"
+      ],
+      "id": "R3",
+      "impact": 4,
+      "likelihood": 5,
+      "title": "Contract break for callers or API clients"
+    },
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F15",
+        "F16",
+        "F17"
+      ],
+      "id": "R4",
+      "impact": 3,
+      "likelihood": 5,
+      "title": "Changed behaviour with no direct test (3 definition(s))"
+    }
+  ],
+  "schema_version": 1,
+  "summary": {
+    "change_class": "feature",
+    "in_scope": [
+      "AC-1: Support staff can refund up to the paid amount of an order with POST /refunds.",
+      "AC-2: A refund larger than the amount paid is rejected with status 422.",
+      "AC-3: Only users with the support role can issue refunds; everyone else gets 403.",
+      "AC-4: A refund is recorded once even if the request is retried."
+    ],
+    "out_of_scope": [
+      "Partial refunds of shipping costs"
+    ],
+    "text": "Refund endpoint. 2 file(s) changed, classified as feature. 4 acceptance criteria found. Highest risk: Authentication and permissions: wrong behaviour in shop/api.py, shop/refunds.py (score 25, high)."
+  },
+  "validation": []
+}

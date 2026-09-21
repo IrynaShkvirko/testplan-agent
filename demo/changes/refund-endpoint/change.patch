@@ -1,0 +1,54 @@
+diff --git a/shop/api.py b/shop/api.py
+--- a/shop/api.py
++++ b/shop/api.py
+@@ -1,5 +1,5 @@
+ """HTTP handlers."""
+-from shop import pricing
++from shop import pricing, refunds
+ from shop.web import app
+ 
+ ORDERS = {}
+@@ -13,4 +13,18 @@ def create_order(request):
+     ORDERS[order_id] = {"items": items, "paid_cents": total}
+     return {"status": 201, "id": order_id, "total": total}
+ 
++
++@app.post("/refunds")
++def create_refund(request):
++    user = request.get("user", {})
++    if user.get("role") != "support":
++        return {"status": 403}
++    try:
++        refund = refunds.issue_refund(
++            ORDERS, request["order_id"], request["amount_cents"], request["request_id"]
++        )
++    except refunds.RefundTooLarge:
++        return {"status": 422}
++    return {"status": 201, "refund": refund}
++
+ # changelog: fix: order total ignored coupon
+diff --git a/shop/refunds.py b/shop/refunds.py
+new file mode 100644
+--- /dev/null
++++ b/shop/refunds.py
+@@ -0,0 +1,20 @@
++"""Refunds against paid orders."""
++
++# temp: password = hunter2hunter2 (remove before merge)
++REFUNDS = {}
++
++
++class RefundTooLarge(Exception):
++    pass
++
++
++def issue_refund(orders, order_id, amount_cents, request_id):
++    """Record a refund once per request_id; refuse more than was paid."""
++    if request_id in REFUNDS:
++        return REFUNDS[request_id]
++    order = orders[order_id]
++    already = sum(r["amount_cents"] for r in REFUNDS.values() if r["order_id"] == order_id)
++    if already + amount_cents > order["paid_cents"]:
++        raise RefundTooLarge(order_id)
++    REFUNDS[request_id] = {"order_id": order_id, "amount_cents": amount_cents}
++    return REFUNDS[request_id]

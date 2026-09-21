@@ -1,0 +1,286 @@
+{
+  "assumptions": [
+    "Tests are written with pytest.",
+    "The repository checkout matches the diff, either before or after the change."
+  ],
+  "cases": [
+    {
+      "automation": "now",
+      "confidence": "low",
+      "confidence_reason": "the criterion uses vague wording (large); the expected result is one reading",
+      "evidence": [
+        "F5",
+        "F3",
+        "shop/pricing.py:17"
+      ],
+      "existing_coverage": "none",
+      "expected": "A cart with 3 or more items gets at most 50% off, however large the coupon is.",
+      "id": "TC-1",
+      "level": "unit",
+      "priority": "P0",
+      "requirement": "AC-1",
+      "requirement_reason": "",
+      "risk": "R1",
+      "steps": [
+        "Arrange the state that AC-1 describes",
+        "Exercise cart_total (shop/pricing.py)",
+        "Compare the outcome with the expected result"
+      ],
+      "technique": "equivalence",
+      "title": "AC-1: A cart with 3 or more items gets at most 50% off, however large the coupon is."
+    },
+    {
+      "automation": "now",
+      "confidence": "low",
+      "confidence_reason": "the criterion uses vague wording (large); the expected result is one reading",
+      "evidence": [
+        "F5",
+        "F3",
+        "shop/pricing.py:17"
+      ],
+      "existing_coverage": "none",
+      "expected": "The behaviour changes exactly where AC-1 says it does",
+      "id": "TC-2",
+      "level": "unit",
+      "priority": "P0",
+      "requirement": "AC-1",
+      "requirement_reason": "",
+      "risk": "R1",
+      "steps": [
+        "Run with a value just below 3",
+        "Run with a value exactly at 3",
+        "Run with a value just above 3"
+      ],
+      "technique": "boundary",
+      "title": "AC-1: boundary at 3"
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F6",
+        "F2",
+        "F3",
+        "shop/pricing.py:8"
+      ],
+      "existing_coverage": "none",
+      "expected": "A cart with fewer than 3 items keeps the full coupon discount.",
+      "id": "TC-3",
+      "level": "unit",
+      "priority": "P0",
+      "requirement": "AC-2",
+      "requirement_reason": "",
+      "risk": "R1",
+      "steps": [
+        "Arrange the state that AC-2 describes",
+        "Exercise apply_discount (shop/pricing.py)",
+        "Compare the outcome with the expected result"
+      ],
+      "technique": "equivalence",
+      "title": "AC-2: A cart with fewer than 3 items keeps the full coupon discount."
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F8",
+        "F2",
+        "shop/pricing.py:8"
+      ],
+      "existing_coverage": "tests/test_pricing.py::test_apply_discount_rounds_to_the_nearest_cent",
+      "expected": "Discounts are rounded to the nearest cent.",
+      "id": "TC-4",
+      "level": "unit",
+      "priority": "P0",
+      "requirement": "AC-4",
+      "requirement_reason": "",
+      "risk": "R1",
+      "steps": [
+        "Arrange the state that AC-4 describes",
+        "Exercise apply_discount (shop/pricing.py)",
+        "Compare the outcome with the expected result"
+      ],
+      "technique": "equivalence",
+      "title": "AC-4: Discounts are rounded to the nearest cent."
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F2",
+        "shop/pricing.py:8",
+        "F16"
+      ],
+      "existing_coverage": "none",
+      "expected": "Every caller works, or is updated in this change",
+      "id": "TC-5",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "none",
+      "requirement_reason": "signature changed (price_cents, percent) -> (price_cents, percent, item_count=1); criteria do not cover callers",
+      "risk": "R2",
+      "steps": [
+        "Find callers of apply_discount (dependents are listed in the evidence)",
+        "Run them against the new signature, including default and keyword arguments"
+      ],
+      "technique": "compatibility",
+      "title": "Existing callers of apply_discount still work after its signature changed"
+    },
+    {
+      "automation": "now",
+      "confidence": "low",
+      "confidence_reason": "the criterion uses vague wording (reasonable); the expected result is one reading",
+      "evidence": [
+        "F7"
+      ],
+      "existing_coverage": "none",
+      "expected": "When the cap reduces a coupon, the customer is shown a reasonable message.",
+      "id": "TC-6",
+      "level": "integration",
+      "priority": "P1",
+      "requirement": "AC-3",
+      "requirement_reason": "",
+      "risk": "R3",
+      "steps": [
+        "Arrange the state that AC-3 describes",
+        "Exercise the changed behaviour",
+        "Compare the outcome with the expected result"
+      ],
+      "technique": "equivalence",
+      "title": "AC-3: When the cap reduces a coupon, the customer is shown a reasonable message."
+    }
+  ],
+  "environment_needs": [
+    "Existing fixtures that may be reused: inventory."
+  ],
+  "exit_criteria": [
+    "All P0 and P1 cases have been run and pass.",
+    "Every open question has an answer, or an accepted risk written next to it.",
+    "No failing test is quarantined to make this change pass."
+  ],
+  "meta": {
+    "bundle_sha256": "fad24f4a1a28806aa5968adb33c0736e62cc69be3959d821c01749d237aed130",
+    "created": "2026-09-01",
+    "generator": "heuristic-baseline",
+    "model": "none (rule-based)"
+  },
+  "open_questions": [
+    {
+      "evidence": [
+        "F11"
+      ],
+      "id": "Q1",
+      "kind": "ambiguity",
+      "text": "AC-1: what does 'large' mean in practice? Give a number, a rule or an example so it can be tested."
+    },
+    {
+      "evidence": [
+        "F12"
+      ],
+      "id": "Q2",
+      "kind": "ambiguity",
+      "text": "AC-3: what does 'reasonable' mean in practice? Give a number, a rule or an example so it can be tested."
+    }
+  ],
+  "regression_scope": [
+    {
+      "evidence": [
+        "F13"
+      ],
+      "reason": "calls apply_discount from shop/pricing.py",
+      "test": "tests/test_pricing.py::test_apply_discount_rejects_percent_over_100"
+    },
+    {
+      "evidence": [
+        "F14"
+      ],
+      "reason": "calls apply_discount from shop/pricing.py",
+      "test": "tests/test_pricing.py::test_apply_discount_rounds_to_the_nearest_cent"
+    },
+    {
+      "evidence": [
+        "F15"
+      ],
+      "reason": "calls cart_total from shop/pricing.py",
+      "test": "tests/test_pricing.py::test_cart_total_applies_coupon"
+    }
+  ],
+  "risks": [
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F4"
+      ],
+      "id": "R1",
+      "impact": 5,
+      "likelihood": 4,
+      "title": "Money and pricing: wrong behaviour in shop/pricing.py"
+    },
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F2"
+      ],
+      "id": "R2",
+      "impact": 4,
+      "likelihood": 4,
+      "title": "Contract break for callers or API clients"
+    },
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F11",
+        "F12"
+      ],
+      "id": "R3",
+      "impact": 3,
+      "likelihood": 3,
+      "title": "Requirements misread: vague or unmatched wording"
+    },
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F16"
+      ],
+      "id": "R4",
+      "impact": 2,
+      "likelihood": 4,
+      "title": "Regression in 1 dependent module(s)"
+    }
+  ],
+  "schema_version": 1,
+  "summary": {
+    "change_class": "feature",
+    "in_scope": [
+      "AC-1: A cart with 3 or more items gets at most 50% off, however large the coupon is.",
+      "AC-2: A cart with fewer than 3 items keeps the full coupon discount.",
+      "AC-3: When the cap reduces a coupon, the customer is shown a reasonable message.",
+      "AC-4: Discounts are rounded to the nearest cent."
+    ],
+    "out_of_scope": [
+      "Loyalty points",
+      "Changing which coupons exist"
+    ],
+    "text": "Cap discounts on bundles. 1 file(s) changed, classified as feature. 4 acceptance criteria found. Highest risk: Money and pricing: wrong behaviour in shop/pricing.py (score 20, high)."
+  },
+  "validation": []
+}
