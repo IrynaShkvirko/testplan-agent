@@ -179,6 +179,18 @@ def test_git_does_not_read_configuration_from_the_analysed_repository(tmp_path):
     assert gitsignals.is_git_repo(tmp_path) and not gitsignals.is_git_repo(tmp_path / ".git")
 
 
+@pytest.mark.parametrize(
+    "stamp,expected",
+    [
+        ("2026-08-10T10:00:00+02:00", date(2026, 8, 10)),
+        ("2026-08-10T23:30:00Z", date(2026, 8, 10)),  # newer git; Python < 3.11 rejects the Z
+        ("not a date", None),
+    ],
+)
+def test_git_dates_are_read_on_every_python(stamp, expected):
+    assert gitsignals.parse_git_date(stamp) == expected
+
+
 def test_a_plain_directory_is_not_a_git_repo(tmp_path):
     assert gitsignals.is_git_repo(tmp_path) is False
 

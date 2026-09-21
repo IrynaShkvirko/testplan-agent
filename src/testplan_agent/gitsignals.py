@@ -63,6 +63,19 @@ def is_git_repo(repo: Path) -> bool:
     return (_git(repo, "rev-parse", "--is-inside-work-tree") or "").strip() == "true"
 
 
+def parse_git_date(stamp: str) -> Optional[date]:
+    """Date of a strict ISO 8601 git timestamp.
+
+    Newer git writes UTC as ``Z``, which ``datetime.fromisoformat`` accepts only from Python 3.11.
+    """
+    if stamp.endswith("Z"):
+        stamp = stamp[:-1] + "+00:00"
+    try:
+        return datetime.fromisoformat(stamp).date()
+    except ValueError:
+        return None
+
+
 def file_history(repo: Path, paths: Sequence[str], as_of: date) -> Dict[str, FileHistory]:
     """History of each path as of a date. Missing or new files get an empty history."""
     out: Dict[str, FileHistory] = {}
@@ -88,9 +101,8 @@ def file_history(repo: Path, paths: Sequence[str], as_of: date) -> Dict[str, Fil
             if len(parts) != 4:
                 continue
             _, author, stamp, subject = parts
-            try:
-                when = datetime.fromisoformat(stamp).date()
-            except ValueError:
+            when = parse_git_date(stamp)
+            if when is None:
                 continue
             if hist.last_change is None or when.isoformat() > hist.last_change:
                 hist.last_change = when.isoformat()
