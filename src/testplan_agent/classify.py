@@ -23,8 +23,11 @@ CLASSES = (
     "dependency",
     "test-only",
     "docs",
+    "data",
     "change",
 )
+# Classes where no code changed, so there is no behaviour to put at risk unless criteria ask.
+NO_CODE_CLASSES = ("docs", "data", "test-only")
 
 
 def classify(
@@ -58,6 +61,8 @@ def classify(
 
     if kinds <= {"docs"}:
         return "docs", traits, ["only documentation changed"]
+    if kinds <= {"docs", "data"}:
+        return "data", traits, ["only data files (fixtures, samples, generated output) changed"]
     if kinds <= {"test"}:
         return "test-only", traits, ["only test files changed"]
     if not source:

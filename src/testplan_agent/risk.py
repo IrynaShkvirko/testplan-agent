@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Dict, List, Tuple
 
+from .classify import NO_CODE_CLASSES
 from .facts import FactStore
 from .surface import AREAS
 
@@ -255,16 +256,16 @@ def assess(facts: FactStore) -> List[RiskItem]:
 
     classes = facts.by_kind("change_class")
     cls = classes[0].data.get("class") if classes else "change"
-    # Criteria always need a risk to hang their conditions on, even for docs or tests only.
+    # Criteria always need a risk to hang their conditions on, even when no code changed.
     stated = facts.by_kind("requirement")
-    if not drafts and (cls not in ("docs", "test-only") or stated):
+    if not drafts and (cls not in NO_CODE_CLASSES or stated):
         files = facts.by_kind("change_file")
         drafts.append(
             RiskItem(
                 id="",
                 title=(
                     "Regression in the changed code"
-                    if cls not in ("docs", "test-only")
+                    if cls not in NO_CODE_CLASSES
                     else "The change does not do what its criteria ask"
                 ),
                 kind="general",

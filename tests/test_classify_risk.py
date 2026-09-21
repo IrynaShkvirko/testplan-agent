@@ -27,6 +27,7 @@ def _new(path, body="x = 1\n"):
     "diff,title,expected",
     [
         (_new("docs/a.md", "text"), "", "docs"),
+        (_new("demo/plans/a.json", '{"price": 1}') + _new("demo/plans/a.md", "text"), "", "data"),
         (_new("tests/test_a.py", "def test_a():\n    pass"), "", "test-only"),
         (_new("migrations/0001_x.sql", "ALTER TABLE a ADD b int;"), "", "migration"),
         (_new("requirements.txt", "flask==3.0"), "", "dependency"),
@@ -151,3 +152,12 @@ def test_risk_round_trips_through_a_dict():
 def test_docs_only_changes_produce_no_general_risk():
     facts = _facts(change_class=[("docs", {"class": "docs", "traits": []})])
     assert risk.assess(facts) == []
+
+
+def test_a_change_to_data_files_alone_raises_no_risk():
+    diff = _new("fixtures/orders.json", '{"total": 10, "discount": 2}')
+    summaries = [summarize(c, None) for c in parse_diff(diff)]
+    cls, traits, reasons = classify(summaries, "", "", False)
+    store = FactStore()
+    store.add("change_class", cls, "test", **{"class": cls, "traits": traits, "reasons": reasons})
+    assert cls == "data" and risk.assess(store) == []
