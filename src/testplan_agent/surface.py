@@ -30,6 +30,24 @@ SOURCE_EXT = {
 }
 CONFIG_EXT = {".yml", ".yaml", ".toml", ".ini", ".cfg", ".json", ".env", ".properties", ".conf"}
 DOC_EXT = {".md", ".rst", ".txt", ".adoc"}
+DATA_EXT = {".csv", ".tsv", ".jsonl", ".ndjson", ".snap"}
+# Non-code files in these folders are samples, fixtures or generated output, not the project's
+# configuration: a word like "price" in them says nothing about what the code does.
+DATA_DIRS = {
+    "data",
+    "testdata",
+    "test_data",
+    "fixtures",
+    "fixture",
+    "samples",
+    "sample",
+    "examples",
+    "example",
+    "demo",
+    "demos",
+    "snapshots",
+    "__snapshots__",
+}
 DEPENDENCY_NAMES = {
     "pyproject.toml",
     "setup.py",
@@ -131,7 +149,7 @@ class ChangeSummary:
 
 
 def classify_path(path: str) -> str:
-    """Kind of file: test, migration, dependency, ci, config, docs, source or other."""
+    """Kind of file: test, migration, dependency, ci, docs, source, data, config or other."""
     p = PurePosixPath(path)
     parts = [x.lower() for x in p.parts]
     name = p.name.lower()
@@ -153,6 +171,8 @@ def classify_path(path: str) -> str:
         return "docs"
     if ext in SOURCE_EXT:
         return "source"
+    if ext in DATA_EXT or any(x in DATA_DIRS for x in parts[:-1]):
+        return "data"
     if ext in CONFIG_EXT or name.startswith(".env") or name in ("dockerfile", "makefile"):
         return "config"
     return "other"

@@ -19,6 +19,12 @@ from testplan_agent.surface import after_text, classify_path, summarize
         ("docs/guide.md", "docs"),
         ("README.md", "docs"),
         ("settings.toml", "config"),
+        ("config/app.json", "config"),
+        ("demo/plans/discount-cap.json", "data"),
+        ("examples/settings.yml", "data"),
+        ("data/prices.csv", "data"),
+        ("exports/rows.jsonl", "data"),
+        ("demo/run_demo.py", "source"),
     ],
 )
 def test_classify_path(path, kind):
@@ -149,3 +155,9 @@ def test_methods_are_matched_by_class_not_by_bare_name(tmp_path):
     write_files(tmp_path, {"m.py": old})
     status = {s.qualname: s.status for s in summarize(parse_diff(diff)[0], tmp_path).symbols}
     assert status == {"B.save": "added", "B.load": "removed"}
+
+
+def test_data_files_are_not_scanned_for_sensitive_areas(tmp_path):
+    diff = '--- /dev/null\n+++ b/demo/plans/p.json\n@@ -0,0 +1 @@\n+{"price": 1, "discount": 2}\n'
+    summary = summarize(parse_diff(diff)[0], tmp_path)
+    assert summary.kind == "data" and summary.areas == {}
