@@ -20,6 +20,7 @@ classifiers = [
 dependencies = []
 
 [project.optional-dependencies]
+anthropic = ["anthropic>=1.7,<2"]  # only for --client anthropic
 dev = ["pytest>=7.0", "ruff"]
 
 [project.scripts]

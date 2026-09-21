@@ -104,6 +104,32 @@ def _bundle_from_args(args: argparse.Namespace) -> ContextBundle:
 
 
 def _client(args: argparse.Namespace) -> LLMClient:
+    model_flags = [
+        flag
+        for flag, value in (
+            ("--model", args.model),
+            ("--effort", args.effort),
+            ("--max-output-tokens", args.max_output_tokens),
+            ("--no-fallback", args.no_fallback or None),
+        )
+        if value is not None
+    ]
+    if model_flags and args.client != "anthropic":
+        raise CliError(f"{', '.join(model_flags)} only apply with --client anthropic")
+    if args.client == "anthropic":
+        from .anthropic_client import (
+            DEFAULT_EFFORT,
+            DEFAULT_MAX_TOKENS,
+            DEFAULT_MODEL,
+            AnthropicClient,
+        )
+
+        return AnthropicClient(
+            model=args.model or DEFAULT_MODEL,
+            effort=args.effort or DEFAULT_EFFORT,
+            max_tokens=args.max_output_tokens or DEFAULT_MAX_TOKENS,
+            fallback=not args.no_fallback,
+        )
     if args.client == "heuristic":
         return HeuristicClient()
     if not args.responses:
@@ -141,6 +167,8 @@ def cmd_generate(args: argparse.Namespace) -> int:
             max_cases_per_risk=args.max_cases_per_risk,
         )
     except LLMError as exc:
+        if exc.spent:
+            _print_usage(exc.spent)  # a failed call can still have been paid for
         raise CliError(f"the planner gave no answer: {exc}") from exc
     total = run_details(result.usage)["total"]
     if result.plan is None:
@@ -253,7 +281,29 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="print exactly what would be sent to a model, then stop",
     )
-    p.add_argument("--client", choices=("heuristic", "scripted"), default="heuristic")
+    p.add_argument(
+        "--client",
+        choices=("heuristic", "scripted", "anthropic"),
+        default="heuristic",
+        help="who drafts the plan: the rule-based baseline (default), canned answers, or Claude",
+    )
+    p.add_argument("--model", help="Claude model for --client anthropic (default: claude-opus-5)")
+    p.add_argument(
+        "--effort",
+        choices=("low", "medium", "high", "xhigh", "max"),
+        help="how hard Claude thinks (default: high); higher costs more",
+    )
+    p.add_argument(
+        "--max-output-tokens",
+        type=int,
+        metavar="N",
+        help="limit on Claude's answer, thinking included (default: 64000)",
+    )
+    p.add_argument(
+        "--no-fallback",
+        action="store_true",
+        help="do not re-run a declined request on Anthropic's fallback model",
+    )
     p.add_argument("--responses", metavar="FILE", help="canned answers for --client scripted")
     p.add_argument("--max-repairs", type=int, default=2, metavar="N")
     p.add_argument(

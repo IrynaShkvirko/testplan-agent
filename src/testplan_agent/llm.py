@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass, field
-from typing import Callable, Dict, List, Optional, Protocol, Sequence, Union
+from typing import Any, Callable, Dict, List, Optional, Protocol, Sequence, Union
 
 from .bundle import ContextBundle
 from .prompts import extract_context_json
@@ -14,7 +14,17 @@ Turn = Dict[str, str]
 
 
 class LLMError(RuntimeError):
-    """The client could not produce an answer at all (as opposed to a wrong answer)."""
+    """The client could not produce an answer at all (as opposed to a wrong answer).
+
+    ``usage`` is what the failed call still cost, if anything (a refusal after partial output,
+    an answer cut off at the token limit). ``spent`` is filled in by the planner: the totals of
+    every call made for the plan, so the user learns what a failed run cost.
+    """
+
+    def __init__(self, message: str, usage: Optional[Usage] = None) -> None:
+        super().__init__(message)
+        self.usage = usage
+        self.spent: Optional[Dict[str, Any]] = None
 
 
 @dataclass

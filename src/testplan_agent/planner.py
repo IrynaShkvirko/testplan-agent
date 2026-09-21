@@ -11,7 +11,7 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 from . import prompts
 from .bundle import ContextBundle
-from .llm import LLMClient, Turn, Usage
+from .llm import LLMClient, LLMError, Turn, Usage
 from .schema import TestPlan
 from .validate import DEFAULT_MAX_CASES_PER_RISK, Issue, check_shape, has_errors, validate_plan
 
@@ -69,7 +69,17 @@ def generate_plan(
 
     for attempt in range(max_repairs + 1):
         result.attempts = attempt + 1
-        completion = client.complete(system, turns)
+        try:
+            completion = client.complete(system, turns)
+        except LLMError as exc:
+            if exc.usage is not None:
+                result.usage.append(exc.usage)
+            if best is None:
+                exc.spent = run_details(result.usage)["total"]
+                raise
+            # A plan from an earlier attempt exists: keep it, and say why the repair stopped.
+            best[1].append(Issue("client_error", "warning", f"attempt {attempt + 1}", str(exc)))
+            break
         result.usage.append(completion.usage)
         raw = completion.text
         result.raw = raw
