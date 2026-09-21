@@ -22,7 +22,7 @@
       "priority": "P0",
       "requirement": "AC-1",
       "requirement_reason": "",
-      "risk": "R1",
+      "risk": "R2",
       "steps": [
         "Arrange the state that AC-1 describes",
         "Exercise create_refund (shop/api.py)",
@@ -150,7 +150,7 @@
       "priority": "P0",
       "requirement": "AC-4",
       "requirement_reason": "",
-      "risk": "R2",
+      "risk": "R1",
       "steps": [
         "Arrange the state that AC-4 describes",
         "Exercise create_refund (shop/api.py)",
@@ -176,7 +176,7 @@
       "priority": "P0",
       "requirement": "AC-4",
       "requirement_reason": "",
-      "risk": "R2",
+      "risk": "R1",
       "steps": [
         "Perform the action",
         "Repeat it exactly, as a retry or double submit would"
@@ -217,7 +217,7 @@
     "No failing test is quarantined to make this change pass."
   ],
   "meta": {
-    "bundle_sha256": "d310529a708e690ee1ff637d2c89b9dfd9553e4839b4cf85a3426868e0078adb",
+    "bundle_sha256": "b9266a6671536bb83c58b5ed0430c8411625286ab9d86a67ac340c0f674916b7",
     "created": "2026-09-01",
     "generator": "heuristic-baseline",
     "model": "none (rule-based)"

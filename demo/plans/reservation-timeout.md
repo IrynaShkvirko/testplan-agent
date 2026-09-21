@@ -24,7 +24,7 @@ Expire stock reservations. 2 file(s) changed, classified as feature. 4 acceptanc
 | Risk | What could go wrong | Likelihood | Impact | Score | Level | Adjusted | Evidence |
 |---|---|---|---|---|---|---|---|
 | R1 | Data loss or migration: wrong behaviour in migrations/0004_add_reservation_expiry.sql | 5 | 5 | 25 | high | - | F11 |
-| R2 | Concurrency: wrong behaviour in shop/inventory.py | 5 | 4 | 20 | high | - | F10 |
+| R2 | Concurrency: wrong behaviour in migrations/0004_add_reservation_expiry.sql, shop/inventory.py | 5 | 4 | 20 | high | - | F10 |
 | R3 | Contract break for callers or API clients | 5 | 4 | 20 | high | - | F4, F5, F9 |
 | R4 | Time and scheduling: wrong behaviour in migrations/0004_add_reservation_expiry.sql, shop/inventory.py | 5 | 3 | 15 | high | - | F12 |
 | R5 | Changed behaviour with no direct test (2 definition(s)) | 5 | 3 | 15 | high | - | F22, F23 |
@@ -46,21 +46,21 @@ Likelihood and impact run from 1 to 5. The score is their product: 15 or more is
 | ID | Priority | Condition | Requirement | Technique | Level | Automate | Existing coverage | Confidence | Evidence |
 |---|---|---|---|---|---|---|---|---|---|
 | TC-1 | P0 | Migration migrations/0004_add_reservation_expiry.sql applies to empty and populated data and can be rolled... | none | migration | integration | now | none | medium | F1 |
-| TC-2 | P0 | AC-2: Confirming a reservation before it expires keeps the stock reserved. | AC-2 | equivalence | unit | now | none | medium | F14, F7, shop/inventory.py:43 |
-| TC-3 | P0 | AC-3: two callers at the same time | AC-3 | concurrency | integration | now | none | medium | F15 |
-| TC-4 | P0 | Existing callers of Inventory.available still work after its signature changed | none | compatibility | integration | now | none | medium | F4, shop/inventory.py:20 |
-| TC-5 | P0 | Existing callers of Inventory.reserve still work after its signature changed | none | compatibility | integration | now | none | medium | F5, shop/inventory.py:29 |
-| TC-6 | P0 | Existing callers of Inventory.release still work after its signature changed | none | compatibility | integration | now | none | medium | F9, shop/inventory.py:63 |
-| TC-7 | P0 | AC-1: A reservation that is not confirmed within 15 minutes is released and the stock becomes... | AC-1 | equivalence | unit | now | none | medium | F13, F4, F7, shop/inventory.py:20 |
-| TC-8 | P0 | AC-1: boundary at 15 | AC-1 | boundary | unit | now | none | medium | F13, F4, F7, shop/inventory.py:20 |
-| TC-9 | P0 | AC-1: the excluded case is refused | AC-1 | negative | unit | now | none | medium | F13, F4, F7, shop/inventory.py:20 |
-| TC-10 | P0 | AC-1: behaviour around the time limit | AC-1 | state_transition | integration | now | none | medium | F13, F4, F7, shop/inventory.py:20 |
+| TC-2 | P0 | AC-3: two callers at the same time | AC-3 | concurrency | integration | now | none | medium | F15 |
+| TC-3 | P0 | Existing callers of Inventory.available still work after its signature changed | none | compatibility | integration | now | none | medium | F4, shop/inventory.py:20 |
+| TC-4 | P0 | Existing callers of Inventory.reserve still work after its signature changed | none | compatibility | integration | now | none | medium | F5, shop/inventory.py:29 |
+| TC-5 | P0 | Existing callers of Inventory.release still work after its signature changed | none | compatibility | integration | now | none | medium | F9, shop/inventory.py:63 |
+| TC-6 | P0 | AC-1: A reservation that is not confirmed within 15 minutes is released and the stock becomes... | AC-1 | equivalence | unit | now | none | medium | F13, F4, F7, shop/inventory.py:20 |
+| TC-7 | P0 | AC-1: boundary at 15 | AC-1 | boundary | unit | now | none | medium | F13, F4, F7, shop/inventory.py:20 |
+| TC-8 | P0 | AC-1: the excluded case is refused | AC-1 | negative | unit | now | none | medium | F13, F4, F7, shop/inventory.py:20 |
+| TC-9 | P0 | AC-1: behaviour around the time limit | AC-1 | state_transition | integration | now | none | medium | F13, F4, F7, shop/inventory.py:20 |
+| TC-10 | P0 | AC-2: Confirming a reservation before it expires keeps the stock reserved. | AC-2 | equivalence | unit | now | none | medium | F14, F7, shop/inventory.py:43 |
 | TC-11 | P0 | AC-2: behaviour around the time limit | AC-2 | state_transition | integration | now | none | medium | F14, F7, shop/inventory.py:43 |
 | TC-12 | P0 | AC-3: Two customers reserving the last item at the same time must not both succeed. | AC-3 | equivalence | integration | now | none | medium | F15 |
 | TC-13 | P0 | AC-3: the excluded case is refused | AC-3 | negative | integration | now | none | medium | F15 |
-| TC-14 | P0 | AC-4: behaviour around the time limit | AC-4 | state_transition | integration | now | none | low | F16 |
-| TC-15 | P0 | Characterise the current behaviour of Inventory.expire | none | regression | unit | now | none | medium | F23, F8, shop/inventory.py:51 |
-| TC-16 | P1 | AC-4: Expired reservations are cleaned up as needed without slowing checkout. | AC-4 | equivalence | integration | now | none | low | F16 |
+| TC-14 | P0 | AC-4: Expired reservations are cleaned up as needed without slowing checkout. | AC-4 | equivalence | integration | now | none | low | F16 |
+| TC-15 | P0 | AC-4: behaviour around the time limit | AC-4 | state_transition | integration | now | none | low | F16 |
+| TC-16 | P0 | Characterise the current behaviour of Inventory.expire | none | regression | unit | now | none | medium | F23, F8, shop/inventory.py:51 |
 
 ### Steps and expected results (P0 and P1)
 
@@ -76,17 +76,7 @@ No criterion covers this: migrations are not described by the acceptance criteri
 
 Confidence medium: rule-based template; a reviewer must supply concrete test data.
 
-**TC-2: AC-2: Confirming a reservation before it expires keeps the stock reserved.**
-
-1. Arrange the state that AC-2 describes
-2. Exercise Inventory.confirm (shop/inventory.py)
-3. Compare the outcome with the expected result
-
-Expected: Confirming a reservation before it expires keeps the stock reserved.
-
-Confidence medium: rule-based template; a reviewer must supply concrete test data.
-
-**TC-3: AC-3: two callers at the same time**
+**TC-2: AC-3: two callers at the same time**
 
 1. Start two callers together against the same record
 2. Check the final state
@@ -95,7 +85,7 @@ Expected: No lost update, double booking or duplicate; totals stay consistent
 
 Confidence medium: rule-based template; a reviewer must supply concrete test data.
 
-**TC-4: Existing callers of Inventory.available still work after its signature changed**
+**TC-3: Existing callers of Inventory.available still work after its signature changed**
 
 1. Find callers of Inventory.available (dependents are listed in the evidence)
 2. Run them against the new signature, including default and keyword arguments
@@ -106,7 +96,7 @@ No criterion covers this: signature changed (self, sku) -> (self, sku, now=None)
 
 Confidence medium: rule-based template; a reviewer must supply concrete test data.
 
-**TC-5: Existing callers of Inventory.reserve still work after its signature changed**
+**TC-4: Existing callers of Inventory.reserve still work after its signature changed**
 
 1. Find callers of Inventory.reserve (dependents are listed in the evidence)
 2. Run them against the new signature, including default and keyword arguments
@@ -117,7 +107,7 @@ No criterion covers this: signature changed (self, sku, qty) -> (self, sku, qty,
 
 Confidence medium: rule-based template; a reviewer must supply concrete test data.
 
-**TC-6: Existing callers of Inventory.release still work after its signature changed**
+**TC-5: Existing callers of Inventory.release still work after its signature changed**
 
 1. Find callers of Inventory.release (dependents are listed in the evidence)
 2. Run them against the new signature, including default and keyword arguments
@@ -128,7 +118,7 @@ No criterion covers this: signature changed (self, sku, qty) -> (self, reservati
 
 Confidence medium: rule-based template; a reviewer must supply concrete test data.
 
-**TC-7: AC-1: A reservation that is not confirmed within 15 minutes is released and the stock becomes...**
+**TC-6: AC-1: A reservation that is not confirmed within 15 minutes is released and the stock becomes...**
 
 1. Arrange the state that AC-1 describes
 2. Exercise Inventory.available (shop/inventory.py)
@@ -138,7 +128,7 @@ Expected: A reservation that is not confirmed within 15 minutes is released and 
 
 Confidence medium: rule-based template; a reviewer must supply concrete test data.
 
-**TC-8: AC-1: boundary at 15**
+**TC-7: AC-1: boundary at 15**
 
 1. Run with a value just below 15
 2. Run with a value exactly at 15
@@ -148,7 +138,7 @@ Expected: The behaviour changes exactly where AC-1 says it does
 
 Confidence medium: rule-based template; a reviewer must supply concrete test data.
 
-**TC-9: AC-1: the excluded case is refused**
+**TC-8: AC-1: the excluded case is refused**
 
 1. Provide input that AC-1 rules out
 2. Exercise Inventory.available (shop/inventory.py)
@@ -157,12 +147,22 @@ Expected: The input is rejected or handled as the criterion states, with no side
 
 Confidence medium: rule-based template; a reviewer must supply concrete test data.
 
-**TC-10: AC-1: behaviour around the time limit**
+**TC-9: AC-1: behaviour around the time limit**
 
 1. Freeze or control the clock
 2. Check the state just before the limit, at it, and just after it
 
 Expected: The state changes only once the limit has passed
+
+Confidence medium: rule-based template; a reviewer must supply concrete test data.
+
+**TC-10: AC-2: Confirming a reservation before it expires keeps the stock reserved.**
+
+1. Arrange the state that AC-2 describes
+2. Exercise Inventory.confirm (shop/inventory.py)
+3. Compare the outcome with the expected result
+
+Expected: Confirming a reservation before it expires keeps the stock reserved.
 
 Confidence medium: rule-based template; a reviewer must supply concrete test data.
 
@@ -194,7 +194,17 @@ Expected: The input is rejected or handled as the criterion states, with no side
 
 Confidence medium: rule-based template; a reviewer must supply concrete test data.
 
-**TC-14: AC-4: behaviour around the time limit**
+**TC-14: AC-4: Expired reservations are cleaned up as needed without slowing checkout.**
+
+1. Arrange the state that AC-4 describes
+2. Exercise the changed behaviour
+3. Compare the outcome with the expected result
+
+Expected: Expired reservations are cleaned up as needed without slowing checkout.
+
+Confidence low: the criterion uses vague wording (as needed); the expected result is one reading.
+
+**TC-15: AC-4: behaviour around the time limit**
 
 1. Freeze or control the clock
 2. Check the state just before the limit, at it, and just after it
@@ -203,7 +213,7 @@ Expected: The state changes only once the limit has passed
 
 Confidence low: the criterion uses vague wording (as needed); the expected result is one reading.
 
-**TC-15: Characterise the current behaviour of Inventory.expire**
+**TC-16: Characterise the current behaviour of Inventory.expire**
 
 1. Call Inventory.expire with typical, empty and extreme inputs
 2. Record what it returns
@@ -213,16 +223,6 @@ Expected: Results match what the author intended; surprises become questions
 No criterion covers this: no criterion mentions this change and no existing test calls it.
 
 Confidence medium: rule-based template; a reviewer must supply concrete test data.
-
-**TC-16: AC-4: Expired reservations are cleaned up as needed without slowing checkout.**
-
-1. Arrange the state that AC-4 describes
-2. Exercise the changed behaviour
-3. Compare the outcome with the expected result
-
-Expected: Expired reservations are cleaned up as needed without slowing checkout.
-
-Confidence low: the criterion uses vague wording (as needed); the expected result is one reading.
 
 ## 4. Regression scope
 
@@ -237,21 +237,21 @@ Confidence low: the criterion uses vague wording (as needed); the expected resul
 16 of 16 conditions have no existing test; 0 are already exercised by one.
 
 - TC-1 (P0): Migration migrations/0004_add_reservation_expiry.sql applies to empty and populated data and can be rolled...
-- TC-2 (P0): AC-2: Confirming a reservation before it expires keeps the stock reserved.
-- TC-3 (P0): AC-3: two callers at the same time
-- TC-4 (P0): Existing callers of Inventory.available still work after its signature changed
-- TC-5 (P0): Existing callers of Inventory.reserve still work after its signature changed
-- TC-6 (P0): Existing callers of Inventory.release still work after its signature changed
-- TC-7 (P0): AC-1: A reservation that is not confirmed within 15 minutes is released and the stock becomes...
-- TC-8 (P0): AC-1: boundary at 15
-- TC-9 (P0): AC-1: the excluded case is refused
-- TC-10 (P0): AC-1: behaviour around the time limit
+- TC-2 (P0): AC-3: two callers at the same time
+- TC-3 (P0): Existing callers of Inventory.available still work after its signature changed
+- TC-4 (P0): Existing callers of Inventory.reserve still work after its signature changed
+- TC-5 (P0): Existing callers of Inventory.release still work after its signature changed
+- TC-6 (P0): AC-1: A reservation that is not confirmed within 15 minutes is released and the stock becomes...
+- TC-7 (P0): AC-1: boundary at 15
+- TC-8 (P0): AC-1: the excluded case is refused
+- TC-9 (P0): AC-1: behaviour around the time limit
+- TC-10 (P0): AC-2: Confirming a reservation before it expires keeps the stock reserved.
 - TC-11 (P0): AC-2: behaviour around the time limit
 - TC-12 (P0): AC-3: Two customers reserving the last item at the same time must not both succeed.
 - TC-13 (P0): AC-3: the excluded case is refused
-- TC-14 (P0): AC-4: behaviour around the time limit
-- TC-15 (P0): Characterise the current behaviour of Inventory.expire
-- TC-16 (P1): AC-4: Expired reservations are cleaned up as needed without slowing checkout.
+- TC-14 (P0): AC-4: Expired reservations are cleaned up as needed without slowing checkout.
+- TC-15 (P0): AC-4: behaviour around the time limit
+- TC-16 (P0): Characterise the current behaviour of Inventory.expire
 
 ## 6. Open questions and assumptions
 
@@ -284,7 +284,9 @@ Confidence low: the criterion uses vague wording (as needed); the expected resul
 
 ### Plan checks
 
-All checks passed: every citation resolves, every criterion has a condition, and risks match the computed scores.
+| Severity | Check | Where | Message |
+|---|---|---|---|
+| warning | too_many_cases | risk R4 | 10 cases for one risk; the cap is 8 |
 
 ### Facts cited
 
@@ -296,9 +298,9 @@ All checks passed: every citation resolves, every criterion has a condition, and
 | F7 | symbol | method Inventory.confirm added at shop/inventory.py:43-49 |
 | F8 | symbol | method Inventory.expire added at shop/inventory.py:51-61 |
 | F9 | symbol | method Inventory.release modified at shop/inventory.py:63-65; signature (self, sku, qty) -> (self, reservation_id) |
-| F10 | sensitive_area | Concurrency touched in shop/inventory.py (terms: reserve, reservation) |
+| F10 | sensitive_area | Concurrency touched in migrations/0004_add_reservation_expiry.sql, shop/inventory.py (terms: reservation, reserve, lock) |
 | F11 | sensitive_area | Data loss or migration touched in migrations/0004_add_reservation_expiry.sql (terms: alter table, delete) |
-| F12 | sensitive_area | Time and scheduling touched in migrations/0004_add_reservation_expiry.sql, shop/inventory.py (terms: minutes, expiry, datetime, expire) |
+| F12 | sensitive_area | Time and scheduling touched in migrations/0004_add_reservation_expiry.sql, shop/inventory.py (terms: minutes, expiry, expires, datetime, expire) |
 | F13 | requirement | AC-1: A reservation that is not confirmed within 15 minutes is released and the stock becomes available again. |
 | F14 | requirement | AC-2: Confirming a reservation before it expires keeps the stock reserved. |
 | F15 | requirement | AC-3: Two customers reserving the last item at the same time must not both succeed. |
@@ -318,5 +320,5 @@ All checks passed: every citation resolves, every criterion has a condition, and
 
 - Generator: heuristic-baseline (none (rule-based))
 - Context as of: 2026-09-01
-- Context hash: 75a0b309e79a
+- Context hash: cfedc1c5803f
 - Tool version: 0.1.0

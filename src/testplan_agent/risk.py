@@ -255,12 +255,18 @@ def assess(facts: FactStore) -> List[RiskItem]:
 
     classes = facts.by_kind("change_class")
     cls = classes[0].data.get("class") if classes else "change"
-    if not drafts and cls not in ("docs", "test-only"):
+    # Criteria always need a risk to hang their conditions on, even for docs or tests only.
+    stated = facts.by_kind("requirement")
+    if not drafts and (cls not in ("docs", "test-only") or stated):
         files = facts.by_kind("change_file")
         drafts.append(
             RiskItem(
                 id="",
-                title="Regression in the changed code",
+                title=(
+                    "Regression in the changed code"
+                    if cls not in ("docs", "test-only")
+                    else "The change does not do what its criteria ask"
+                ),
                 kind="general",
                 likelihood=likelihood,
                 impact=_clamp(max(2, impact)),

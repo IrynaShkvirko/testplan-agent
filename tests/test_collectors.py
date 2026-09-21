@@ -123,6 +123,22 @@ def test_one_hop_limit(shop):
     assert [d.module for d in found] == ["shop.api"]
 
 
+def test_unittest_classes_are_found_whatever_their_name(shop):
+    write_files(
+        shop,
+        {
+            "tests/test_totals.py": (
+                "import unittest\nfrom shop.pricing import apply_discount\n\n\n"
+                "class PricingTests(unittest.TestCase):\n    def test_half(self):\n"
+                "        self.assertEqual(apply_discount(100, 50), 50)\n"
+            )
+        },
+    )
+    found = testscan.match_existing(_summaries(shop), testscan.scan_test_files(shop))
+    by_id = {t.nodeid: t for t in found}
+    assert by_id["tests/test_totals.py::PricingTests::test_half"].strength == testscan.DIRECT
+
+
 # ---- git history ----------------------------------------------------------------------------
 @needs_git
 def test_history_counts_churn_and_bug_fixes_as_of_a_date(tmp_path):
@@ -155,6 +171,14 @@ def test_a_file_with_no_history_is_empty_not_an_error(tmp_path):
     assert hist.last_change is None and hist.commits_90d == 0
 
 
+@needs_git
+def test_git_does_not_read_configuration_from_the_analysed_repository(tmp_path):
+    write_files(tmp_path, {"a.py": "x = 1\n", ".gitconfig": "[probe]\n\tfrom = repo\n"})
+    git(tmp_path, "init", "-q")
+    assert gitsignals._git(tmp_path, "config", "--get", "probe.from") is None
+    assert gitsignals.is_git_repo(tmp_path) and not gitsignals.is_git_repo(tmp_path / ".git")
+
+
 def test_a_plain_directory_is_not_a_git_repo(tmp_path):
     assert gitsignals.is_git_repo(tmp_path) is False
 
@@ -174,6 +198,15 @@ def test_cobertura_reports_lines_that_never_ran(tmp_path):
     cov = coverage.load_cobertura(path)
     assert coverage.uncovered(cov, "shop/pricing.py", {1, 2, 3, 9}) == {2, 3}
     assert coverage.uncovered(cov, "other.py", {1}) is None
+
+
+def test_an_exact_coverage_name_wins_over_a_shorter_one_that_also_matches():
+    cov = {"utils.py": {3: 0}, "shop/utils.py": {3: 1}, "/ci/other/shop/utils.py": {3: 0}}
+    assert coverage.uncovered(cov, "shop/utils.py", {3}) == set()
+    assert (
+        coverage.uncovered({"utils.py": {3: 0}, "x/shop/utils.py": {3: 1}}, "shop/utils.py", {3})
+        == set()
+    )
 
 
 @pytest.mark.parametrize(
@@ -196,3 +229,8 @@ def test_environment_detection_reads_fixtures_and_frameworks(shop):
     env = environment.detect(shop)
     assert "pytest" in env["frameworks"]
     assert any("cart" in str(f) for f in env["fixtures"])
+
+
+def test_environment_detection_ignores_virtualenvs(tmp_path):
+    write_files(tmp_path, {".venv/lib/pkg/conftest.py": "import pytest\n", "app.py": "x = 1\n"})
+    assert environment.detect(tmp_path)["frameworks"] == []

@@ -52,3 +52,39 @@ def test_line_count_is_preserved_so_hunk_headers_stay_valid():
     )
     out, _ = redact(text)
     assert out.count("\n") == text.count("\n")
+
+
+@pytest.mark.parametrize(
+    "text,secret",
+    [
+        ('AWS_SECRET_ACCESS_KEY = "wJalrXUtnFEMIK7MDENGbPxRfiCY"', "wJalrXUtnF"),
+        ("DB_PASSWORD=hunter2hunter2", "hunter2"),
+        ('STRIPE_API_KEY="sk_live_abcdefghijklmnop"', "sk_live"),
+        ('client.clientSecret = "s3cr3tv4lu3"', "s3cr3t"),
+        ('{"api_key": "abcdefgh12345678"}', "abcdefgh"),
+        ("x-api-key: abcdefgh12345678", "abcdefgh"),
+    ],
+)
+def test_secret_words_inside_longer_names_are_found(text, secret):
+    out, counts = redact(text)
+    assert secret not in out and counts["credential_assignment"] == 1
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "def login(password: Optional[str]):",
+        'token = request.headers.get("X-Token")',
+        "password = new_password",
+        "self.api_key = settings.api_key",
+        "check(password=DEFAULT_PASSWORD, retries=3)",
+    ],
+)
+def test_code_that_mentions_secrets_is_left_readable(text):
+    out, counts = redact(text)
+    assert out == text and not counts
+
+
+def test_a_value_redacted_by_another_rule_is_counted_once():
+    out, counts = redact('token = "ghp_' + "a1B2c3D4e5" * 4 + '"')
+    assert counts == {"github_token": 1}

@@ -28,7 +28,7 @@ anything. This project treats the model as one stage in a pipeline that can be c
 4. **Validators** check the draft against the facts. A citation that does not resolve, a risk
    that was quietly re-scored, an acceptance criterion with no test, a "covered by" pointing at a
    test that does not exist: each is an error. Errors go back to the planner as a repair prompt,
-   at most twice.
+   at most twice; the attempt with the fewest errors is kept.
 5. **A plan that still fails is shipped with its errors shown**, not hidden or silently patched.
 
 ## Quick start
@@ -111,7 +111,8 @@ testplan generate  --diff D [--spec S] [--repo R] ...   collect, plan, validate,
     --context FILE        use a saved bundle instead of collecting
     --client heuristic    the rule-based baseline (default)
     --client scripted --responses FILE   canned answers; used by the tests
-    --max-repairs N       repair rounds after the first attempt (default 2)
+    --max-repairs N       repair rounds after the first attempt (default 2; the rule-based
+                          baseline is deterministic, so it is never asked to repair)
 testplan validate  PLAN.json --context BUNDLE.json       check a plan you edited or got elsewhere
 testplan schema                                          print the plan JSON Schema
 ```

@@ -14,6 +14,7 @@ def detect(repo: Path) -> Dict[str, Any]:
     env: Dict[str, Any] = {"frameworks": [], "ci": [], "fixtures": [], "test_data_dirs": []}
     frameworks: List[str] = env["frameworks"]
 
+    conftests = codeinfo.iter_files(repo, "conftest.py")
     pyproject = codeinfo.read_text(repo / "pyproject.toml") or ""
     tox = codeinfo.read_text(repo / "tox.ini") or ""
     setup_cfg = codeinfo.read_text(repo / "setup.cfg") or ""
@@ -22,7 +23,7 @@ def detect(repo: Path) -> Dict[str, Any]:
         or "[tool.pytest" in pyproject
         or "[pytest]" in tox
         or "[tool:pytest]" in setup_cfg
-        or any(repo.rglob("conftest.py"))
+        or bool(conftests)
     ):
         frameworks.append("pytest")
 
@@ -46,10 +47,7 @@ def detect(repo: Path) -> Dict[str, Any]:
         if (repo / name).exists():
             env["ci"].append(name)
 
-    for path in sorted(repo.rglob("conftest.py")):
-        rel_parts = path.relative_to(repo).parts
-        if any(part in codeinfo.SKIP_DIRS for part in rel_parts):
-            continue
+    for path in conftests:
         text = codeinfo.read_text(path)
         tree = codeinfo.parse_python(text) if text else None
         if tree is None:

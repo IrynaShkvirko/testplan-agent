@@ -47,12 +47,23 @@ def load_cobertura(path: Path) -> Dict[str, Dict[int, int]]:
 
 
 def uncovered(cov: Dict[str, Dict[int, int]], path: str, wanted: Set[int]) -> Optional[Set[int]]:
-    """Which of ``wanted`` lines ran zero times. None if the file is not in the report."""
-    hits = None
+    """Which of ``wanted`` lines ran zero times. None if the file is not in the report.
+
+    An exact name wins; otherwise the report name that shares the longest path with ``path``,
+    so ``shop/utils.py`` is not answered with the data of some other ``utils.py``.
+    """
+    hits, best_rank = None, (-1, -1)
     for name, data in cov.items():
-        if name == path or name.endswith("/" + path) or path.endswith("/" + name):
-            hits = data
-            break
+        if name == path:
+            rank = (2, len(name))
+        elif name.endswith("/" + path):
+            rank = (1, -len(name))  # an absolute or prefixed spelling of the same file
+        elif path.endswith("/" + name):
+            rank = (0, len(name))  # a shorter name: the more of the path it covers, the better
+        else:
+            continue
+        if rank > best_rank:
+            hits, best_rank = data, rank
     if hits is None:
         return None
     return {n for n in wanted if n in hits and hits[n] == 0}

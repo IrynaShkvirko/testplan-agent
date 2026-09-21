@@ -9,12 +9,21 @@ from .bundle import ContextBundle
 from .prompts import extract_context_json
 
 
+class LLMError(RuntimeError):
+    """The client could not produce an answer at all (as opposed to a wrong answer)."""
+
+
 class LLMClient(Protocol):
     name: str
     model: str
+    # True when the same prompt always gives the same answer, so a repair round cannot help.
+    deterministic: bool
 
     def complete(self, system: str, user: str) -> str:
-        """Return the model's answer as text (a JSON object, optionally in a code fence)."""
+        """Return the model's answer as text (a JSON object, optionally in a code fence).
+
+        Raise ``LLMError`` when no answer can be produced.
+        """
 
 
 Reply = Union[str, dict, Callable[[str, str], str]]
@@ -25,6 +34,7 @@ class ScriptedClient:
 
     name = "scripted"
     model = "scripted"
+    deterministic = False  # each call plays the next reply
 
     def __init__(self, replies: Sequence[Reply]) -> None:
         if not replies:
@@ -50,11 +60,12 @@ class HeuristicClient:
 
     name = "heuristic-baseline"
     model = "none (rule-based)"
+    deterministic = True
 
     def complete(self, system: str, user: str) -> str:
         from .baseline import build_baseline_plan
 
         raw = extract_context_json(user)
         if raw is None:
-            raise ValueError("no context bundle found in the prompt")
+            raise LLMError("no context bundle found in the prompt")
         return json.dumps(build_baseline_plan(ContextBundle.from_dict(raw)))

@@ -91,8 +91,18 @@ class ContextBundle:
 
     @classmethod
     def from_dict(cls, raw: Dict[str, Any]) -> ContextBundle:
+        """Rebuild a saved bundle. Raises ValueError if it is not one this version can read."""
+        if not isinstance(raw, dict):
+            raise ValueError("a context bundle is a JSON object")
         if raw.get("version") != BUNDLE_VERSION:
             raise ValueError(f"unsupported context bundle version: {raw.get('version')!r}")
+        try:
+            return cls._from_dict(raw)
+        except (TypeError, KeyError, AttributeError) as exc:
+            raise ValueError(f"malformed context bundle: {exc}") from exc
+
+    @classmethod
+    def _from_dict(cls, raw: Dict[str, Any]) -> ContextBundle:
 
         def change(item: Dict[str, Any]) -> surface.ChangeSummary:
             data = dict(item)
@@ -171,7 +181,8 @@ def _excerpt(
             )
             continue
         if len(text) > left:
-            text = text[:left] + "\n... [truncated]"
+            marker = "\n... [truncated]"
+            text = text[: left - len(marker)] + marker
             notes.append(
                 f"diff of {changes[i].path} truncated to fit the {budget} character budget"
             )
@@ -329,8 +340,14 @@ def build_bundle(
             )
 
         if gitsignals.is_git_repo(repo):
-            paths = [c.path for c in summaries if c.kind == "source" and c.status != "added"]
-            for path, hist in gitsignals.file_history(repo, paths, as_of).items():
+            # A renamed file has its history under the old name while the checkout is at the base.
+            asked = {
+                (c.old_path if c.old_path and not (repo / c.path).exists() else c.path): c.path
+                for c in summaries
+                if c.kind == "source" and c.status != "added"
+            }
+            for queried, hist in gitsignals.file_history(repo, list(asked), as_of).items():
+                path = asked[queried]
                 if hist.last_change is None:
                     continue
                 facts.add(

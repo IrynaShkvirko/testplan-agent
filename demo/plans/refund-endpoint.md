@@ -183,7 +183,7 @@ All checks passed: every citation resolves, every criterion has a condition, and
 | F5 | symbol | class RefundTooLarge added at shop/refunds.py:7-8 |
 | F6 | symbol | function issue_refund added at shop/refunds.py:11-20 |
 | F7 | sensitive_area | Authentication and permissions touched in shop/api.py, shop/refunds.py (terms: role, password) |
-| F8 | sensitive_area | Money and pricing touched in shop/api.py, shop/refunds.py (terms: pricing, refund) |
+| F8 | sensitive_area | Money and pricing touched in shop/api.py, shop/refunds.py (terms: pricing, refund, amount, cents) |
 | F9 | requirement | AC-1: Support staff can refund up to the paid amount of an order with POST /refunds. |
 | F10 | requirement | AC-2: A refund larger than the amount paid is rejected with status 422. |
 | F11 | requirement | AC-3: Only users with the support role can issue refunds; everyone else gets 403. |
@@ -198,5 +198,5 @@ All checks passed: every citation resolves, every criterion has a condition, and
 
 - Generator: heuristic-baseline (none (rule-based))
 - Context as of: 2026-09-01
-- Context hash: d310529a708e
+- Context hash: b9266a667153
 - Tool version: 0.1.0

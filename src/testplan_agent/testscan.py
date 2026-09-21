@@ -60,6 +60,17 @@ def _is_test_file(rel: str) -> bool:
     return rel.endswith(".py") and classify_path(rel) == "test" and Path(rel).name != "conftest.py"
 
 
+def _is_test_class(node: ast.ClassDef) -> bool:
+    """pytest collects ``Test*`` classes, and ``unittest.TestCase`` subclasses whatever their name."""
+    if node.name.startswith("Test"):
+        return True
+    for base in node.bases:
+        name = base.attr if isinstance(base, ast.Attribute) else getattr(base, "id", "")
+        if name.endswith("TestCase"):
+            return True
+    return False
+
+
 def scan_test_files(repo: Path) -> List[TestFile]:
     files: List[TestFile] = []
     for path in codeinfo.iter_python_files(repo):
@@ -76,7 +87,7 @@ def scan_test_files(repo: Path) -> List[TestFile]:
                 "test"
             ):
                 tests[f"{rel}::{node.name}"] = codeinfo.referenced_names(node)
-            elif isinstance(node, ast.ClassDef) and node.name.startswith("Test"):
+            elif isinstance(node, ast.ClassDef) and _is_test_class(node):
                 for item in node.body:
                     if isinstance(
                         item, (ast.FunctionDef, ast.AsyncFunctionDef)
