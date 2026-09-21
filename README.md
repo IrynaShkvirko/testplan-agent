@@ -5,10 +5,11 @@ at evidence**. Given a unified diff, a story or ticket, and (optionally) a check
 repository, it collects facts, scores risk in code, has a planner draft the plan, and checks the
 draft against those facts before anyone reads it.
 
-> **Status: v0.1, offline core.** The collectors, risk model, validators, repair loop and
-> renderers are built and tested. The planner in this release is a **rule-based baseline**; there
-> is no language-model client yet (planned for v0.2). The prompts are written and tested for
-> structure, but **have not been run against a live model**. See [Limits](#limits).
+> **Status: v0.2 in progress.** The collectors, risk model, validators, repair loop and
+> renderers are built and tested. The default planner is a **rule-based baseline**; an
+> **Anthropic client** (`--client anthropic`) lets Claude draft the plan instead. That client is
+> tested against a fake API only: **it has not been run against the live API**, and the prompts
+> have not been tuned on real answers. See [Limits](#limits).
 
 ## Why it is built this way
 
@@ -111,12 +112,45 @@ testplan generate  --diff D [--spec S] [--repo R] ...   collect, plan, validate,
     --show-context        print exactly what would be sent to a model, then stop
     --context FILE        use a saved bundle instead of collecting
     --client heuristic    the rule-based baseline (default)
+    --client anthropic    Claude drafts the plan (see "Planning with Claude")
     --client scripted --responses FILE   canned answers; used by the tests
     --max-repairs N       repair rounds after the first attempt (default 2; the rule-based
                           baseline is deterministic, so it is never asked to repair)
 testplan validate  PLAN.json --context BUNDLE.json       check a plan you edited or got elsewhere
 testplan schema                                          print the plan JSON Schema
 ```
+
+## Planning with Claude
+
+```bash
+python -m pip install -e ".[anthropic]"      # the only optional dependency
+export ANTHROPIC_API_KEY=...                  # or: ant auth login
+
+testplan generate --diff change.patch --spec story.md --repo . --client anthropic -o plan.md
+```
+
+| Option | Default | |
+|---|---|---|
+| `--model` | `claude-opus-5` | any Claude model id |
+| `--effort` | `high` | `low`, `medium`, `high`, `xhigh`, `max`: how hard Claude thinks; higher costs more |
+| `--max-output-tokens` | `64000` | limit on the answer, thinking included |
+| `--no-fallback` | off | by default a request Claude declines is re-run on Anthropic's fallback model in the same call |
+
+How it works:
+
+- The plan schema is sent as the required output format, so the answer is always JSON of the
+  right shape. Limits the API cannot enforce (id patterns, score ranges, minimum citations) go
+  into the schema's descriptions for the model, and the validators check them afterwards.
+- Repairs continue the conversation (the answer, then its problems) instead of starting again,
+  and the conversation is cached: a repair reads the context bundle from cache at a tenth of
+  the input price.
+- Every call is recorded in the plan (`meta.run`, and a table in the appendix): model that
+  answered, tokens, cache use, time, stop reason, request id and an **estimated** cost from the
+  list prices in `pricing.py`. The command also prints the totals, even when no usable plan
+  came back.
+- A refusal or an answer cut off at the token limit ends the run with a message; if an earlier
+  attempt produced a plan, that plan is kept and the reason is listed with its checks.
+- `--show-context` prints exactly what would be sent, without calling anything.
 
 Exit codes: `0` plan is clean, `1` a plan was produced but has unresolved errors (it is still
 written, with the errors shown), `2` usage error or no usable plan.
@@ -148,10 +182,13 @@ does not make a model immune to being nudged, which is why the validators exist.
 
 ## Limits
 
-- **No model has been run yet.** The baseline planner fills templates from facts. Its plans are
-  well-formed and grounded but generic (for example "Arrange the state that AC-1 describes"); it
-  cannot invent test data or judge subtle requirements. The prompts and the repair loop are
-  tested against scripted answers only.
+- **No model has been run yet.** The Anthropic client is tested against a fake API with real
+  SDK objects, not the live service, and the prompts have not been tuned on real answers. The
+  baseline planner fills templates from facts: its plans are well-formed and grounded but generic
+  (for example "Arrange the state that AC-1 describes"); it cannot invent test data or judge
+  subtle requirements.
+- **Costs are estimates** from list prices dated in `pricing.py`, not a bill. When a fallback
+  model answered, an attempt the first model declined is counted even if it was not billed.
 - **Requirement-to-code mapping is word overlap**, so it produces questions for a person, never
   verdicts. Existing tests are matched statically (imports, names called, file name) for Python
   only; dynamic dispatch and fixtures that hide the call are missed.

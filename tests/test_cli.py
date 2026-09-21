@@ -203,3 +203,16 @@ def test_model_usage_is_reported_even_when_no_plan_comes_back(demo, capsys, monk
     assert main(["generate", *paths(demo)]) == 2
     err = capsys.readouterr().err
     assert "model usage: 5,000 tokens in, 100 out" in err and "about $0.03" in err
+
+
+def test_model_options_need_the_anthropic_client(demo, capsys):
+    assert main(["generate", *paths(demo), "--model", "claude-sonnet-5"]) == 2
+    assert "--model only apply with --client anthropic" in capsys.readouterr().err
+
+
+def test_the_anthropic_client_without_the_sdk_says_how_to_install_it(demo, capsys, monkeypatch):
+    import sys
+
+    monkeypatch.setitem(sys.modules, "anthropic", None)  # import anthropic now fails
+    assert main(["generate", *paths(demo), "--client", "anthropic"]) == 2
+    assert 'pip install "testplan-agent[anthropic]"' in capsys.readouterr().err
