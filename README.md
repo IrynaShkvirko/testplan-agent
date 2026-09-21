@@ -5,11 +5,11 @@ at evidence**. Given a unified diff, a story or ticket, and (optionally) a check
 repository, it collects facts, scores risk in code, has a planner draft the plan, and checks the
 draft against those facts before anyone reads it.
 
-> **Status: v0.2 in progress.** The collectors, risk model, validators, repair loop and
-> renderers are built and tested. The default planner is a **rule-based baseline**; an
-> **Anthropic client** (`--client anthropic`) lets Claude draft the plan instead. That client is
-> tested against a fake API only: **it has not been run against the live API**, and the prompts
-> have not been tuned on real answers. See [Limits](#limits).
+> **Status: v0.2.** The collectors, risk model, validators, repair loop and renderers are built
+> and tested. The default planner is a **rule-based baseline**; the **Anthropic client**
+> (`--client anthropic`) lets Claude draft the plan instead. The client is tested against a fake
+> API, and the prompt was reviewed offline against current prompting guidance. **Neither has been
+> run against the live API**, so the prompt is not tuned on real answers yet. See [Limits](#limits).
 
 ## Why it is built this way
 
@@ -203,11 +203,11 @@ does not make a model immune to being nudged, which is why the validators exist.
 
 ## Roadmap
 
-- **v0.2**: an Anthropic client behind the existing `LLMClient` interface, prompt tuning against
-  real answers, cost and latency recorded in the plan's run details.
-- **v0.3**: a small labelled evaluation set (changes with known defects) to measure whether a
-  model's plan beats this baseline on coverage of known failure modes, citation accuracy and
-  reviewer edit distance.
+- **v0.2** (done): an Anthropic client behind the `LLMClient` interface, cost and latency in the
+  plan's run details, the prompt reviewed against the checks it has to pass.
+- **v0.3**: prompt tuning against real answers, and a small labelled evaluation set (changes with
+  known defects) to measure whether a model's plan beats this baseline on coverage of known
+  failure modes, citation accuracy and reviewer edit distance.
 - **v0.4**: pull request input, posting the plan as a PR comment, pytest skeleton generation,
   a skill wrapper.
 
@@ -215,6 +215,7 @@ does not make a model immune to being nudged, which is why the validators exist.
 
 ```bash
 python -m pytest            # offline; git is needed for the history and demo tests
+TESTPLAN_LIVE=1 python -m pytest tests/test_live.py -s   # one real Claude call; costs money
 ruff check . && ruff format --check .
 python demo/run_demo.py     # after changing the collectors or the baseline: refresh demo/plans
 ```

@@ -396,7 +396,7 @@
     "No failing test is quarantined to make this change pass."
   ],
   "meta": {
-    "bundle_sha256": "cfedc1c5803f37ffee097a44efc8bdc398defc3b107e945cdec644ada561bb78",
+    "bundle_sha256": "57a1d83e31bc9d0c07f910a76df7a8980701864e23852f34f5e1ed37eec9c64b",
     "created": "2026-09-01",
     "generator": "heuristic-baseline",
     "model": "none (rule-based)",
