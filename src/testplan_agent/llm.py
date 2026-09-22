@@ -16,14 +16,17 @@ Turn = Dict[str, str]
 class LLMError(RuntimeError):
     """The client could not produce an answer at all (as opposed to a wrong answer).
 
+    ``kind`` says what went wrong: "refusal" and "truncated" are answers the model gave;
+    anything else ("auth", "rate_limit", "connection", ...) is a failure to get an answer.
     ``usage`` is what the failed call still cost, if anything (a refusal after partial output,
     an answer cut off at the token limit). ``spent`` is filled in by the planner: the totals of
     every call made for the plan, so the user learns what a failed run cost.
     """
 
-    def __init__(self, message: str, usage: Optional[Usage] = None) -> None:
+    def __init__(self, message: str, usage: Optional[Usage] = None, kind: str = "error") -> None:
         super().__init__(message)
         self.usage = usage
+        self.kind = kind
         self.spent: Optional[Dict[str, Any]] = None
 
 
@@ -105,6 +108,6 @@ class HeuristicClient:
 
         raw = extract_context_json(turns[0]["content"]) if turns else None
         if raw is None:
-            raise LLMError("no context bundle found in the prompt")
+            raise LLMError("no context bundle found in the prompt", kind="client")
         plan = build_baseline_plan(ContextBundle.from_dict(raw))
         return Completion(json.dumps(plan), Usage(model=self.model, cost_usd=0.0))

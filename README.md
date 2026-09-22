@@ -220,6 +220,8 @@ ruff check . && ruff format --check .
 python demo/run_demo.py     # after changing the collectors or the baseline: refresh demo/plans
 ```
 
+The evaluation (known-defect cases, runner, report) lives in [`evals/`](evals/README.md).
+
 Layout: `src/testplan_agent/` (`diffparse`, `requirements`, `surface`, `testscan`, `importgraph`,
 `gitsignals`, `coverage`, `redact` collect; `bundle`, `risk`, `facts` assemble; `prompts`, `llm`,
 `baseline`, `planner`, `validate`, `schema`, `render`, `cli` plan and check), `tests/`, `demo/`,

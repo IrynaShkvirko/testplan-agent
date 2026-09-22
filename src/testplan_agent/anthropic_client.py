@@ -55,7 +55,9 @@ class AnthropicClient:
             try:
                 sdk_client = self._anthropic.Anthropic()
             except self._anthropic.AnthropicError as exc:  # e.g. no credentials found
-                raise LLMError(f"the Anthropic client could not start: {exc}") from exc
+                raise LLMError(
+                    f"the Anthropic client could not start: {exc}", kind="client"
+                ) from exc
         self._sdk = sdk_client
         # The API supports a subset of JSON Schema. The SDK moves the rest (lengths, ranges,
         # patterns) into descriptions, so the model still reads them; the validators enforce them.
@@ -92,28 +94,37 @@ class AnthropicClient:
         except sdk.AuthenticationError as exc:
             raise LLMError(
                 "no valid Anthropic credentials: set ANTHROPIC_API_KEY or run `ant auth login`"
-                + _request_suffix(exc)
+                + _request_suffix(exc),
+                kind="auth",
             ) from exc
         except sdk.PermissionDeniedError as exc:
             raise LLMError(
-                f"these credentials may not use {self.model}" + _request_suffix(exc)
+                f"these credentials may not use {self.model}" + _request_suffix(exc), kind="auth"
             ) from exc
         except sdk.NotFoundError as exc:
-            raise LLMError(f"unknown model {self.model!r}" + _request_suffix(exc)) from exc
+            raise LLMError(
+                f"unknown model {self.model!r}" + _request_suffix(exc), kind="not_found"
+            ) from exc
         except sdk.BadRequestError as exc:
             raise LLMError(
-                f"the API rejected the request: {exc.message}" + _request_suffix(exc)
+                f"the API rejected the request: {exc.message}" + _request_suffix(exc),
+                kind="bad_request",
             ) from exc
         except sdk.RateLimitError as exc:
-            raise LLMError("rate limited, even after retries; try again later") from exc
+            raise LLMError(
+                "rate limited, even after retries; try again later", kind="rate_limit"
+            ) from exc
         except sdk.APIStatusError as exc:
             raise LLMError(
-                f"the API answered with an error ({exc.status_code})" + _request_suffix(exc)
+                f"the API answered with an error ({exc.status_code})" + _request_suffix(exc),
+                kind="api",
             ) from exc
         except sdk.APIConnectionError as exc:
-            raise LLMError("could not reach the Anthropic API (network or timeout)") from exc
+            raise LLMError(
+                "could not reach the Anthropic API (network or timeout)", kind="connection"
+            ) from exc
         except sdk.AnthropicError as exc:  # e.g. no credentials found at all
-            raise LLMError(f"the Anthropic client failed: {exc}") from exc
+            raise LLMError(f"the Anthropic client failed: {exc}", kind="client") from exc
         latency_ms = int(round((self._clock() - started) * 1000))
         usage = usage_from(message, latency_ms, request_id)
 
@@ -123,12 +134,14 @@ class AnthropicClient:
                 f"the model declined to answer ({category or 'no category given'})"
                 + ("" if self.fallback else "; the refusal fallback was off"),
                 usage=usage,
+                kind="refusal",
             )
         if message.stop_reason == "max_tokens":
             raise LLMError(
                 f"the answer was cut off at {self.max_tokens} output tokens; "
                 "raise --max-output-tokens or lower --effort",
                 usage=usage,
+                kind="truncated",
             )
         text = "".join(block.text for block in message.content if block.type == "text")
         return Completion(text, usage)
@@ -173,5 +186,5 @@ def _import_sdk() -> Any:
     try:
         import anthropic
     except ImportError as exc:
-        raise LLMError(INSTALL_HINT) from exc
+        raise LLMError(INSTALL_HINT, kind="sdk_missing") from exc
     return anthropic

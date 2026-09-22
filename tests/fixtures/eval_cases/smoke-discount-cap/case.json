@@ -1,0 +1,15 @@
+{
+  "id": "smoke-discount-cap",
+  "title": "Demo change: discount-cap",
+  "tags": [
+    "smoke",
+    "money"
+  ],
+  "repo": {
+    "kind": "demo"
+  },
+  "as_of": "2026-09-01",
+  "demo_change": "discount-cap",
+  "notes": "Runner smoke test: a demo change with no labelled defects.",
+  "defects": []
+}

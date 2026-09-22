@@ -1,0 +1,15 @@
+{
+  "id": "smoke-refund-endpoint",
+  "title": "Demo change: refund-endpoint",
+  "tags": [
+    "smoke",
+    "endpoint"
+  ],
+  "repo": {
+    "kind": "demo"
+  },
+  "as_of": "2026-09-01",
+  "demo_change": "refund-endpoint",
+  "notes": "Runner smoke test: a demo change with no labelled defects.",
+  "defects": []
+}

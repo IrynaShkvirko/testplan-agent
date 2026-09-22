@@ -1,0 +1,57 @@
+{
+  "flow": "testplan",
+  "metrics": [
+    {
+      "id": "checks_clean",
+      "label": "Checks clean",
+      "kind": "binary"
+    },
+    {
+      "id": "first_try_clean",
+      "label": "First try",
+      "kind": "binary"
+    },
+    {
+      "id": "citations_first",
+      "label": "Citations ok",
+      "kind": "float",
+      "scale": 1
+    }
+  ],
+  "perf_fields": [
+    {
+      "id": "cost_usd",
+      "label": "Cost",
+      "unit": "$"
+    },
+    {
+      "id": "latency_s",
+      "label": "Model time",
+      "unit": "s"
+    },
+    {
+      "id": "attempts",
+      "label": "Attempts"
+    },
+    {
+      "id": "check_errors",
+      "label": "Errors"
+    },
+    {
+      "id": "check_warnings",
+      "label": "Warnings"
+    }
+  ],
+  "harness_paths": [
+    "evals/run.py",
+    "evals/cases.py",
+    "evals/grading.py",
+    "src/testplan_agent/prompts.py",
+    "src/testplan_agent/planner.py",
+    "src/testplan_agent/llm.py",
+    "src/testplan_agent/anthropic_client.py",
+    "src/testplan_agent/validate.py",
+    "src/testplan_agent/schema.py",
+    "src/testplan_agent/baseline.py"
+  ]
+}
