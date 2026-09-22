@@ -1,0 +1,29 @@
+{
+  "id": "r01-humanize-float-bytes",
+  "title": "humanize: tooling update rewrites byte formatting",
+  "tags": [
+    "real",
+    "formatting"
+  ],
+  "repo": {
+    "kind": "git",
+    "url": "https://github.com/python-humanize/humanize.git",
+    "commit": "fb61d5aae902e4526cd733a90d7a96ecded11b0e",
+    "license": "MIT",
+    "fixed_by": "11e62eeedb8990298c3612af82376dc2344d24f8"
+  },
+  "as_of": "2025-01-07",
+  "notes": "A pre-commit update whose lint auto-fix turned %-formatting into f-strings. The story is only the commit message.",
+  "defects": [
+    {
+      "id": "D1",
+      "summary": "naturalsize() prints float byte counts below the base with all their decimals: 1.123456789 gives '1.123456789 Bytes' instead of '1 Bytes' (and '1.123456789B' with gnu=True).",
+      "location": "src/humanize/filesize.py:97",
+      "trigger": "a float value below 1000 (or 1024 with gnu/binary), e.g. naturalsize(1.123456789)",
+      "caught_if": "a condition formats a non-integer byte count below the unit threshold and checks the output is a whole number of bytes, as before the change",
+      "written_by": "claude-opus-5 (draft)",
+      "verified_by": "",
+      "observed": "at fb61d5a naturalsize(1.123456789) returned '1.123456789 Bytes' (gnu: '1.123456789B'); the later fix makes it '1 Bytes'"
+    }
+  ]
+}

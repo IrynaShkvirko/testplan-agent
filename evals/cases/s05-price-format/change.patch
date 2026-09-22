@@ -1,0 +1,12 @@
+diff --git a/shop/money.py b/shop/money.py
+new file mode 100644
+--- /dev/null
++++ b/shop/money.py
+@@ -0,0 +1,7 @@
++"""Money formatting for receipts."""
++
++
++def format_eur(cents):
++    """Format cents as euros, e.g. 1234 -> '€12.34'."""
++    euros, rest = divmod(cents, 100)
++    return f"€{euros}.{rest}"

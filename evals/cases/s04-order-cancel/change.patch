@@ -1,0 +1,40 @@
+diff --git a/shop/api.py b/shop/api.py
+--- a/shop/api.py
++++ b/shop/api.py
+@@ -1,4 +1,6 @@
+ """HTTP handlers."""
++from datetime import datetime, timedelta
++
+ from shop import pricing
+ from shop.web import app
+ 
+@@ -10,7 +12,28 @@ def create_order(request):
+     items = request["items"]
+     total = pricing.cart_total(items, request.get("coupon", 0))
+     order_id = len(ORDERS) + 1
+-    ORDERS[order_id] = {"items": items, "paid_cents": total}
++    ORDERS[order_id] = {
++        "items": items,
++        "paid_cents": total,
++        "customer": request.get("user", {}).get("id"),
++        "created_at": request.get("now") or datetime.utcnow(),
++        "status": "placed",
++    }
+     return {"status": 201, "id": order_id, "total": total}
+ 
++
++CANCEL_WINDOW = timedelta(minutes=30)
++
++
++@app.post("/orders/cancel")
++def cancel_order(request):
++    order = ORDERS.get(request["order_id"])
++    if order is None:
++        return {"status": 404}
++    now = request.get("now") or datetime.utcnow()
++    if now - order["created_at"] > CANCEL_WINDOW:
++        return {"status": 409}
++    order["status"] = "cancelled"
++    return {"status": 200, "refund_cents": order["paid_cents"]}
++
+ # changelog: fix: order total ignored coupon

@@ -13,3 +13,4 @@ evals/runs/*/traces/
 evals/runs/report.html
 evals/runs/state.json
 evals/runs/trajectory/
+evals/runs/review.html

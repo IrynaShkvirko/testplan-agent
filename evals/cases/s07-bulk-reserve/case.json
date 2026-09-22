@@ -1,0 +1,25 @@
+{
+  "id": "s07-bulk-reserve",
+  "title": "Reserve every line of an order at once",
+  "tags": [
+    "synthetic",
+    "concurrency"
+  ],
+  "repo": {
+    "kind": "demo"
+  },
+  "as_of": "2026-09-01",
+  "notes": "Synthetic change to the demo shop with seeded defects.",
+  "defects": [
+    {
+      "id": "D1",
+      "summary": "Lines reserved before an out-of-stock line stay reserved: nothing is rolled back.",
+      "location": "shop/inventory.py:34",
+      "trigger": "an order whose second line is out of stock",
+      "caught_if": "a condition reserves an order where a later line fails and checks the earlier lines' stock is still available",
+      "written_by": "claude-opus-5 (draft)",
+      "verified_by": "",
+      "observed": "pen 10, ink 0; reserve_many([pen 3, ink 1]) failed and left pen at 7"
+    }
+  ]
+}

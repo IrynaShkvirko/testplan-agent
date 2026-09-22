@@ -1,0 +1,35 @@
+{
+  "id": "s12-orders-csv",
+  "title": "Export orders as CSV",
+  "tags": [
+    "synthetic",
+    "data"
+  ],
+  "repo": {
+    "kind": "demo"
+  },
+  "as_of": "2026-09-01",
+  "notes": "Synthetic change to the demo shop with seeded defects.",
+  "defects": [
+    {
+      "id": "D1",
+      "summary": "Amounts lose trailing zeros: 1250 cents is written as 12.5.",
+      "location": "shop/export.py:13",
+      "trigger": "an order paid 1250 or 1000 cents",
+      "caught_if": "a condition exports an amount ending in zero cents and checks two decimals",
+      "written_by": "claude-opus-5 (draft)",
+      "verified_by": "",
+      "observed": "an order paid 1250 cents exported as '1,12.5,pen'"
+    },
+    {
+      "id": "D2",
+      "summary": "Item names are joined with ';', so a name containing ';' cannot be told apart from two items.",
+      "location": "shop/export.py:12",
+      "trigger": "an item named 'pens; blue'",
+      "caught_if": "a condition exports an item name containing a semicolon and checks it is read back as one item",
+      "written_by": "claude-opus-5 (draft)",
+      "verified_by": "",
+      "observed": "item 'pens; blue' exported as 'pens; blue', indistinguishable from two items"
+    }
+  ]
+}

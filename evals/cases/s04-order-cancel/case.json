@@ -1,0 +1,35 @@
+{
+  "id": "s04-order-cancel",
+  "title": "Customers cancel recent orders",
+  "tags": [
+    "synthetic",
+    "auth"
+  ],
+  "repo": {
+    "kind": "demo"
+  },
+  "as_of": "2026-09-01",
+  "notes": "Synthetic change to the demo shop with seeded defects.",
+  "defects": [
+    {
+      "id": "D1",
+      "summary": "Any caller can cancel any order: the order's customer is never compared with the requesting user.",
+      "location": "shop/api.py:30",
+      "trigger": "customer B cancels customer A's order",
+      "caught_if": "a condition cancels an order as a different customer and expects 403 with the order unchanged",
+      "written_by": "claude-opus-5 (draft)",
+      "verified_by": "",
+      "observed": "customer B cancelled customer A's order: status 200 with a refund"
+    },
+    {
+      "id": "D2",
+      "summary": "Cancelling an already cancelled order returns the refund again.",
+      "location": "shop/api.py:36",
+      "trigger": "the same cancel request sent twice",
+      "caught_if": "a condition cancels the same order twice and checks the second call does not refund again",
+      "written_by": "claude-opus-5 (draft)",
+      "verified_by": "",
+      "observed": "second cancel of the same order: status 200 and a second refund"
+    }
+  ]
+}

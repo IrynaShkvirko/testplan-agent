@@ -1,0 +1,35 @@
+{
+  "id": "s02-free-shipping",
+  "title": "Free shipping from 50 euros",
+  "tags": [
+    "synthetic",
+    "money"
+  ],
+  "repo": {
+    "kind": "demo"
+  },
+  "as_of": "2026-09-01",
+  "notes": "Synthetic change to the demo shop with seeded defects.",
+  "defects": [
+    {
+      "id": "D1",
+      "summary": "An order of exactly 50.00 euros pays shipping: the comparison is > instead of >=.",
+      "location": "shop/pricing.py:26",
+      "trigger": "a cart totalling exactly 5000 cents",
+      "caught_if": "a condition checks shipping at exactly 50.00 euros (and just below) and expects it free at 50.00",
+      "written_by": "claude-opus-5 (draft)",
+      "verified_by": "",
+      "observed": "shipping_cost for exactly 5000 cents returned 499; 0 expected"
+    },
+    {
+      "id": "D2",
+      "summary": "The threshold is checked on the subtotal before the coupon.",
+      "location": "shop/pricing.py:25",
+      "trigger": "a cart of 60 euros with a 25% coupon (45 euros paid)",
+      "caught_if": "a condition uses a coupon that takes the total below 50 euros and checks shipping is charged",
+      "written_by": "claude-opus-5 (draft)",
+      "verified_by": "",
+      "observed": "6000 cents with a 25% coupon: shipping 0; 499 expected"
+    }
+  ]
+}

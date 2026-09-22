@@ -1,0 +1,35 @@
+{
+  "id": "s10-order-status-migration",
+  "title": "Track order status",
+  "tags": [
+    "synthetic",
+    "migration"
+  ],
+  "repo": {
+    "kind": "demo"
+  },
+  "as_of": "2026-09-01",
+  "notes": "Synthetic change to the demo shop with seeded defects.",
+  "defects": [
+    {
+      "id": "D1",
+      "summary": "Adding a NOT NULL column without a default fails on a table that already has rows.",
+      "location": "migrations/0004_add_order_status.sql:1",
+      "trigger": "running the migration against a database with existing orders",
+      "caught_if": "a condition applies the migration to a populated orders table and checks it succeeds",
+      "written_by": "claude-opus-5 (draft)",
+      "verified_by": "",
+      "observed": "SQLite, orders with one row: 'Cannot add a NOT NULL column with default value NULL'"
+    },
+    {
+      "id": "D2",
+      "summary": "Existing orders are backfilled as 'paid', a status that does not exist; they should be 'placed'.",
+      "location": "migrations/0004_add_order_status.sql:2",
+      "trigger": "any order that existed before the migration",
+      "caught_if": "a condition migrates existing orders and checks their status is placed",
+      "written_by": "claude-opus-5 (draft)",
+      "verified_by": "",
+      "observed": "the backfill writes 'paid'; the story's statuses are placed, shipped, cancelled"
+    }
+  ]
+}

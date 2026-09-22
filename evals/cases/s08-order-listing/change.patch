@@ -1,0 +1,22 @@
+diff --git a/shop/api.py b/shop/api.py
+--- a/shop/api.py
++++ b/shop/api.py
+@@ -13,4 +13,18 @@ def create_order(request):
+     ORDERS[order_id] = {"items": items, "paid_cents": total}
+     return {"status": 201, "id": order_id, "total": total}
+ 
++
++PAGE_SIZE = 20
++MAX_PAGE_SIZE = 50
++
++
++@app.get("/orders")
++def list_orders(request):
++    page = int(request.get("page", 1))
++    size = int(request.get("size", PAGE_SIZE))
++    ids = sorted(ORDERS)
++    start = (page - 1) * size
++    chunk = ids[start + 1 : start + size]
++    return {"status": 200, "page": page, "orders": [{"id": i, **ORDERS[i]} for i in chunk]}
++
+ # changelog: fix: order total ignored coupon

@@ -1,0 +1,45 @@
+{
+  "id": "s08-order-listing",
+  "title": "List orders page by page",
+  "tags": [
+    "synthetic",
+    "endpoint"
+  ],
+  "repo": {
+    "kind": "demo"
+  },
+  "as_of": "2026-09-01",
+  "notes": "Synthetic change to the demo shop with seeded defects.",
+  "defects": [
+    {
+      "id": "D1",
+      "summary": "Each page skips its first order and returns one order too few.",
+      "location": "shop/api.py:27",
+      "trigger": "listing page 1 of three orders",
+      "caught_if": "a condition lists a known set of orders and checks the first page starts with the first order and holds the full page size",
+      "written_by": "claude-opus-5 (draft)",
+      "verified_by": "",
+      "observed": "3 orders, size=2: page 1 returned ids [2]; [1, 2] expected"
+    },
+    {
+      "id": "D2",
+      "summary": "The page size is never capped at 50.",
+      "location": "shop/api.py:24",
+      "trigger": "size=500",
+      "caught_if": "a condition asks for more than 50 per page and checks at most 50 come back (or the request is refused)",
+      "written_by": "claude-opus-5 (draft)",
+      "verified_by": "",
+      "observed": "60 orders, size=500: 59 returned (none capped at 50)"
+    },
+    {
+      "id": "D3",
+      "summary": "Page 0 or a negative page is not rejected; it returns a slice from the end.",
+      "location": "shop/api.py:23",
+      "trigger": "page=0 or page=-1",
+      "caught_if": "a condition asks for page 0 and expects status 400",
+      "written_by": "claude-opus-5 (draft)",
+      "verified_by": "",
+      "observed": "page=0 returned status 200"
+    }
+  ]
+}

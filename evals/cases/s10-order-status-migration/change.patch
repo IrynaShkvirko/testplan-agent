@@ -1,0 +1,19 @@
+diff --git a/migrations/0004_add_order_status.sql b/migrations/0004_add_order_status.sql
+new file mode 100644
+--- /dev/null
++++ b/migrations/0004_add_order_status.sql
+@@ -0,0 +1,2 @@
++ALTER TABLE orders ADD COLUMN status TEXT NOT NULL;
++UPDATE orders SET status = 'paid';
+diff --git a/shop/api.py b/shop/api.py
+--- a/shop/api.py
++++ b/shop/api.py
+@@ -10,7 +10,7 @@ def create_order(request):
+     items = request["items"]
+     total = pricing.cart_total(items, request.get("coupon", 0))
+     order_id = len(ORDERS) + 1
+-    ORDERS[order_id] = {"items": items, "paid_cents": total}
++    ORDERS[order_id] = {"items": items, "paid_cents": total, "status": "placed"}
+     return {"status": 201, "id": order_id, "total": total}
+ 
+ # changelog: fix: order total ignored coupon

@@ -1,0 +1,33 @@
+diff --git a/shop/api.py b/shop/api.py
+--- a/shop/api.py
++++ b/shop/api.py
+@@ -8,7 +8,8 @@ ORDERS = {}
+ @app.post("/orders")
+ def create_order(request):
+     items = request["items"]
+-    total = pricing.cart_total(items, request.get("coupon", 0))
++    coupon = request.get("coupon", 0)
++    total = pricing.cart_total(items, coupon) + pricing.shipping_cost(items, coupon)
+     order_id = len(ORDERS) + 1
+     ORDERS[order_id] = {"items": items, "paid_cents": total}
+     return {"status": 201, "id": order_id, "total": total}
+diff --git a/shop/pricing.py b/shop/pricing.py
+--- a/shop/pricing.py
++++ b/shop/pricing.py
+@@ -15,4 +15,16 @@ def cart_total(items, coupon_percent=0):
+     subtotal = sum(price * qty for _, price, qty in items)
+     return apply_discount(subtotal, coupon_percent)
+ 
++
++SHIPPING_CENTS = 499
++FREE_SHIPPING_FROM_CENTS = 5000
++
++
++def shipping_cost(items, coupon_percent=0):
++    """Shipping in cents: free from 50 euros, after discounts."""
++    subtotal = sum(price * qty for _, price, qty in items)
++    if subtotal > FREE_SHIPPING_FROM_CENTS:
++        return 0
++    return SHIPPING_CENTS
++
+ # changelog: fix: order total ignored coupon
