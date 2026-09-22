@@ -18,7 +18,7 @@
       "trigger": "customer B cancels customer A's order",
       "caught_if": "a condition cancels an order as a different customer and expects it refused with the order unchanged",
       "written_by": "claude-opus-5 (draft)",
-      "verified_by": "",
+      "verified_by": "Iryna Shkvirko (in chat, 2026-09-22)",
       "observed": "customer B cancelled customer A's order: status 200 with a refund"
     },
     {

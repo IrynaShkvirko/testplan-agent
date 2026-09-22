@@ -38,7 +38,7 @@
       "trigger": "page=0 or page=-1",
       "caught_if": "a condition asks for page 0 (or below) and expects it refused rather than a page of orders",
       "written_by": "claude-opus-5 (draft)",
-      "verified_by": "",
+      "verified_by": "Iryna Shkvirko (in chat, 2026-09-22)",
       "observed": "page=0 returned status 200"
     }
   ]

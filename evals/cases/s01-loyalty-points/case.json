@@ -28,7 +28,7 @@
       "trigger": "redeem(-500)",
       "caught_if": "a condition redeems a negative number of points and checks the balance does not go up",
       "written_by": "claude-opus-5 (draft)",
-      "verified_by": "",
+      "verified_by": "Iryna Shkvirko (in chat, 2026-09-22)",
       "observed": "balance 100, redeem(-500): accepted, balance became 600"
     }
   ]
