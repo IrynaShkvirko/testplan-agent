@@ -339,7 +339,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     p.add_argument("--variant", required=True)
     p.add_argument("--flow", type=Path, default=FLOW_DIR)
     p.add_argument("--cases", type=Path, default=CASES_DIR)
-    args = p.parse_args(argv)
+    args = p.parse_intermixed_args(argv)  # the grades file may follow --variant
     try:
         cases = load_cases(args.cases)
         if args.action == "worksheet":

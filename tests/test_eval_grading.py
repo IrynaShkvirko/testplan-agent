@@ -162,3 +162,14 @@ def test_edits_are_counted_per_line_and_per_condition(tmp_path):
     assert v["reworded"] == ["TC-1"] and v["dropped"] == ["TC-2"] and v["added"] == ["TC-99"]
     assert 0 < result["conditions"]["edit_distance"] < 1
     assert result["conditions"]["changed"] + result["conditions"]["deleted"] >= 1
+
+
+def test_the_documented_apply_command_works(tmp_path, capsys):
+    """`apply --variant X grades.json`, exactly as the README shows it."""
+    flow = run_variant(tmp_path)
+    path = grades_file(
+        tmp_path, {f"{CASE}/0/D1": {"grade": "caught"}, f"{CASE}/0/D2": {"grade": "missed"}}
+    )
+    argv = ["apply", "--variant", "baseline", str(path), "--flow", str(flow)]
+    assert coverage.main(argv) == 0
+    assert "2 of 2 defect grades; 1 of 1 plans scored" in capsys.readouterr().out
