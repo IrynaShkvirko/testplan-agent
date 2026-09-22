@@ -70,12 +70,44 @@ It writes `evals/runs/report.html` (per-variant summary, a sortable per-case tab
 each trace) and `evals/runs/trajectory/scores.tsv`. The runner also prints a summary with 95%
 intervals after every run.
 
-## Metrics so far
+## Metrics
 
-| Metric | Meaning |
-|---|---|
-| `checks_clean` | the final plan passes every check |
-| `first_try_clean` | ...and needed no repair |
-| `citations_first` | share of the first answer's citations that resolve, before repairs |
+| Metric | Meaning | Graded by |
+|---|---|---|
+| `coverage` | share of the case's known defects the plan would catch (headline) | a person |
+| `coverage_lenient` | the same, with "partial" counting half | a person |
+| `checks_clean` | the final plan passes every check | code |
+| `first_try_clean` | ...and needed no repair | code |
+| `citations_first` | share of the first answer's citations that resolve, before repairs | code |
 
-Coverage of known defects, the headline metric, is added with the grading worksheet.
+## Grading coverage
+
+```bash
+python -m evals.coverage worksheet --variant baseline   # writes evals/runs/baseline/worksheet.html
+python -m evals.coverage apply --variant baseline ~/Downloads/coverage-baseline.json
+python -m evals.coverage status --variant baseline      # how much is graded (changes nothing)
+```
+
+The worksheet shows each plan's conditions next to each known defect of its case. For every
+defect pick:
+
+- **caught**: a condition, run as written with sensible data, exercises the defect's trigger (or
+  an equivalent input) and checks the behaviour the defect breaks;
+- **partial**: a condition targets the right behaviour or criterion but never forces the
+  triggering input;
+- **missed**: nothing in the plan would expose it.
+
+Conditions that cite the defect's code are highlighted as a hint, not a verdict. Progress is
+kept in the browser; "Download grades" saves a JSON file for `apply`, which can be run after
+each sitting. A plan with no conditions is graded missed automatically. Grades are kept in
+`<variant>/coverage.json`; a plan is scored once all its defects are graded.
+
+## Reviewer edit distance
+
+```bash
+python -m evals.compare plan.md edited.md
+```
+
+Edit a generated Markdown plan into what you would actually use, then compare: lines kept,
+changed, deleted and added, an edit distance from 0 to 1 (for the test conditions and for the
+whole plan), and which conditions were kept, reworded, dropped or added.

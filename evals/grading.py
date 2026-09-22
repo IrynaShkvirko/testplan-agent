@@ -1,6 +1,7 @@
 """Grades that need no judgment: computed from the plan and the checks, so free and repeatable.
 
-Coverage of known defects needs judgment and is graded separately.
+Coverage of known defects needs judgment: a person grades it (evals/coverage.py) and the grades
+are merged into the same rows.
 """
 
 from __future__ import annotations
@@ -17,9 +18,13 @@ from testplan_agent.validate import check_shape, validate_plan
 _CITATION_CODES = ("unknown_fact", "bad_file_ref")
 
 # What each metric is, for the report (_state.json) and for readers of the results.
+# Coverage comes first: the report's headline is the first metric (none is "binary", which
+# would take precedence). It is graded by a person; see evals/coverage.py.
 METRICS: List[Dict[str, Any]] = [
-    {"id": "checks_clean", "label": "Checks clean", "kind": "binary"},
-    {"id": "first_try_clean", "label": "First try", "kind": "binary"},
+    {"id": "coverage", "label": "Coverage", "kind": "float", "scale": 1},
+    {"id": "coverage_lenient", "label": "Cov. lenient", "kind": "float", "scale": 1},
+    {"id": "checks_clean", "label": "Checks clean", "kind": "float", "scale": 1},
+    {"id": "first_try_clean", "label": "First try", "kind": "float", "scale": 1},
     {"id": "citations_first", "label": "Citations ok", "kind": "float", "scale": 1},
 ]
 
