@@ -16,9 +16,9 @@
       "summary": "Any caller can cancel any order: the order's customer is never compared with the requesting user.",
       "location": "shop/api.py:30",
       "trigger": "customer B cancels customer A's order",
-      "caught_if": "a condition cancels an order as a different customer and expects 403 with the order unchanged",
+      "caught_if": "a condition cancels an order as a different customer and expects it refused with the order unchanged",
       "written_by": "claude-opus-5 (draft)",
-      "verified_by": "Iryna Shkvirko (review page, 2026-09-22)",
+      "verified_by": "Iryna Shkvirko (in chat, 2026-09-22)",
       "observed": "customer B cancelled customer A's order: status 200 with a refund"
     },
     {
