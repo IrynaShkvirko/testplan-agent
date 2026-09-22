@@ -1,0 +1,29 @@
+{
+  "id": "r03-prettytable-empty-add-rows",
+  "title": "prettytable: add a divider option to add_rows()",
+  "tags": [
+    "real",
+    "feature"
+  ],
+  "repo": {
+    "kind": "git",
+    "url": "https://github.com/prettytable/prettytable.git",
+    "commit": "4bc8b4f1b5477a0eaa0f7587fca1ac1faa9b5653",
+    "license": "BSD-3-Clause",
+    "fixed_by": "b3de36f62f65d1853a8f591c1469d089549ffe73"
+  },
+  "as_of": "2025-02-19",
+  "notes": "A new keyword argument that puts a divider after the last added row. The story is only the commit message.",
+  "defects": [
+    {
+      "id": "D1",
+      "summary": "add_rows([]) now raises IndexError: the new code adds every row but the last, then indexes rows[-1] for the divider, which fails on an empty list.",
+      "location": "src/prettytable/prettytable.py:1655",
+      "trigger": "add_rows([]) (with or without divider=True)",
+      "caught_if": "a condition calls add_rows with an empty list and checks it adds nothing without raising, as before the change",
+      "written_by": "claude-opus-5 (draft)",
+      "verified_by": "",
+      "observed": "at 4bc8b4f add_rows([]) raised IndexError: list index out of range; at its parent it added nothing and returned normally"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "id": "r04-humanize-intcomma-ndigits-zero",
+  "title": "humanize: add an ndigits option to intcomma",
+  "tags": [
+    "real",
+    "feature"
+  ],
+  "repo": {
+    "kind": "git",
+    "url": "https://github.com/python-humanize/humanize.git",
+    "commit": "f14d5c18284f631f4356f9d1b5eb8e043b2db720",
+    "license": "MIT",
+    "fixed_by": "03863fed6c2ba02cfd13d5b1e0b161f680c7b966"
+  },
+  "as_of": "2020-03-09",
+  "notes": "A new rounding option for intcomma. The story is only the commit message.",
+  "defects": [
+    {
+      "id": "D1",
+      "summary": "ndigits=0 is ignored because the code tests 'if ndigits:', so intcomma(1234.5, ndigits=0) returns '1,234.5' instead of rounding to a whole number.",
+      "location": "src/humanize/number.py:59",
+      "trigger": "intcomma with ndigits=0, e.g. intcomma(1234.5, ndigits=0)",
+      "caught_if": "a condition passes ndigits=0 (the falsy edge of the new option) and checks the result is rounded to no decimal places",
+      "written_by": "claude-opus-5 (draft)",
+      "verified_by": "",
+      "observed": "at f14d5c1 intcomma(1234.5, ndigits=0) returned '1,234.5', the same as ndigits=1"
+    }
+  ]
+}
