@@ -2,14 +2,28 @@
   "flow": "testplan",
   "metrics": [
     {
+      "id": "coverage",
+      "label": "Coverage",
+      "kind": "float",
+      "scale": 1
+    },
+    {
+      "id": "coverage_lenient",
+      "label": "Cov. lenient",
+      "kind": "float",
+      "scale": 1
+    },
+    {
       "id": "checks_clean",
       "label": "Checks clean",
-      "kind": "binary"
+      "kind": "float",
+      "scale": 1
     },
     {
       "id": "first_try_clean",
       "label": "First try",
-      "kind": "binary"
+      "kind": "float",
+      "scale": 1
     },
     {
       "id": "citations_first",

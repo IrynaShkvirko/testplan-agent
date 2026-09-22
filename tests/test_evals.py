@@ -65,7 +65,11 @@ def test_a_run_writes_a_complete_row_plan_and_trace_per_case(tmp_path, capsys):
     for field in ("prompt", "tags", "status", "model", "grade", "usage", "attempts", "wall_s"):
         assert field in row
     assert row["status"] == "ok" and row["model"] == "none (rule-based)"
-    assert set(row["grade"]) == {m["id"] for m in grading.METRICS}
+    # the free grades are there at once; coverage waits for a person (evals/coverage.py)
+    assert set(row["grade"]) == {m["id"] for m in grading.METRICS} - {
+        "coverage",
+        "coverage_lenient",
+    }
     assert (flow / "baseline" / row["meta"]["plan"]).is_file()
     trace = json.loads((flow / "baseline" / "traces" / f"{row['prompt_id']}_rep0.json").read_text())
     assert [t["role"] for t in trace] == ["system", "user", "assistant"]
