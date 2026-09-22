@@ -1,0 +1,238 @@
+{
+  "assumptions": [
+    "Tests are written with pytest.",
+    "The repository checkout matches the diff, either before or after the change.",
+    "Some values were redacted before analysis (F1); tests that need them need real test data."
+  ],
+  "cases": [
+    {
+      "automation": "now",
+      "confidence": "low",
+      "confidence_reason": "there is no stated requirement to check against",
+      "evidence": [
+        "F7",
+        "src/humanize/filesize.py:34"
+      ],
+      "existing_coverage": "tests/test_filesize.py::test_naturalsize",
+      "expected": "",
+      "id": "TC-1",
+      "level": "unit",
+      "priority": "P2",
+      "requirement": "none",
+      "requirement_reason": "no acceptance criteria were supplied",
+      "risk": "R1",
+      "steps": [],
+      "technique": "equivalence",
+      "title": "Verify naturalsize behaves as intended"
+    },
+    {
+      "automation": "now",
+      "confidence": "low",
+      "confidence_reason": "there is no stated requirement to check against",
+      "evidence": [
+        "F8",
+        "src/humanize/number.py:518"
+      ],
+      "existing_coverage": "tests/test_number.py::test_metric",
+      "expected": "",
+      "id": "TC-2",
+      "level": "unit",
+      "priority": "P2",
+      "requirement": "none",
+      "requirement_reason": "no acceptance criteria were supplied",
+      "risk": "R1",
+      "steps": [],
+      "technique": "equivalence",
+      "title": "Verify metric behaves as intended"
+    }
+  ],
+  "environment_needs": [
+    "Cases marked 'now' should run in the existing CI: .github/workflows/docs.yml, .github/workflows/labels.yml."
+  ],
+  "exit_criteria": [
+    "All P0 and P1 cases have been run and pass.",
+    "Every open question has an answer, or an accepted risk written next to it.",
+    "No failing test is quarantined to make this change pass."
+  ],
+  "meta": {
+    "bundle_sha256": "e3b3eba668984c2482d2f23075795770f8373e0348f8d761dd31aae67a24e900",
+    "created": "2025-01-07",
+    "generator": "heuristic-baseline",
+    "model": "none (rule-based)",
+    "run": {
+      "attempts": [
+        {
+          "attempt": 1,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.0,
+          "input_tokens": 0,
+          "latency_ms": null,
+          "model": "none (rule-based)",
+          "output_tokens": 0,
+          "request_id": "",
+          "stop_reason": ""
+        }
+      ],
+      "total": {
+        "cache_read_tokens": 0,
+        "cache_write_tokens": 0,
+        "cost_usd": 0.0,
+        "input_tokens": 0,
+        "latency_ms": null,
+        "output_tokens": 0
+      }
+    }
+  },
+  "open_questions": [
+    {
+      "evidence": [
+        "F54"
+      ],
+      "id": "Q1",
+      "kind": "missing_info",
+      "text": "No acceptance criteria were found in the story. Add them, or this plan can only describe the change and not check it against a requirement."
+    }
+  ],
+  "regression_scope": [
+    {
+      "evidence": [
+        "F9"
+      ],
+      "reason": "imports humanize",
+      "test": "tests/test_filesize.py::test_naturalsize"
+    },
+    {
+      "evidence": [
+        "F10"
+      ],
+      "reason": "imports humanize",
+      "test": "tests/test_number.py::test_metric"
+    },
+    {
+      "evidence": [
+        "F11"
+      ],
+      "reason": "imports humanize",
+      "test": "tests/test_i18n.py::TestActivate::test_default_locale_path_null__spec__"
+    },
+    {
+      "evidence": [
+        "F12"
+      ],
+      "reason": "imports humanize",
+      "test": "tests/test_i18n.py::TestActivate::test_default_locale_path_undefined__spec__"
+    },
+    {
+      "evidence": [
+        "F13"
+      ],
+      "reason": "imports humanize",
+      "test": "tests/test_i18n.py::test_default_locale_path_defined__spec__"
+    },
+    {
+      "evidence": [
+        "F14"
+      ],
+      "reason": "imports humanize",
+      "test": "tests/test_i18n.py::test_default_locale_path_none__spec__"
+    },
+    {
+      "evidence": [
+        "F15"
+      ],
+      "reason": "imports humanize",
+      "test": "tests/test_i18n.py::test_default_locale_path_undefined__file__"
+    },
+    {
+      "evidence": [
+        "F16"
+      ],
+      "reason": "imports humanize",
+      "test": "tests/test_i18n.py::test_i18n"
+    },
+    {
+      "evidence": [
+        "F17"
+      ],
+      "reason": "imports humanize",
+      "test": "tests/test_i18n.py::test_intcomma"
+    },
+    {
+      "evidence": [
+        "F18"
+      ],
+      "reason": "imports humanize",
+      "test": "tests/test_i18n.py::test_intword_plurals"
+    },
+    {
+      "evidence": [
+        "F19"
+      ],
+      "reason": "imports humanize",
+      "test": "tests/test_i18n.py::test_langauge_codes"
+    },
+    {
+      "evidence": [
+        "F20"
+      ],
+      "reason": "imports humanize",
+      "test": "tests/test_i18n.py::test_naturaldelta"
+    },
+    {
+      "evidence": [
+        "F21"
+      ],
+      "reason": "imports humanize",
+      "test": "tests/test_i18n.py::test_ordinal_genders"
+    },
+    {
+      "evidence": [
+        "F22"
+      ],
+      "reason": "imports humanize",
+      "test": "tests/test_lists.py::test_natural_list"
+    },
+    {
+      "evidence": [
+        "F23"
+      ],
+      "reason": "imports humanize",
+      "test": "tests/test_number.py::test_apnumber"
+    }
+  ],
+  "risks": [
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F2",
+        "F3",
+        "F4",
+        "F5",
+        "F6"
+      ],
+      "id": "R1",
+      "impact": 2,
+      "likelihood": 3,
+      "title": "Regression in the changed code"
+    }
+  ],
+  "schema_version": 1,
+  "summary": {
+    "change_class": "change",
+    "in_scope": [
+      "Changed file .pre-commit-config.yaml",
+      "Changed file src/humanize/__init__.py",
+      "Changed file src/humanize/filesize.py",
+      "Changed file src/humanize/number.py",
+      "Changed file src/humanize/time.py"
+    ],
+    "out_of_scope": [],
+    "text": "Update pre-commit (#226). 5 file(s) changed, classified as change. 0 acceptance criteria found. Highest risk: Regression in the changed code (score 6, low)."
+  },
+  "validation": []
+}

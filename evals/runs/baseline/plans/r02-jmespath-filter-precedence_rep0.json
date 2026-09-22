@@ -1,0 +1,192 @@
+{
+  "assumptions": [
+    "The test framework is unknown, so steps are framework-neutral.",
+    "The repository checkout matches the diff, either before or after the change."
+  ],
+  "cases": [],
+  "environment_needs": [
+    "No special environment beyond the existing test setup."
+  ],
+  "exit_criteria": [
+    "All P0 and P1 cases have been run and pass.",
+    "Every open question has an answer, or an accepted risk written next to it.",
+    "No failing test is quarantined to make this change pass."
+  ],
+  "meta": {
+    "bundle_sha256": "424e80ef552872225bcab68d9b01de7ab823f4cd697b1ae9eccbd45b138769f4",
+    "created": "2015-03-19",
+    "generator": "heuristic-baseline",
+    "model": "none (rule-based)",
+    "run": {
+      "attempts": [
+        {
+          "attempt": 1,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.0,
+          "input_tokens": 0,
+          "latency_ms": null,
+          "model": "none (rule-based)",
+          "output_tokens": 0,
+          "request_id": "",
+          "stop_reason": ""
+        }
+      ],
+      "total": {
+        "cache_read_tokens": 0,
+        "cache_write_tokens": 0,
+        "cost_usd": 0.0,
+        "input_tokens": 0,
+        "latency_ms": null,
+        "output_tokens": 0
+      }
+    }
+  },
+  "open_questions": [
+    {
+      "evidence": [
+        "F50"
+      ],
+      "id": "Q1",
+      "kind": "missing_info",
+      "text": "No acceptance criteria were found in the story. Add them, or this plan can only describe the change and not check it against a requirement."
+    }
+  ],
+  "regression_scope": [
+    {
+      "evidence": [
+        "F4"
+      ],
+      "reason": "calls Parser from jmespath/parser.py",
+      "test": "tests/test_parser.py::TestParserAddsExpressionAttribute::test_expression_available_from_parser"
+    },
+    {
+      "evidence": [
+        "F5"
+      ],
+      "reason": "calls Parser from jmespath/parser.py",
+      "test": "tests/test_parser.py::TestParserCaching::test_cache_purge"
+    },
+    {
+      "evidence": [
+        "F6"
+      ],
+      "reason": "calls Parser from jmespath/parser.py",
+      "test": "tests/test_parser.py::TestParserCaching::test_compile_lots_of_expressions"
+    },
+    {
+      "evidence": [
+        "F7"
+      ],
+      "reason": "calls Parser from jmespath/parser.py",
+      "test": "tests/test_parser.py::TestRenderGraphvizFile::test_dot_file_rendered"
+    },
+    {
+      "evidence": [
+        "F8"
+      ],
+      "reason": "calls Parser from jmespath/parser.py",
+      "test": "tests/test_parser.py::TestRenderGraphvizFile::test_dot_file_subexpr"
+    },
+    {
+      "evidence": [
+        "F9"
+      ],
+      "reason": "imports jmespath.parser",
+      "test": "tests/test_compliance.py::test_compliance"
+    },
+    {
+      "evidence": [
+        "F10"
+      ],
+      "reason": "imports jmespath.parser",
+      "test": "tests/test_parser.py::TestErrorMessages::test_bad_lexer_literal_value_with_json_object"
+    },
+    {
+      "evidence": [
+        "F11"
+      ],
+      "reason": "imports jmespath.parser",
+      "test": "tests/test_parser.py::TestErrorMessages::test_bad_lexer_values"
+    },
+    {
+      "evidence": [
+        "F12"
+      ],
+      "reason": "imports jmespath.parser",
+      "test": "tests/test_parser.py::TestErrorMessages::test_bad_parse"
+    },
+    {
+      "evidence": [
+        "F13"
+      ],
+      "reason": "imports jmespath.parser",
+      "test": "tests/test_parser.py::TestErrorMessages::test_bad_parse_error_message"
+    },
+    {
+      "evidence": [
+        "F14"
+      ],
+      "reason": "imports jmespath.parser",
+      "test": "tests/test_parser.py::TestErrorMessages::test_bad_parse_error_message_with_multiselect"
+    },
+    {
+      "evidence": [
+        "F15"
+      ],
+      "reason": "imports jmespath.parser",
+      "test": "tests/test_parser.py::TestErrorMessages::test_bad_unicode_string"
+    },
+    {
+      "evidence": [
+        "F16"
+      ],
+      "reason": "imports jmespath.parser",
+      "test": "tests/test_parser.py::TestMergedLists::test_merge_with_indices"
+    },
+    {
+      "evidence": [
+        "F17"
+      ],
+      "reason": "imports jmespath.parser",
+      "test": "tests/test_parser.py::TestMergedLists::test_trailing_merged_operator"
+    },
+    {
+      "evidence": [
+        "F18"
+      ],
+      "reason": "imports jmespath.parser",
+      "test": "tests/test_parser.py::TestParser::test_complex_or_expression"
+    }
+  ],
+  "risks": [
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F44",
+        "F45",
+        "F46",
+        "F47"
+      ],
+      "id": "R1",
+      "impact": 3,
+      "likelihood": 2,
+      "title": "Regression in 4 dependent module(s)"
+    }
+  ],
+  "schema_version": 1,
+  "summary": {
+    "change_class": "bugfix",
+    "in_scope": [
+      "Changed file jmespath/parser.py",
+      "Changed file tests/compliance/filters.json"
+    ],
+    "out_of_scope": [],
+    "text": "Fix filter projection parsing. 2 file(s) changed, classified as bugfix. 0 acceptance criteria found. Highest risk: Regression in 4 dependent module(s) (score 6, low)."
+  },
+  "validation": []
+}

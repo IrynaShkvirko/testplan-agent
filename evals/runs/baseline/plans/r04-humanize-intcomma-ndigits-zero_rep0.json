@@ -1,0 +1,172 @@
+{
+  "assumptions": [
+    "The test framework is unknown, so steps are framework-neutral.",
+    "The repository checkout matches the diff, either before or after the change."
+  ],
+  "cases": [
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F3",
+        "src/humanize/number.py:38",
+        "F11"
+      ],
+      "existing_coverage": "none",
+      "expected": "Every caller works, or is updated in this change",
+      "id": "TC-1",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "none",
+      "requirement_reason": "signature changed (value) -> (value, ndigits=None); criteria do not cover callers",
+      "risk": "R1",
+      "steps": [
+        "Find callers of intcomma (dependents are listed in the evidence)",
+        "Run them against the new signature, including default and keyword arguments"
+      ],
+      "technique": "compatibility",
+      "title": "Existing callers of intcomma still work after its signature changed"
+    }
+  ],
+  "environment_needs": [
+    "Cases marked 'now' should run in the existing CI: .github/workflows/labels.yml, .github/workflows/lint.yml."
+  ],
+  "exit_criteria": [
+    "All P0 and P1 cases have been run and pass.",
+    "Every open question has an answer, or an accepted risk written next to it.",
+    "No failing test is quarantined to make this change pass."
+  ],
+  "meta": {
+    "bundle_sha256": "5a6ed61bb84eab24db6edf69df8bd85073a0d29a406683905b488f3ebe9ba3fb",
+    "created": "2020-03-09",
+    "generator": "heuristic-baseline",
+    "model": "none (rule-based)",
+    "run": {
+      "attempts": [
+        {
+          "attempt": 1,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.0,
+          "input_tokens": 0,
+          "latency_ms": null,
+          "model": "none (rule-based)",
+          "output_tokens": 0,
+          "request_id": "",
+          "stop_reason": ""
+        }
+      ],
+      "total": {
+        "cache_read_tokens": 0,
+        "cache_write_tokens": 0,
+        "cost_usd": 0.0,
+        "input_tokens": 0,
+        "latency_ms": null,
+        "output_tokens": 0
+      }
+    }
+  },
+  "open_questions": [
+    {
+      "evidence": [
+        "F14"
+      ],
+      "id": "Q1",
+      "kind": "missing_info",
+      "text": "No acceptance criteria were found in the story. Add them, or this plan can only describe the change and not check it against a requirement."
+    }
+  ],
+  "regression_scope": [
+    {
+      "evidence": [
+        "F4"
+      ],
+      "reason": "calls intcomma from src/humanize/number.py",
+      "test": "tests/test_number.py::test_intcomma"
+    },
+    {
+      "evidence": [
+        "F5"
+      ],
+      "reason": "imports humanize.number",
+      "test": "tests/test_number.py::test_apnumber"
+    },
+    {
+      "evidence": [
+        "F6"
+      ],
+      "reason": "imports humanize.number",
+      "test": "tests/test_number.py::test_fractional"
+    },
+    {
+      "evidence": [
+        "F7"
+      ],
+      "reason": "imports humanize.number",
+      "test": "tests/test_number.py::test_intword"
+    },
+    {
+      "evidence": [
+        "F8"
+      ],
+      "reason": "imports humanize.number",
+      "test": "tests/test_number.py::test_intword_powers"
+    },
+    {
+      "evidence": [
+        "F9"
+      ],
+      "reason": "imports humanize.number",
+      "test": "tests/test_number.py::test_ordinal"
+    },
+    {
+      "evidence": [
+        "F10"
+      ],
+      "reason": "imports humanize.number",
+      "test": "tests/test_number.py::test_scientific"
+    }
+  ],
+  "risks": [
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F3"
+      ],
+      "id": "R1",
+      "impact": 4,
+      "likelihood": 5,
+      "title": "Contract break for callers or API clients"
+    },
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F11"
+      ],
+      "id": "R2",
+      "impact": 2,
+      "likelihood": 5,
+      "title": "Regression in 1 dependent module(s)"
+    }
+  ],
+  "schema_version": 1,
+  "summary": {
+    "change_class": "change",
+    "in_scope": [
+      "Changed file src/humanize/number.py",
+      "Changed file tests/test_number.py"
+    ],
+    "out_of_scope": [],
+    "text": "Add ndigits option to intcomma. 2 file(s) changed, classified as change. 0 acceptance criteria found. Highest risk: Contract break for callers or API clients (score 20, high)."
+  },
+  "validation": []
+}

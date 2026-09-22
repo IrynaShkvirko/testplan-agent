@@ -1,0 +1,149 @@
+{
+  "variant": "baseline",
+  "graders": [
+    "claude-opus-5 (at the user's request; not a person)"
+  ],
+  "updated": "2026-09-22",
+  "grades": {
+    "r01-humanize-float-bytes/0/D1": {
+      "grade": "missed",
+      "by": "TC-1",
+      "note": "only a generic 'verify naturalsize behaves as intended' (P2, no steps); no float input, no expected output"
+    },
+    "r02-jmespath-filter-precedence/0/D1": {
+      "grade": "missed",
+      "by": "",
+      "note": "auto: the plan has no test conditions"
+    },
+    "r03-prettytable-empty-add-rows/0/D1": {
+      "grade": "partial",
+      "by": "TC-1",
+      "note": "targets add_rows backward compatibility, the class of the defect, but does not force an empty list"
+    },
+    "r04-humanize-intcomma-ndigits-zero/0/D1": {
+      "grade": "missed",
+      "by": "TC-1",
+      "note": "checks existing callers only; the defect is in the new option (ndigits=0), which no condition exercises"
+    },
+    "s01-loyalty-points/0/D1": {
+      "grade": "partial",
+      "by": "TC-1",
+      "note": "AC-1 'per whole euro they pay', but no condition uses a coupon"
+    },
+    "s01-loyalty-points/0/D2": {
+      "grade": "partial",
+      "by": "TC-3",
+      "note": "AC-3 covers overspending, not a negative amount; TC-4 tries extreme inputs but only records them"
+    },
+    "s02-free-shipping/0/D1": {
+      "grade": "partial",
+      "by": "TC-1",
+      "note": "'from 50 euros' can be tested at 60; nothing forces exactly 5000 cents"
+    },
+    "s02-free-shipping/0/D2": {
+      "grade": "partial",
+      "by": "TC-3",
+      "note": "'depends on the amount the customer pays', but no condition uses a coupon"
+    },
+    "s03-restock/0/D1": {
+      "grade": "missed",
+      "by": "",
+      "note": "no condition on concurrent deliveries (the story mentions several scanners only as context)"
+    },
+    "s03-restock/0/D2": {
+      "grade": "missed",
+      "by": "",
+      "note": "no condition on the quantity; TC-3's 'input AC-2 rules out' has nothing to rule out"
+    },
+    "s04-order-cancel/0/D1": {
+      "grade": "partial",
+      "by": "TC-5",
+      "note": "TC-5 checks callers without a role, not another customer with the same role; TC-7 cancels one's own order"
+    },
+    "s04-order-cancel/0/D2": {
+      "grade": "caught",
+      "by": "TC-6",
+      "note": "the same cancel sent twice; nothing may be done twice"
+    },
+    "s05-price-format/0/D1": {
+      "grade": "partial",
+      "by": "TC-1",
+      "note": "two decimals wanted, but the example (1234) has cents above 10"
+    },
+    "s05-price-format/0/D2": {
+      "grade": "caught",
+      "by": "TC-2",
+      "note": "AC-2 names a negative amount and '-\u20ac1.50'"
+    },
+    "s06-coupon-codes/0/D1": {
+      "grade": "caught",
+      "by": "TC-2",
+      "note": "'not case-sensitive' can only be tested by changing the case"
+    },
+    "s06-coupon-codes/0/D2": {
+      "grade": "caught",
+      "by": "TC-4",
+      "note": "checks just before, at and after the time limit, i.e. on the last day"
+    },
+    "s07-bulk-reserve/0/D1": {
+      "grade": "caught",
+      "by": "TC-1",
+      "note": "'never holds stock for an order it could not reserve' needs a failing line and a stock check"
+    },
+    "s08-order-listing/0/D1": {
+      "grade": "caught",
+      "by": "TC-1",
+      "note": "id order and 20 per page on a known set shows the short page"
+    },
+    "s08-order-listing/0/D2": {
+      "grade": "caught",
+      "by": "TC-3",
+      "note": "boundary at 50: just above must be capped"
+    },
+    "s08-order-listing/0/D3": {
+      "grade": "partial",
+      "by": "TC-4",
+      "note": "'pages are numbered from 1', but nothing asks for page 0"
+    },
+    "s09-vat/0/D1": {
+      "grade": "partial",
+      "by": "TC-2",
+      "note": "rounding on the total, but nothing forces several small lines"
+    },
+    "s09-vat/0/D2": {
+      "grade": "caught",
+      "by": "TC-3",
+      "note": "items without a category are standard-rate"
+    },
+    "s10-order-status-migration/0/D1": {
+      "grade": "caught",
+      "by": "TC-4",
+      "note": "applies the migration to populated data"
+    },
+    "s10-order-status-migration/0/D2": {
+      "grade": "caught",
+      "by": "TC-3",
+      "note": "orders from before the change must count as placed; steps point at create_order"
+    },
+    "s11-login-lockout/0/D1": {
+      "grade": "caught",
+      "by": "TC-1",
+      "note": "five failures in a row must lock"
+    },
+    "s11-login-lockout/0/D2": {
+      "grade": "partial",
+      "by": "TC-1",
+      "note": "'in a row' implies a success resets, but nothing forces fail, succeed, fail"
+    },
+    "s12-orders-csv/0/D1": {
+      "grade": "partial",
+      "by": "TC-2",
+      "note": "two decimals wanted, but nothing forces an amount ending in zero cents"
+    },
+    "s12-orders-csv/0/D2": {
+      "grade": "partial",
+      "by": "TC-3",
+      "note": "'exactly as entered', but nothing forces a name with a semicolon"
+    }
+  }
+}

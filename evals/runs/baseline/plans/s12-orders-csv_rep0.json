@@ -1,0 +1,184 @@
+{
+  "assumptions": [
+    "Tests are written with pytest.",
+    "The repository checkout matches the diff, either before or after the change."
+  ],
+  "cases": [
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F4",
+        "F2",
+        "shop/export.py:6"
+      ],
+      "existing_coverage": "none",
+      "expected": "One row per order with id, amount paid in euros and item names.",
+      "id": "TC-1",
+      "level": "unit",
+      "priority": "P0",
+      "requirement": "AC-1",
+      "requirement_reason": "",
+      "risk": "R1",
+      "steps": [
+        "Arrange the state that AC-1 describes",
+        "Exercise orders_csv (shop/export.py)",
+        "Compare the outcome with the expected result"
+      ],
+      "technique": "equivalence",
+      "title": "AC-1: One row per order with id, amount paid in euros and item names."
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F5"
+      ],
+      "existing_coverage": "none",
+      "expected": "Amounts are written with two decimals.",
+      "id": "TC-2",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "AC-2",
+      "requirement_reason": "",
+      "risk": "R1",
+      "steps": [
+        "Arrange the state that AC-2 describes",
+        "Exercise the changed behaviour",
+        "Compare the outcome with the expected result"
+      ],
+      "technique": "equivalence",
+      "title": "AC-2: Amounts are written with two decimals."
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F6"
+      ],
+      "existing_coverage": "none",
+      "expected": "Item names are written exactly as entered.",
+      "id": "TC-3",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "AC-3",
+      "requirement_reason": "",
+      "risk": "R1",
+      "steps": [
+        "Arrange the state that AC-3 describes",
+        "Exercise the changed behaviour",
+        "Compare the outcome with the expected result"
+      ],
+      "technique": "equivalence",
+      "title": "AC-3: Item names are written exactly as entered."
+    }
+  ],
+  "environment_needs": [
+    "Existing fixtures that may be reused: inventory."
+  ],
+  "exit_criteria": [
+    "All P0 and P1 cases have been run and pass.",
+    "Every open question has an answer, or an accepted risk written next to it.",
+    "No failing test is quarantined to make this change pass."
+  ],
+  "meta": {
+    "bundle_sha256": "e0ac3229471dd5f6a3404ce0e1de1751fef6ebebb6650c418aaabf04cc0a1bb5",
+    "created": "2026-09-01",
+    "generator": "heuristic-baseline",
+    "model": "none (rule-based)",
+    "run": {
+      "attempts": [
+        {
+          "attempt": 1,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.0,
+          "input_tokens": 0,
+          "latency_ms": null,
+          "model": "none (rule-based)",
+          "output_tokens": 0,
+          "request_id": "",
+          "stop_reason": ""
+        }
+      ],
+      "total": {
+        "cache_read_tokens": 0,
+        "cache_write_tokens": 0,
+        "cost_usd": 0.0,
+        "input_tokens": 0,
+        "latency_ms": null,
+        "output_tokens": 0
+      }
+    }
+  },
+  "open_questions": [
+    {
+      "evidence": [
+        "F9"
+      ],
+      "id": "Q1",
+      "kind": "unmapped",
+      "text": "AC-2 shares almost no wording with the changed code; it may already hold, live elsewhere or be missing, so confirm where it is built."
+    }
+  ],
+  "regression_scope": [],
+  "risks": [
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F3"
+      ],
+      "id": "R1",
+      "impact": 5,
+      "likelihood": 3,
+      "title": "Money and pricing: wrong behaviour in shop/export.py"
+    },
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F7"
+      ],
+      "id": "R2",
+      "impact": 3,
+      "likelihood": 4,
+      "title": "Changed behaviour with no direct test (1 definition(s))"
+    },
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F9"
+      ],
+      "id": "R3",
+      "impact": 3,
+      "likelihood": 3,
+      "title": "Requirements misread: vague or unmatched wording"
+    }
+  ],
+  "schema_version": 1,
+  "summary": {
+    "change_class": "feature",
+    "in_scope": [
+      "AC-1: One row per order with id, amount paid in euros and item names.",
+      "AC-2: Amounts are written with two decimals.",
+      "AC-3: Item names are written exactly as entered."
+    ],
+    "out_of_scope": [],
+    "text": "Orders export. 1 file(s) changed, classified as feature. 3 acceptance criteria found. Highest risk: Money and pricing: wrong behaviour in shop/export.py (score 15, high)."
+  },
+  "validation": []
+}

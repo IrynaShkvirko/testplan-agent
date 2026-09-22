@@ -1,0 +1,423 @@
+{
+  "assumptions": [
+    "Tests are written with pytest.",
+    "The repository checkout matches the diff, either before or after the change."
+  ],
+  "cases": [
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F8"
+      ],
+      "existing_coverage": "none",
+      "expected": "Later cancellations are refused with status 409.",
+      "id": "TC-1",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "AC-2",
+      "requirement_reason": "",
+      "risk": "R1",
+      "steps": [
+        "Arrange the state that AC-2 describes",
+        "Exercise the changed behaviour",
+        "Compare the outcome with the expected result"
+      ],
+      "technique": "equivalence",
+      "title": "AC-2: Later cancellations are refused with status 409."
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F8"
+      ],
+      "existing_coverage": "none",
+      "expected": "The input is rejected or handled as the criterion states, with no side effects",
+      "id": "TC-2",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "AC-2",
+      "requirement_reason": "",
+      "risk": "R1",
+      "steps": [
+        "Provide input that AC-2 rules out",
+        "Exercise the changed behaviour"
+      ],
+      "technique": "negative",
+      "title": "AC-2: the excluded case is refused"
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F2",
+        "shop/api.py:10"
+      ],
+      "existing_coverage": "none",
+      "expected": "Both calls are refused and nothing changes",
+      "id": "TC-3",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "none",
+      "requirement_reason": "authorisation for a write endpoint is not in the criteria",
+      "risk": "R1",
+      "steps": [
+        "Call without credentials",
+        "Call as a user without the required role"
+      ],
+      "technique": "permission",
+      "title": "POST /orders: caller who is not allowed to do this"
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F2",
+        "shop/api.py:10"
+      ],
+      "existing_coverage": "none",
+      "expected": "The second call is rejected or returns the first result; nothing is done twice",
+      "id": "TC-4",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "none",
+      "requirement_reason": "retries and double submits are not in the criteria",
+      "risk": "R1",
+      "steps": [
+        "Send the request",
+        "Send an identical request again"
+      ],
+      "technique": "idempotency",
+      "title": "POST /orders: the same request sent twice"
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F3",
+        "shop/api.py:28"
+      ],
+      "existing_coverage": "none",
+      "expected": "Both calls are refused and nothing changes",
+      "id": "TC-5",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "none",
+      "requirement_reason": "authorisation for a write endpoint is not in the criteria",
+      "risk": "R1",
+      "steps": [
+        "Call without credentials",
+        "Call as a user without the required role"
+      ],
+      "technique": "permission",
+      "title": "POST /orders/cancel: caller who is not allowed to do this"
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F3",
+        "shop/api.py:28"
+      ],
+      "existing_coverage": "none",
+      "expected": "The second call is rejected or returns the first result; nothing is done twice",
+      "id": "TC-6",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "none",
+      "requirement_reason": "retries and double submits are not in the criteria",
+      "risk": "R1",
+      "steps": [
+        "Send the request",
+        "Send an identical request again"
+      ],
+      "technique": "idempotency",
+      "title": "POST /orders/cancel: the same request sent twice"
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F7",
+        "F2",
+        "F3",
+        "shop/api.py:10"
+      ],
+      "existing_coverage": "none",
+      "expected": "A customer can cancel their own order within 30 minutes of placing it and gets the paid amount back.",
+      "id": "TC-7",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "AC-1",
+      "requirement_reason": "",
+      "risk": "R2",
+      "steps": [
+        "Arrange the state that AC-1 describes",
+        "Exercise create_order (shop/api.py)",
+        "Compare the outcome with the expected result"
+      ],
+      "technique": "equivalence",
+      "title": "AC-1: A customer can cancel their own order within 30 minutes of placing it and gets the paid..."
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F7",
+        "F2",
+        "F3",
+        "shop/api.py:10"
+      ],
+      "existing_coverage": "none",
+      "expected": "The behaviour changes exactly where AC-1 says it does",
+      "id": "TC-8",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "AC-1",
+      "requirement_reason": "",
+      "risk": "R2",
+      "steps": [
+        "Run with a value just below 30",
+        "Run with a value exactly at 30",
+        "Run with a value just above 30"
+      ],
+      "technique": "boundary",
+      "title": "AC-1: boundary at 30"
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F2",
+        "shop/api.py:10"
+      ],
+      "existing_coverage": "none",
+      "expected": "A clear client error is returned and no state changes",
+      "id": "TC-9",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "none",
+      "requirement_reason": "input validation for a new or changed endpoint is not in the criteria",
+      "risk": "R3",
+      "steps": [
+        "Send a request with a missing field, a wrong type and an empty body"
+      ],
+      "technique": "negative",
+      "title": "POST /orders: malformed or incomplete request"
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F3",
+        "shop/api.py:28"
+      ],
+      "existing_coverage": "none",
+      "expected": "A clear client error is returned and no state changes",
+      "id": "TC-10",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "none",
+      "requirement_reason": "input validation for a new or changed endpoint is not in the criteria",
+      "risk": "R3",
+      "steps": [
+        "Send a request with a missing field, a wrong type and an empty body"
+      ],
+      "technique": "negative",
+      "title": "POST /orders/cancel: malformed or incomplete request"
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F7",
+        "F2",
+        "F3",
+        "shop/api.py:10"
+      ],
+      "existing_coverage": "none",
+      "expected": "The state changes only once the limit has passed",
+      "id": "TC-11",
+      "level": "integration",
+      "priority": "P1",
+      "requirement": "AC-1",
+      "requirement_reason": "",
+      "risk": "R5",
+      "steps": [
+        "Freeze or control the clock",
+        "Check the state just before the limit, at it, and just after it"
+      ],
+      "technique": "state_transition",
+      "title": "AC-1: behaviour around the time limit"
+    }
+  ],
+  "environment_needs": [
+    "Existing fixtures that may be reused: inventory.",
+    "A test client or running app, with users of each relevant role.",
+    "A way to control the clock."
+  ],
+  "exit_criteria": [
+    "All P0 and P1 cases have been run and pass.",
+    "Every open question has an answer, or an accepted risk written next to it.",
+    "No failing test is quarantined to make this change pass."
+  ],
+  "meta": {
+    "bundle_sha256": "c5a4c290360f33c352c7d1d0c910bb8be34266c10013cdefe943f1b4a3ed002c",
+    "created": "2026-09-01",
+    "generator": "heuristic-baseline",
+    "model": "none (rule-based)",
+    "run": {
+      "attempts": [
+        {
+          "attempt": 1,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.0,
+          "input_tokens": 0,
+          "latency_ms": null,
+          "model": "none (rule-based)",
+          "output_tokens": 0,
+          "request_id": "",
+          "stop_reason": ""
+        }
+      ],
+      "total": {
+        "cache_read_tokens": 0,
+        "cache_write_tokens": 0,
+        "cost_usd": 0.0,
+        "input_tokens": 0,
+        "latency_ms": null,
+        "output_tokens": 0
+      }
+    }
+  },
+  "open_questions": [
+    {
+      "evidence": [
+        "F13"
+      ],
+      "id": "Q1",
+      "kind": "unmapped",
+      "text": "AC-2 shares almost no wording with the changed code; it may already hold, live elsewhere or be missing, so confirm where it is built."
+    }
+  ],
+  "regression_scope": [
+    {
+      "evidence": [
+        "F9"
+      ],
+      "reason": "calls create_order from shop/api.py",
+      "test": "tests/test_api.py::test_create_order_returns_total"
+    }
+  ],
+  "risks": [
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F4"
+      ],
+      "id": "R1",
+      "impact": 5,
+      "likelihood": 4,
+      "title": "Money and pricing: wrong behaviour in shop/api.py"
+    },
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F5"
+      ],
+      "id": "R2",
+      "impact": 4,
+      "likelihood": 4,
+      "title": "Personal data: wrong behaviour in shop/api.py"
+    },
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F2",
+        "F3"
+      ],
+      "id": "R3",
+      "impact": 4,
+      "likelihood": 4,
+      "title": "Contract break for callers or API clients"
+    },
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F10"
+      ],
+      "id": "R4",
+      "impact": 3,
+      "likelihood": 5,
+      "title": "Changed behaviour with no direct test (1 definition(s))"
+    },
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F6"
+      ],
+      "id": "R5",
+      "impact": 3,
+      "likelihood": 4,
+      "title": "Time and scheduling: wrong behaviour in shop/api.py"
+    },
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F13"
+      ],
+      "id": "R6",
+      "impact": 3,
+      "likelihood": 3,
+      "title": "Requirements misread: vague or unmatched wording"
+    }
+  ],
+  "schema_version": 1,
+  "summary": {
+    "change_class": "feature",
+    "in_scope": [
+      "AC-1: A customer can cancel their own order within 30 minutes of placing it and gets the paid amount back.",
+      "AC-2: Later cancellations are refused with status 409."
+    ],
+    "out_of_scope": [],
+    "text": "Cancel an order. 1 file(s) changed, classified as feature. 2 acceptance criteria found. Highest risk: Money and pricing: wrong behaviour in shop/api.py (score 20, high)."
+  },
+  "validation": []
+}
