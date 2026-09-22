@@ -23,12 +23,12 @@
     },
     {
       "id": "D2",
-      "summary": "Redeeming zero or negative points is accepted; a negative redemption raises the balance.",
+      "summary": "A negative redemption is accepted and raises the balance.",
       "location": "shop/loyalty.py:24",
-      "trigger": "redeem(0) or redeem(-500)",
-      "caught_if": "a condition redeems zero or a negative number of points and checks it is rejected with the balance unchanged",
+      "trigger": "redeem(-500)",
+      "caught_if": "a condition redeems a negative number of points and checks the balance does not go up",
       "written_by": "claude-opus-5 (draft)",
-      "verified_by": "Iryna Shkvirko (review page, 2026-09-22)",
+      "verified_by": "",
       "observed": "balance 100, redeem(-500): accepted, balance became 600"
     }
   ]

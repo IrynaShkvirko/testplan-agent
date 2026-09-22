@@ -6,8 +6,10 @@ Each spec is a change (edits to existing demo files, new files), the story that 
 and the defects planted in it. A defect names a line by a snippet of its text; the generator
 resolves it to ``file:line`` in the changed file, so labels cannot drift from the code.
 
-Some defects break a stated acceptance criterion; others are edge cases the story never
-mentions, which is where a test planner earns its keep. The stories do not hint at them.
+Stories state rules the way a business would, not the way a tester would: they give the rule
+and leave out the edge inputs (boundaries, zero or negative values, example values, error
+codes), so a planner has to derive the edge cases itself. A planner that only restates the
+criteria should not catch most defects.
 """
 
 from __future__ import annotations
@@ -50,10 +52,9 @@ Customers should earn points on what they pay and spend them later as a discount
 
 ## Acceptance criteria
 
-- AC-1: A customer earns one point per whole euro of the amount actually paid, after coupons.
-- AC-2: 100 points are worth 1 euro off (1 cent per point).
-- AC-3: A customer cannot redeem more points than they have.
-- AC-4: Redeeming zero or a negative number of points is rejected.
+- AC-1: A customer earns one point per whole euro they pay for an order.
+- AC-2: 100 points are worth 1 euro off.
+- AC-3: Customers can only spend points they have.
 """,
         "edits": {},
         "new": {
@@ -97,12 +98,11 @@ class LoyaltyAccount:
             ),
             defect(
                 "D2",
-                "Redeeming zero or negative points is accepted; a negative redemption raises "
-                "the balance.",
+                "A negative redemption is accepted and raises the balance.",
                 "shop/loyalty.py::if points > self.balance:",
-                "redeem(0) or redeem(-500)",
-                "a condition redeems zero or a negative number of points and checks it is "
-                "rejected with the balance unchanged",
+                "redeem(-500)",
+                "a condition redeems a negative number of points and checks the balance does not "
+                "go up",
             ),
         ],
     },
@@ -116,9 +116,9 @@ Shipping is a flat 4.99 euros. Make larger orders ship free.
 
 ## Acceptance criteria
 
-- AC-1: Orders of 50.00 euros or more ship free.
-- AC-2: The threshold applies to the total after the coupon.
-- AC-3: Other orders pay 4.99 euros shipping, included in the order total.
+- AC-1: Orders from 50 euros ship free.
+- AC-2: Other orders pay 4.99 euros shipping, included in the order total.
+- AC-3: Free shipping depends on the amount the customer pays.
 """,
         "edits": {
             "shop/pricing.py": [
@@ -174,14 +174,13 @@ def shipping_cost(items, coupon_percent=0):
         "tags": ["synthetic", "concurrency"],
         "story": """# Restock deliveries
 
-The warehouse needs to add delivered stock through the inventory module.
+The warehouse needs to add delivered stock through the inventory module. Deliveries are
+recorded from several scanners while the shop keeps taking orders.
 
 ## Acceptance criteria
 
 - AC-1: Restocking adds the delivered quantity to the SKU's stock and returns the new stock.
 - AC-2: A SKU that has never been stocked can be restocked.
-- AC-3: Several warehouse workers record deliveries at the same time, while customers reserve.
-- AC-4: A delivery must be a positive quantity.
 """,
         "edits": {
             "shop/inventory.py": [
@@ -231,9 +230,7 @@ Customers ask support to cancel orders they placed by mistake. Let them do it th
 ## Acceptance criteria
 
 - AC-1: A customer can cancel their own order within 30 minutes of placing it and gets the paid amount back.
-- AC-2: After that, cancelling is refused with status 409.
-- AC-3: Customers cannot cancel other customers' orders; they get 403.
-- AC-4: Cancelling an order that is already cancelled does not refund it again.
+- AC-2: Later cancellations are refused with status 409.
 """,
         "edits": {
             "shop/api.py": [
@@ -281,8 +278,8 @@ def cancel_order(request):
                 "the requesting user.",
                 'shop/api.py::order = ORDERS.get(request["order_id"])',
                 "customer B cancels customer A's order",
-                "a condition cancels an order as a different customer and expects 403 with the "
-                "order unchanged",
+                "a condition cancels an order as a different customer and expects it refused "
+                "with the order unchanged",
             ),
             defect(
                 "D2",
@@ -346,8 +343,8 @@ Marketing wants named coupon codes that stop working after a date.
 
 ## Acceptance criteria
 
-- AC-1: Codes are case-insensitive: "spring10" works like "SPRING10".
-- AC-2: A coupon is valid up to and including its last day.
+- AC-1: Codes are not case-sensitive.
+- AC-2: Coupons expire after their last day.
 - AC-3: Unknown or expired codes are rejected with an error.
 """,
         "edits": {},
@@ -403,7 +400,7 @@ Checkout reserves stock line by line, so a failed line leaves the others reserve
 
 ## Acceptance criteria
 
-- AC-1: All lines of an order are reserved, or none are.
+- AC-1: An order is reserved in one step: checkout never holds stock for an order it could not reserve.
 - AC-2: When a line is out of stock, the error names that SKU.
 """,
         "edits": {
@@ -446,8 +443,8 @@ Support needs to browse orders.
 ## Acceptance criteria
 
 - AC-1: GET /orders returns orders in id order, 20 per page by default.
-- AC-2: The page size can be chosen, up to at most 50.
-- AC-3: Page numbers start at 1; page 0 or below is rejected with status 400.
+- AC-2: The page size can be chosen, up to 50.
+- AC-3: Pages are numbered from 1.
 """,
         "edits": {
             "shop/api.py": [
@@ -495,7 +492,8 @@ def list_orders(request):
                 "Page 0 or a negative page is not rejected; it returns a slice from the end.",
                 'shop/api.py::page = int(request.get("page", 1))',
                 "page=0 or page=-1",
-                "a condition asks for page 0 and expects status 400",
+                "a condition asks for page 0 (or below) and expects it refused rather than a page "
+                "of orders",
             ),
         ],
     },
@@ -510,8 +508,8 @@ Invoices must show VAT. Books have a reduced rate.
 ## Acceptance criteria
 
 - AC-1: VAT is 20% for standard items and 5% for books.
-- AC-2: VAT is computed per rate on the order total and rounded once, to the nearest cent.
-- AC-3: Items without a category use the standard rate.
+- AC-2: VAT is calculated on the order total for each rate and rounded to the cent.
+- AC-3: Older catalogue items have no category; they are standard-rate items.
 """,
         "edits": {},
         "new": {
@@ -559,7 +557,7 @@ Orders need a status so support can see what happened to them.
 
 - AC-1: Every order has a status: placed, shipped or cancelled.
 - AC-2: New orders start as placed.
-- AC-3: Existing orders are marked as placed when the change is deployed.
+- AC-3: Orders placed before this change count as placed.
 """,
         "edits": {
             "shop/api.py": [
@@ -604,9 +602,8 @@ Stop password guessing on customer accounts.
 
 ## Acceptance criteria
 
-- AC-1: After 5 failed logins in a row, the account is locked for 15 minutes.
-- AC-2: A successful login resets the count of failed logins.
-- AC-3: A locked account can log in again once the 15 minutes have passed.
+- AC-1: Five failed logins in a row lock the account for 15 minutes.
+- AC-2: A locked account can log in again once the 15 minutes have passed.
 """,
         "edits": {},
         "new": {
@@ -670,8 +667,8 @@ Finance wants a CSV of orders for their spreadsheet.
 ## Acceptance criteria
 
 - AC-1: One row per order with id, amount paid in euros and item names.
-- AC-2: Amounts have exactly two decimals, e.g. 12.50 rather than 12.5.
-- AC-3: Item names may contain commas or semicolons and must come through unchanged.
+- AC-2: Amounts are written with two decimals.
+- AC-3: Item names are written exactly as entered.
 """,
         "edits": {},
         "new": {
