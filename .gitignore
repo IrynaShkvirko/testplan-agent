@@ -7,3 +7,9 @@ dist/
 .ruff_cache/
 .pytest_cache/
 demo/_repo/
+
+# eval runs: keep results, plans and _state.json; traces and the report are rebuilt locally
+evals/runs/*/traces/
+evals/runs/report.html
+evals/runs/state.json
+evals/runs/trajectory/

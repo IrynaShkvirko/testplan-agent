@@ -1,0 +1,15 @@
+{
+  "id": "smoke-reservation-timeout",
+  "title": "Demo change: reservation-timeout",
+  "tags": [
+    "smoke",
+    "concurrency"
+  ],
+  "repo": {
+    "kind": "demo"
+  },
+  "as_of": "2026-09-01",
+  "demo_change": "reservation-timeout",
+  "notes": "Runner smoke test: a demo change with no labelled defects.",
+  "defects": []
+}
