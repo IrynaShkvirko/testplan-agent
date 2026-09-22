@@ -1,0 +1,32 @@
+diff --git a/shop/loyalty.py b/shop/loyalty.py
+new file mode 100644
+--- /dev/null
++++ b/shop/loyalty.py
+@@ -0,0 +1,27 @@
++"""Loyalty points: earned on paid orders, redeemed as a discount."""
++
++POINTS_PER_EURO = 1
++CENTS_PER_POINT = 1
++
++
++class NotEnoughPoints(Exception):
++    pass
++
++
++class LoyaltyAccount:
++    def __init__(self):
++        self.balance = 0
++
++    def earn(self, items, coupon_percent=0):
++        """Add points for an order: one point per whole euro paid."""
++        subtotal = sum(price * qty for _, price, qty in items)
++        points = subtotal // 100 * POINTS_PER_EURO
++        self.balance += points
++        return points
++
++    def redeem(self, points):
++        """Spend points; returns the discount in cents."""
++        if points > self.balance:
++            raise NotEnoughPoints(points)
++        self.balance -= points
++        return points * CENTS_PER_POINT

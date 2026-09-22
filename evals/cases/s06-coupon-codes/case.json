@@ -1,0 +1,35 @@
+{
+  "id": "s06-coupon-codes",
+  "title": "Coupon codes with expiry dates",
+  "tags": [
+    "synthetic",
+    "time"
+  ],
+  "repo": {
+    "kind": "demo"
+  },
+  "as_of": "2026-09-01",
+  "notes": "Synthetic change to the demo shop with seeded defects.",
+  "defects": [
+    {
+      "id": "D1",
+      "summary": "Lookup is case-sensitive: 'spring10' is rejected.",
+      "location": "shop/coupons.py:16",
+      "trigger": "a lower- or mixed-case code",
+      "caught_if": "a condition uses a code in another case and expects it accepted",
+      "written_by": "claude-opus-5 (draft)",
+      "verified_by": "Iryna Shkvirko (review page, 2026-09-22)",
+      "observed": "coupon_percent('spring10', 2026-05-01) raised InvalidCoupon"
+    },
+    {
+      "id": "D2",
+      "summary": "A coupon is rejected on its last day: the comparison is >= instead of >.",
+      "location": "shop/coupons.py:19",
+      "trigger": "using SPRING10 on 2026-05-31",
+      "caught_if": "a condition uses a coupon on its last day (and the day after) and expects it valid on the last day",
+      "written_by": "claude-opus-5 (draft)",
+      "verified_by": "Iryna Shkvirko (review page, 2026-09-22)",
+      "observed": "coupon_percent('SPRING10', 2026-05-31) raised InvalidCoupon"
+    }
+  ]
+}

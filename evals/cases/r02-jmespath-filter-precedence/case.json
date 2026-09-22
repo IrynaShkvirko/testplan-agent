@@ -1,0 +1,29 @@
+{
+  "id": "r02-jmespath-filter-precedence",
+  "title": "jmespath: fix filter projection parsing",
+  "tags": [
+    "real",
+    "parsing"
+  ],
+  "repo": {
+    "kind": "git",
+    "url": "https://github.com/jmespath/jmespath.py.git",
+    "commit": "7d461164645b89a9fb434385da0831eda3aa2a92",
+    "license": "MIT",
+    "fixed_by": "79790279d7632eddffe09c90e9251a317ae9a00b"
+  },
+  "as_of": "2015-03-19",
+  "notes": "A one-line precedence fix, with a compliance test, that broke another filter expression. The story is only the commit message.",
+  "defects": [
+    {
+      "id": "D1",
+      "summary": "Giving filters the same binding power as '*' breaks a filter that follows a star projection: reservations[*].instances[?bar==`1`] returns [] instead of the matching instances.",
+      "location": "jmespath/parser.py:60",
+      "trigger": "a filter expression applied after a [*] projection, e.g. reservations[*].instances[?bar==`1`]",
+      "caught_if": "a condition evaluates a filter after a [*] projection (not only after [] or at the top level) and checks the matching elements are returned",
+      "written_by": "claude-opus-5 (draft)",
+      "verified_by": "Iryna Shkvirko (review page, 2026-09-22)",
+      "observed": "at 7d46116 the expression returned []; at its parent it returned [[{'foo': 2, 'bar': 1}]]"
+    }
+  ]
+}

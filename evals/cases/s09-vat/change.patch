@@ -1,0 +1,16 @@
+diff --git a/shop/tax.py b/shop/tax.py
+new file mode 100644
+--- /dev/null
++++ b/shop/tax.py
+@@ -0,0 +1,11 @@
++"""VAT for invoices."""
++
++VAT_RATES = {"standard": 20, "books": 5}
++
++
++def order_vat(items):
++    """VAT in cents for (name, price_cents, qty, category) items."""
++    vat = 0
++    for _, price, qty, category in items:
++        vat += round(price * qty * VAT_RATES[category] / 100)
++    return vat

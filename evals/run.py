@@ -44,7 +44,7 @@ from testplan_agent.planner import PlanResult, generate_plan
 from testplan_agent.pricing import PRICES
 
 from . import grading
-from .cases import CASES_DIR, Case, CaseError, load_cases
+from .cases import CASES_DIR, Case, CaseError, checkout_git_case, load_cases
 
 ROOT = Path(__file__).resolve().parent.parent
 FLOW_DIR = Path(__file__).resolve().parent / "runs"
@@ -441,13 +441,7 @@ def _run(
 
     workdir = Path(tempfile.mkdtemp(prefix="testplan-eval-"))
     try:
-        repo, changes = _demo_repo(workdir)
-        bundles = {}
-        for case in cases:
-            text = case.inputs(changes)
-            bundles[case.id] = build_bundle(
-                text["diff"], text["story"], repo=repo, as_of=case.as_of
-            )
+        bundles, repos = _prepare(cases, workdir)
         done = _done(vdir)
         todo = [(c, r) for c in cases for r in range(reps) if (c.id, r) not in done]
         if not todo:
@@ -462,7 +456,7 @@ def _run(
             if not args.yes and not confirm(question):
                 print("stopped before any call was made", file=sys.stderr)
                 return 1
-        _execute(todo, bundles, repo, client, vdir, args)
+        _execute(todo, bundles, repos, client, vdir, args)
     finally:
         shutil.rmtree(workdir, ignore_errors=True)
     for line in summarize(vdir):
@@ -471,10 +465,29 @@ def _run(
     return 0
 
 
+def _prepare(cases: List[Case], workdir: Path) -> Tuple[Dict[str, ContextBundle], Dict[str, Path]]:
+    """Each case's context bundle and the checkout it was collected from."""
+    bundles: Dict[str, ContextBundle] = {}
+    repos: Dict[str, Path] = {}
+    demo = _demo_repo(workdir) if any(c.repo["kind"] == "demo" for c in cases) else None
+    for case in cases:
+        if case.repo["kind"] == "git":
+            got = checkout_git_case(case, workdir)
+            repo, diff, story = got["repo"], got["diff"], got["story"]
+        else:
+            assert demo is not None
+            repo, changes = demo
+            text = case.inputs(changes)
+            diff, story = text["diff"], text["story"]
+        bundles[case.id] = build_bundle(diff, story, repo=repo, as_of=case.as_of)
+        repos[case.id] = repo
+    return bundles, repos
+
+
 def _execute(
     todo: List[Tuple[Case, int]],
     bundles: Dict[str, ContextBundle],
-    repo: Path,
+    repos: Dict[str, Path],
     client: LLMClient,
     vdir: Path,
     args: argparse.Namespace,
@@ -484,6 +497,7 @@ def _execute(
 
     def one(item: Tuple[Case, int]) -> None:
         case, rep = item
+        repo = repos[case.id]
         outcome = run_case(case, rep, bundles[case.id], repo, client, args.timeout_s)
         kind, row, err = record(case, rep, outcome, bundles[case.id], repo, client, vdir)
         with lock:

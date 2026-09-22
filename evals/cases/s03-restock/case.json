@@ -1,0 +1,35 @@
+{
+  "id": "s03-restock",
+  "title": "Restock deliveries",
+  "tags": [
+    "synthetic",
+    "concurrency"
+  ],
+  "repo": {
+    "kind": "demo"
+  },
+  "as_of": "2026-09-01",
+  "notes": "Synthetic change to the demo shop with seeded defects.",
+  "defects": [
+    {
+      "id": "D1",
+      "summary": "Restock updates the stock without the inventory lock, so concurrent restocks or reservations can lose updates.",
+      "location": "shop/inventory.py:32",
+      "trigger": "two workers restocking the same SKU at once, or a restock during a reservation",
+      "caught_if": "a condition restocks the same SKU from several threads (or alongside reserve) and checks the final stock is the sum of all deliveries",
+      "written_by": "claude-opus-5 (draft)",
+      "verified_by": "Iryna Shkvirko (review page, 2026-09-22)",
+      "observed": "restock() never takes self._lock (checked in the source)"
+    },
+    {
+      "id": "D2",
+      "summary": "A negative quantity is accepted and reduces stock; only zero is special-cased.",
+      "location": "shop/inventory.py:30",
+      "trigger": "restock('pen', -5)",
+      "caught_if": "a condition restocks a negative quantity and checks it is rejected with stock unchanged",
+      "written_by": "claude-opus-5 (draft)",
+      "verified_by": "Iryna Shkvirko (review page, 2026-09-22)",
+      "observed": "stock 10, restock('pen', -5) returned 5 instead of rejecting"
+    }
+  ]
+}

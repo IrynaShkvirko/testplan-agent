@@ -12,6 +12,8 @@ costs money**: the runner shows an estimate and asks before the first call.
 ```text
 evals/
   cases/<id>/case.json     a change, its story, its known defects (see cases/README.md)
+  synthetic.py             generates the synthetic cases (seeded defects in the demo shop)
+  review.py                the review page: python -m evals.review
   run.py                   the runner: python -m evals.run
   grading.py               grades that need no judgment
   runs/                    one folder per variant: baseline, v1, v2, ...
@@ -22,6 +24,13 @@ evals/
     <variant>/traces/         full conversations (not committed)
     <variant>/change.md       for v1, v2, ...: what changed and why (first line = summary)
 ```
+
+## Cases
+
+12 synthetic changes to the demo shop with seeded defects, and 4 real commits from public
+projects (humanize twice, jmespath, prettytable) that introduced a bug a later commit fixed:
+28 defect labels in all. Every trigger was run against the code and the result recorded with the label; each label
+still needs a person to verify it (`verified_by`) before coverage numbers are trusted.
 
 ## Running
 

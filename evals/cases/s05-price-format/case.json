@@ -1,0 +1,35 @@
+{
+  "id": "s05-price-format",
+  "title": "Format prices for receipts",
+  "tags": [
+    "synthetic",
+    "money"
+  ],
+  "repo": {
+    "kind": "demo"
+  },
+  "as_of": "2026-09-01",
+  "notes": "Synthetic change to the demo shop with seeded defects.",
+  "defects": [
+    {
+      "id": "D1",
+      "summary": "Cents below 10 lose their leading zero: 105 cents prints as \u20ac1.5.",
+      "location": "shop/money.py:7",
+      "trigger": "an amount like 105 or 1000 cents",
+      "caught_if": "a condition formats an amount whose cents part is below 10 and checks two decimals are shown",
+      "written_by": "claude-opus-5 (draft)",
+      "verified_by": "Iryna Shkvirko (review page, 2026-09-22)",
+      "observed": "format_eur(105) returned '\u20ac1.5'"
+    },
+    {
+      "id": "D2",
+      "summary": "Negative amounts are formatted wrongly: divmod floors, so -150 prints as \u20ac-2.50.",
+      "location": "shop/money.py:6",
+      "trigger": "a refund such as -150 cents",
+      "caught_if": "a condition formats a negative amount and expects -\u20ac1.50",
+      "written_by": "claude-opus-5 (draft)",
+      "verified_by": "Iryna Shkvirko (review page, 2026-09-22)",
+      "observed": "format_eur(-150) returned '\u20ac-2.50'"
+    }
+  ]
+}

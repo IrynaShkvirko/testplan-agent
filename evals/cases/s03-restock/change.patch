@@ -1,0 +1,15 @@
+diff --git a/shop/inventory.py b/shop/inventory.py
+--- a/shop/inventory.py
++++ b/shop/inventory.py
+@@ -25,4 +25,11 @@ class Inventory:
+         with self._lock:
+             self._reserved[sku] = max(0, self._reserved.get(sku, 0) - qty)
+ 
++    def restock(self, sku, qty):
++        """Add delivered stock for a SKU."""
++        if qty == 0:
++            return self._stock.get(sku, 0)
++        self._stock[sku] = self._stock.get(sku, 0) + qty
++        return self._stock[sku]
++
+ # changelog: fix: reservation release could go negative

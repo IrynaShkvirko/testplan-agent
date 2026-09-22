@@ -1,0 +1,35 @@
+{
+  "id": "s01-loyalty-points",
+  "title": "Loyalty points on paid orders",
+  "tags": [
+    "synthetic",
+    "money"
+  ],
+  "repo": {
+    "kind": "demo"
+  },
+  "as_of": "2026-09-01",
+  "notes": "Synthetic change to the demo shop with seeded defects.",
+  "defects": [
+    {
+      "id": "D1",
+      "summary": "Points are earned on the subtotal before the coupon, not on the amount paid.",
+      "location": "shop/loyalty.py:17",
+      "trigger": "an order with a coupon, e.g. 20.00 euros with 50% off",
+      "caught_if": "a condition earns points on an order with a coupon and checks they follow the discounted total (10 points, not 20)",
+      "written_by": "claude-opus-5 (draft)",
+      "verified_by": "Iryna Shkvirko (review page, 2026-09-22)",
+      "observed": "earn([('x', 2000, 1)], coupon_percent=50) returned 20; 10 expected"
+    },
+    {
+      "id": "D2",
+      "summary": "Redeeming zero or negative points is accepted; a negative redemption raises the balance.",
+      "location": "shop/loyalty.py:24",
+      "trigger": "redeem(0) or redeem(-500)",
+      "caught_if": "a condition redeems zero or a negative number of points and checks it is rejected with the balance unchanged",
+      "written_by": "claude-opus-5 (draft)",
+      "verified_by": "Iryna Shkvirko (review page, 2026-09-22)",
+      "observed": "balance 100, redeem(-500): accepted, balance became 600"
+    }
+  ]
+}

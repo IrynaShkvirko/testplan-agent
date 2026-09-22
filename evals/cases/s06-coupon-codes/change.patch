@@ -1,0 +1,26 @@
+diff --git a/shop/coupons.py b/shop/coupons.py
+new file mode 100644
+--- /dev/null
++++ b/shop/coupons.py
+@@ -0,0 +1,21 @@
++"""Named coupon codes."""
++from datetime import date
++
++COUPONS = {
++    "SPRING10": (10, date(2026, 5, 31)),
++    "WELCOME20": (20, date(2026, 12, 31)),
++}
++
++
++class InvalidCoupon(Exception):
++    pass
++
++
++def coupon_percent(code, today):
++    """Percent off for a coupon code that has not expired."""
++    if code not in COUPONS:
++        raise InvalidCoupon(code)
++    percent, last_day = COUPONS[code]
++    if today >= last_day:
++        raise InvalidCoupon(code)
++    return percent

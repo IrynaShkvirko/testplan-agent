@@ -1,0 +1,35 @@
+{
+  "id": "s11-login-lockout",
+  "title": "Lock accounts after failed logins",
+  "tags": [
+    "synthetic",
+    "auth"
+  ],
+  "repo": {
+    "kind": "demo"
+  },
+  "as_of": "2026-09-01",
+  "notes": "Synthetic change to the demo shop with seeded defects.",
+  "defects": [
+    {
+      "id": "D1",
+      "summary": "The account locks only after the 6th failure: the comparison is > instead of >=.",
+      "location": "shop/auth.py:25",
+      "trigger": "exactly 5 failed logins",
+      "caught_if": "a condition fails 5 times and checks the account is locked (and not after 4)",
+      "written_by": "claude-opus-5 (draft)",
+      "verified_by": "Iryna Shkvirko (review page, 2026-09-22)",
+      "observed": "after 5 failures check() did not raise LockedOut"
+    },
+    {
+      "id": "D2",
+      "summary": "A successful login does not reset the failure count.",
+      "location": "shop/auth.py:29",
+      "trigger": "4 failures, a success, then 2 failures",
+      "caught_if": "a condition fails, succeeds, then fails again and checks the count started over (no lock after 2 new failures)",
+      "written_by": "claude-opus-5 (draft)",
+      "verified_by": "Iryna Shkvirko (review page, 2026-09-22)",
+      "observed": "4 failures, a success, 2 failures: account locked"
+    }
+  ]
+}

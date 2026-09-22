@@ -1,0 +1,34 @@
+diff --git a/shop/auth.py b/shop/auth.py
+new file mode 100644
+--- /dev/null
++++ b/shop/auth.py
+@@ -0,0 +1,29 @@
++"""Login lockout after repeated failures."""
++from datetime import timedelta
++
++MAX_FAILURES = 5
++LOCKOUT = timedelta(minutes=15)
++
++
++class LockedOut(Exception):
++    pass
++
++
++class LoginGuard:
++    def __init__(self):
++        self._failures = {}
++        self._locked_until = {}
++
++    def check(self, user, now):
++        until = self._locked_until.get(user)
++        if until and now < until:
++            raise LockedOut(user)
++
++    def record_failure(self, user, now):
++        count = self._failures.get(user, 0) + 1
++        self._failures[user] = count
++        if count > MAX_FAILURES:
++            self._locked_until[user] = now + LOCKOUT
++
++    def record_success(self, user):
++        self._locked_until.pop(user, None)

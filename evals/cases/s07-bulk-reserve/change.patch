@@ -1,0 +1,16 @@
+diff --git a/shop/inventory.py b/shop/inventory.py
+--- a/shop/inventory.py
++++ b/shop/inventory.py
+@@ -25,4 +25,12 @@ class Inventory:
+         with self._lock:
+             self._reserved[sku] = max(0, self._reserved.get(sku, 0) - qty)
+ 
++    def reserve_many(self, lines):
++        """Reserve several SKUs for one order: all of them, or none."""
++        with self._lock:
++            for sku, qty in lines:
++                if self.available(sku) < qty:
++                    raise OutOfStock(sku)
++                self._reserved[sku] = self._reserved.get(sku, 0) + qty
++
+ # changelog: fix: reservation release could go negative

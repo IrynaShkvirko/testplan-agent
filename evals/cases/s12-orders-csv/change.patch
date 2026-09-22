@@ -1,0 +1,19 @@
+diff --git a/shop/export.py b/shop/export.py
+new file mode 100644
+--- /dev/null
++++ b/shop/export.py
+@@ -0,0 +1,14 @@
++"""CSV export of orders."""
++import csv
++import io
++
++
++def orders_csv(orders):
++    """CSV of orders: id, paid in euros, item names."""
++    out = io.StringIO()
++    writer = csv.writer(out)
++    writer.writerow(["id", "paid_eur", "items"])
++    for order_id, order in orders.items():
++        items = ";".join(name for name, _, _ in order["items"])
++        writer.writerow([order_id, order["paid_cents"] / 100, items])
++    return out.getvalue()

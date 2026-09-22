@@ -219,3 +219,108 @@ def test_cases_are_validated(tmp_path):
         load_cases(tmp_path)
     with pytest.raises(CaseError, match="unknown case"):
         load_cases(CASES, ["nope"])
+
+
+# ---- the case set ---------------------------------------------------------------------------
+def test_every_committed_case_loads_with_complete_labels():
+    from evals.cases import CASES_DIR
+
+    cases = load_cases(CASES_DIR)
+    assert len(cases) >= 14
+    for case in cases:
+        assert case.defects, case.id
+        for d in case.defects:
+            assert d.summary and d.trigger and d.caught_if and d.written_by, (case.id, d.id)
+            path, line = d.location.rsplit(":", 1)
+            assert path and int(line) > 0, (case.id, d.id)
+
+
+def test_the_committed_synthetic_cases_are_current(tmp_path):
+    """If this fails, run ``python -m evals.synthetic`` and commit the result."""
+    from evals import synthetic
+
+    ids = synthetic.generate(tmp_path, keep_from=synthetic.CASES_DIR)
+    for case_id in ids:
+        for name in ("case.json", "change.patch", "story.md"):
+            committed = synthetic.CASES_DIR / case_id / name
+            assert committed.read_text() == (tmp_path / case_id / name).read_text(), (case_id, name)
+
+
+def test_a_synthetic_label_points_at_a_changed_line():
+    from evals import synthetic
+    from testplan_agent.diffparse import parse_diff
+
+    for spec in synthetic.SPECS:
+        folder = synthetic.CASES_DIR / spec["id"]
+        changes = {c.path: c for c in parse_diff((folder / "change.patch").read_text())}
+        for d in json.loads((folder / "case.json").read_text())["defects"]:
+            path, line = d["location"].rsplit(":", 1)
+            assert int(line) in changes[path].added_line_numbers(), (spec["id"], d["id"])
+
+
+def test_regenerating_keeps_a_verification_of_an_unchanged_label(tmp_path):
+    from evals import synthetic
+
+    synthetic.generate(tmp_path)
+    path = tmp_path / "s05-price-format" / "case.json"
+    case = json.loads(path.read_text())
+    case["defects"][0]["verified_by"] = "Reviewer"
+    path.write_text(json.dumps(case))
+    synthetic.generate(tmp_path)
+    assert json.loads(path.read_text())["defects"][0]["verified_by"] == "Reviewer"
+
+
+def _git(repo, *args):
+    import subprocess
+
+    env = {"GIT_AUTHOR_NAME": "T", "GIT_AUTHOR_EMAIL": "t@example.com", "GIT_COMMITTER_NAME": "T",
+           "GIT_COMMITTER_EMAIL": "t@example.com", "PATH": __import__("os").environ["PATH"],
+           "GIT_CONFIG_GLOBAL": "/dev/null", "GIT_AUTHOR_DATE": "2026-05-01T10:00:00",
+           "GIT_COMMITTER_DATE": "2026-05-01T10:00:00"}  # fmt: skip
+    subprocess.run(["git", "-C", str(repo), *args], check=True, capture_output=True, env=env)
+
+
+def test_a_git_case_plans_the_commit_against_its_parent(tmp_path, monkeypatch):
+    upstream = tmp_path / "upstream"
+    (upstream / "lib").mkdir(parents=True)
+    (upstream / "lib" / "calc.py").write_text("def half(x):\n    return x / 2\n")
+    _git(upstream, "init", "-q", "-b", "main")
+    _git(upstream, "add", "-A")
+    _git(upstream, "commit", "-qm", "feat: half")
+    (upstream / "lib" / "calc.py").write_text("def half(x):\n    return x // 2\n")
+    _git(upstream, "commit", "-qam", "Use integer halves\n\nKeep results whole numbers.")
+    import subprocess
+
+    sha = subprocess.run(["git", "-C", str(upstream), "rev-parse", "HEAD"], capture_output=True,
+                         text=True).stdout.strip()  # fmt: skip
+    cases = tmp_path / "cases" / "g01-half"
+    cases.mkdir(parents=True)
+    (cases / "case.json").write_text(json.dumps({
+        "id": "g01-half", "title": "Integer halves", "tags": ["real"], "as_of": "2026-05-01",
+        "repo": {"kind": "git", "url": upstream.as_uri(), "commit": sha},
+        "defects": [{"id": "D1", "summary": "odd numbers lose .5", "location": "lib/calc.py:2",
+                     "trigger": "half(3)", "caught_if": "checks half(3)", "written_by": "t"}],
+    }))  # fmt: skip
+    monkeypatch.setattr("evals.cases.CACHE_DIR", tmp_path / "cache")
+    flow = tmp_path / "flow"
+    code = run.main(
+        ["--variant", "baseline", "--cases", str(tmp_path / "cases"), "--flow", str(flow)]
+    )
+    assert code == 0
+    (row,) = rows(flow)
+    assert row["status"] == "ok"
+    trace = json.loads((flow / "baseline" / "traces" / "g01-half_rep0.json").read_text())
+    assert "Use integer halves" in trace[1]["content"] and "x // 2" in trace[1]["content"]
+
+
+def test_the_review_page_shows_every_label_with_its_line(tmp_path):
+    from evals import review
+    from evals.cases import CASES_DIR
+
+    cases = [c for c in load_cases(CASES_DIR) if c.repo["kind"] == "demo"][:3]
+    page = review.build(cases, tmp_path / "review.html").read_text()
+    labels = sum(len(c.defects) for c in cases)
+    assert page.count('class="defect"') == labels
+    # every label shows its status; the summary line also says "not verified yet"
+    assert page.count("verified by ") + page.count("not verified yet") - 1 == labels
+    assert "if subtotal &gt; FREE_SHIPPING_FROM_CENTS:" in page or "subtotal" in page
