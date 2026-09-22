@@ -239,7 +239,7 @@ def test_the_committed_synthetic_cases_are_current(tmp_path):
     """If this fails, run ``python -m evals.synthetic`` and commit the result."""
     from evals import synthetic
 
-    ids = synthetic.generate(tmp_path)
+    ids = synthetic.generate(tmp_path, keep_from=synthetic.CASES_DIR)
     for case_id in ids:
         for name in ("case.json", "change.patch", "story.md"):
             committed = synthetic.CASES_DIR / case_id / name
@@ -321,5 +321,6 @@ def test_the_review_page_shows_every_label_with_its_line(tmp_path):
     page = review.build(cases, tmp_path / "review.html").read_text()
     labels = sum(len(c.defects) for c in cases)
     assert page.count('class="defect"') == labels
-    assert page.count("not verified yet") == labels + 1  # each label, plus the summary
+    # every label shows its status; the summary line also says "not verified yet"
+    assert page.count("verified by ") + page.count("not verified yet") - 1 == labels
     assert "if subtotal &gt; FREE_SHIPPING_FROM_CENTS:" in page or "subtotal" in page

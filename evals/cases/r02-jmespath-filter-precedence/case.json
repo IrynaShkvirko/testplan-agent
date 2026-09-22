@@ -22,7 +22,7 @@
       "trigger": "a filter expression applied after a [*] projection, e.g. reservations[*].instances[?bar==`1`]",
       "caught_if": "a condition evaluates a filter after a [*] projection (not only after [] or at the top level) and checks the matching elements are returned",
       "written_by": "claude-opus-5 (draft)",
-      "verified_by": "",
+      "verified_by": "Iryna Shkvirko (review page, 2026-09-22)",
       "observed": "at 7d46116 the expression returned []; at its parent it returned [[{'foo': 2, 'bar': 1}]]"
     }
   ]

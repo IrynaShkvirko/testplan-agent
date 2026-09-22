@@ -17,7 +17,7 @@ import shutil
 import sys
 import tempfile
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 ROOT = Path(__file__).resolve().parent.parent
 CASES_DIR = Path(__file__).resolve().parent / "cases"
@@ -776,8 +776,13 @@ def _verifications(path: Path) -> Dict[tuple, str]:
     return {_label_key(d): d.get("verified_by", "") for d in old.get("defects", [])}
 
 
-def generate(out: Path = CASES_DIR) -> List[str]:
-    """Write every synthetic case folder under ``out``; returns the case ids."""
+def generate(out: Path = CASES_DIR, keep_from: Optional[Path] = None) -> List[str]:
+    """Write every synthetic case folder under ``out``; returns the case ids.
+
+    Verifications are carried over from ``keep_from`` (default: ``out``) for labels whose
+    content is unchanged.
+    """
+    keep_from = keep_from or out
     ids = []
     with tempfile.TemporaryDirectory() as tmp:
         repo = Path(tmp) / "repo"
@@ -801,7 +806,7 @@ def generate(out: Path = CASES_DIR) -> List[str]:
             demo._git(repo, "clean", "-fdq")
 
             folder = out / spec["id"]
-            kept = _verifications(folder / "case.json")
+            kept = _verifications(keep_from / spec["id"] / "case.json")
             defects = []
             for d in spec["defects"]:
                 path, snippet = d["at"]

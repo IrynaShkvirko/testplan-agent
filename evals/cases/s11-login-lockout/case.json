@@ -18,7 +18,7 @@
       "trigger": "exactly 5 failed logins",
       "caught_if": "a condition fails 5 times and checks the account is locked (and not after 4)",
       "written_by": "claude-opus-5 (draft)",
-      "verified_by": "",
+      "verified_by": "Iryna Shkvirko (review page, 2026-09-22)",
       "observed": "after 5 failures check() did not raise LockedOut"
     },
     {
@@ -28,7 +28,7 @@
       "trigger": "4 failures, a success, then 2 failures",
       "caught_if": "a condition fails, succeeds, then fails again and checks the count started over (no lock after 2 new failures)",
       "written_by": "claude-opus-5 (draft)",
-      "verified_by": "",
+      "verified_by": "Iryna Shkvirko (review page, 2026-09-22)",
       "observed": "4 failures, a success, 2 failures: account locked"
     }
   ]

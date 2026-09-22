@@ -18,7 +18,7 @@
       "trigger": "running the migration against a database with existing orders",
       "caught_if": "a condition applies the migration to a populated orders table and checks it succeeds",
       "written_by": "claude-opus-5 (draft)",
-      "verified_by": "",
+      "verified_by": "Iryna Shkvirko (review page, 2026-09-22)",
       "observed": "SQLite, orders with one row: 'Cannot add a NOT NULL column with default value NULL'"
     },
     {
@@ -28,7 +28,7 @@
       "trigger": "any order that existed before the migration",
       "caught_if": "a condition migrates existing orders and checks their status is placed",
       "written_by": "claude-opus-5 (draft)",
-      "verified_by": "",
+      "verified_by": "Iryna Shkvirko (review page, 2026-09-22)",
       "observed": "the backfill writes 'paid'; the story's statuses are placed, shipped, cancelled"
     }
   ]

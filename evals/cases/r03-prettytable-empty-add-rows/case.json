@@ -22,7 +22,7 @@
       "trigger": "add_rows([]) (with or without divider=True)",
       "caught_if": "a condition calls add_rows with an empty list and checks it adds nothing without raising, as before the change",
       "written_by": "claude-opus-5 (draft)",
-      "verified_by": "",
+      "verified_by": "Iryna Shkvirko (review page, 2026-09-22)",
       "observed": "at 4bc8b4f add_rows([]) raised IndexError: list index out of range; at its parent it added nothing and returned normally"
     }
   ]

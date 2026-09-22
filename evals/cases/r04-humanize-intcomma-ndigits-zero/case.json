@@ -22,7 +22,7 @@
       "trigger": "intcomma with ndigits=0, e.g. intcomma(1234.5, ndigits=0)",
       "caught_if": "a condition passes ndigits=0 (the falsy edge of the new option) and checks the result is rounded to no decimal places",
       "written_by": "claude-opus-5 (draft)",
-      "verified_by": "",
+      "verified_by": "Iryna Shkvirko (review page, 2026-09-22)",
       "observed": "at f14d5c1 intcomma(1234.5, ndigits=0) returned '1,234.5', the same as ndigits=1"
     }
   ]

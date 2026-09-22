@@ -18,7 +18,7 @@
       "trigger": "an order whose second line is out of stock",
       "caught_if": "a condition reserves an order where a later line fails and checks the earlier lines' stock is still available",
       "written_by": "claude-opus-5 (draft)",
-      "verified_by": "",
+      "verified_by": "Iryna Shkvirko (review page, 2026-09-22)",
       "observed": "pen 10, ink 0; reserve_many([pen 3, ink 1]) failed and left pen at 7"
     }
   ]

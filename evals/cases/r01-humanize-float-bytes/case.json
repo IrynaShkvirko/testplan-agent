@@ -22,7 +22,7 @@
       "trigger": "a float value below 1000 (or 1024 with gnu/binary), e.g. naturalsize(1.123456789)",
       "caught_if": "a condition formats a non-integer byte count below the unit threshold and checks the output is a whole number of bytes, as before the change",
       "written_by": "claude-opus-5 (draft)",
-      "verified_by": "",
+      "verified_by": "Iryna Shkvirko (review page, 2026-09-22)",
       "observed": "at fb61d5a naturalsize(1.123456789) returned '1.123456789 Bytes' (gnu: '1.123456789B'); the later fix makes it '1 Bytes'"
     }
   ]

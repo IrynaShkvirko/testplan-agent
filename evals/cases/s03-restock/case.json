@@ -18,7 +18,7 @@
       "trigger": "two workers restocking the same SKU at once, or a restock during a reservation",
       "caught_if": "a condition restocks the same SKU from several threads (or alongside reserve) and checks the final stock is the sum of all deliveries",
       "written_by": "claude-opus-5 (draft)",
-      "verified_by": "",
+      "verified_by": "Iryna Shkvirko (review page, 2026-09-22)",
       "observed": "restock() never takes self._lock (checked in the source)"
     },
     {
@@ -28,7 +28,7 @@
       "trigger": "restock('pen', -5)",
       "caught_if": "a condition restocks a negative quantity and checks it is rejected with stock unchanged",
       "written_by": "claude-opus-5 (draft)",
-      "verified_by": "",
+      "verified_by": "Iryna Shkvirko (review page, 2026-09-22)",
       "observed": "stock 10, restock('pen', -5) returned 5 instead of rejecting"
     }
   ]

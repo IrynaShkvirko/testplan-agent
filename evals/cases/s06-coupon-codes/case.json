@@ -18,7 +18,7 @@
       "trigger": "a lower- or mixed-case code",
       "caught_if": "a condition uses a code in another case and expects it accepted",
       "written_by": "claude-opus-5 (draft)",
-      "verified_by": "",
+      "verified_by": "Iryna Shkvirko (review page, 2026-09-22)",
       "observed": "coupon_percent('spring10', 2026-05-01) raised InvalidCoupon"
     },
     {
@@ -28,7 +28,7 @@
       "trigger": "using SPRING10 on 2026-05-31",
       "caught_if": "a condition uses a coupon on its last day (and the day after) and expects it valid on the last day",
       "written_by": "claude-opus-5 (draft)",
-      "verified_by": "",
+      "verified_by": "Iryna Shkvirko (review page, 2026-09-22)",
       "observed": "coupon_percent('SPRING10', 2026-05-31) raised InvalidCoupon"
     }
   ]

@@ -18,7 +18,7 @@
       "trigger": "a cart totalling exactly 5000 cents",
       "caught_if": "a condition checks shipping at exactly 50.00 euros (and just below) and expects it free at 50.00",
       "written_by": "claude-opus-5 (draft)",
-      "verified_by": "",
+      "verified_by": "Iryna Shkvirko (review page, 2026-09-22)",
       "observed": "shipping_cost for exactly 5000 cents returned 499; 0 expected"
     },
     {
@@ -28,7 +28,7 @@
       "trigger": "a cart of 60 euros with a 25% coupon (45 euros paid)",
       "caught_if": "a condition uses a coupon that takes the total below 50 euros and checks shipping is charged",
       "written_by": "claude-opus-5 (draft)",
-      "verified_by": "",
+      "verified_by": "Iryna Shkvirko (review page, 2026-09-22)",
       "observed": "6000 cents with a 25% coupon: shipping 0; 499 expected"
     }
   ]

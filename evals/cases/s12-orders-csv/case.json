@@ -18,7 +18,7 @@
       "trigger": "an order paid 1250 or 1000 cents",
       "caught_if": "a condition exports an amount ending in zero cents and checks two decimals",
       "written_by": "claude-opus-5 (draft)",
-      "verified_by": "",
+      "verified_by": "Iryna Shkvirko (review page, 2026-09-22)",
       "observed": "an order paid 1250 cents exported as '1,12.5,pen'"
     },
     {
@@ -28,7 +28,7 @@
       "trigger": "an item named 'pens; blue'",
       "caught_if": "a condition exports an item name containing a semicolon and checks it is read back as one item",
       "written_by": "claude-opus-5 (draft)",
-      "verified_by": "",
+      "verified_by": "Iryna Shkvirko (review page, 2026-09-22)",
       "observed": "item 'pens; blue' exported as 'pens; blue', indistinguishable from two items"
     }
   ]

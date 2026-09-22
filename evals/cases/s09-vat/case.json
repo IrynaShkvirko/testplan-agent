@@ -18,7 +18,7 @@
       "trigger": "three lines of 1.02 euros at 20%: each line's 20.4 cents rounds to 20, so 60 in all, while 61.2 cents on the total rounds to 61",
       "caught_if": "a condition uses several small lines whose per-line VAT rounds differently from the total, and checks VAT is rounded once",
       "written_by": "claude-opus-5 (draft)",
-      "verified_by": "",
+      "verified_by": "Iryna Shkvirko (review page, 2026-09-22)",
       "observed": "three lines of 102 cents at 20%: order_vat returned 60; 61 expected"
     },
     {
@@ -28,7 +28,7 @@
       "trigger": "an item given as (name, price, qty) or with category None",
       "caught_if": "a condition includes an item without a category and expects 20% VAT on it",
       "written_by": "claude-opus-5 (draft)",
-      "verified_by": "",
+      "verified_by": "Iryna Shkvirko (review page, 2026-09-22)",
       "observed": "an item (name, price, qty) raised ValueError (not enough values to unpack)"
     }
   ]

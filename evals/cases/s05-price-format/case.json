@@ -18,7 +18,7 @@
       "trigger": "an amount like 105 or 1000 cents",
       "caught_if": "a condition formats an amount whose cents part is below 10 and checks two decimals are shown",
       "written_by": "claude-opus-5 (draft)",
-      "verified_by": "",
+      "verified_by": "Iryna Shkvirko (review page, 2026-09-22)",
       "observed": "format_eur(105) returned '\u20ac1.5'"
     },
     {
@@ -28,7 +28,7 @@
       "trigger": "a refund such as -150 cents",
       "caught_if": "a condition formats a negative amount and expects -\u20ac1.50",
       "written_by": "claude-opus-5 (draft)",
-      "verified_by": "",
+      "verified_by": "Iryna Shkvirko (review page, 2026-09-22)",
       "observed": "format_eur(-150) returned '\u20ac-2.50'"
     }
   ]
