@@ -1,0 +1,171 @@
+{
+  "assumptions": [
+    "Tests are written with pytest.",
+    "The repository checkout matches the diff, either before or after the change."
+  ],
+  "cases": [
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F3",
+        "F2",
+        "shop/inventory.py:28"
+      ],
+      "existing_coverage": "none",
+      "expected": "Restocking adds the delivered quantity to the SKU's stock and returns the new stock.",
+      "id": "TC-1",
+      "level": "unit",
+      "priority": "P0",
+      "requirement": "AC-1",
+      "requirement_reason": "",
+      "risk": "R1",
+      "steps": [
+        "Arrange the state that AC-1 describes",
+        "Exercise Inventory.restock (shop/inventory.py)",
+        "Compare the outcome with the expected result"
+      ],
+      "technique": "equivalence",
+      "title": "AC-1: Restocking adds the delivered quantity to the SKU's stock and returns the new stock."
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F4",
+        "F2",
+        "shop/inventory.py:28"
+      ],
+      "existing_coverage": "none",
+      "expected": "A SKU that has never been stocked can be restocked.",
+      "id": "TC-2",
+      "level": "unit",
+      "priority": "P0",
+      "requirement": "AC-2",
+      "requirement_reason": "",
+      "risk": "R1",
+      "steps": [
+        "Arrange the state that AC-2 describes",
+        "Exercise Inventory.restock (shop/inventory.py)",
+        "Compare the outcome with the expected result"
+      ],
+      "technique": "equivalence",
+      "title": "AC-2: A SKU that has never been stocked can be restocked."
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F4",
+        "F2",
+        "shop/inventory.py:28"
+      ],
+      "existing_coverage": "none",
+      "expected": "The input is rejected or handled as the criterion states, with no side effects",
+      "id": "TC-3",
+      "level": "unit",
+      "priority": "P0",
+      "requirement": "AC-2",
+      "requirement_reason": "",
+      "risk": "R1",
+      "steps": [
+        "Provide input that AC-2 rules out",
+        "Exercise Inventory.restock (shop/inventory.py)"
+      ],
+      "technique": "negative",
+      "title": "AC-2: the excluded case is refused"
+    }
+  ],
+  "environment_needs": [
+    "Existing fixtures that may be reused: inventory."
+  ],
+  "exit_criteria": [
+    "All P0 and P1 cases have been run and pass.",
+    "Every open question has an answer, or an accepted risk written next to it.",
+    "No failing test is quarantined to make this change pass."
+  ],
+  "meta": {
+    "bundle_sha256": "b207638d06131a4bb9a844f8ade4227087482eb6417ab5476e8ad60330ef8c32",
+    "created": "2026-09-01",
+    "generator": "heuristic-baseline",
+    "model": "none (rule-based)",
+    "run": {
+      "attempts": [
+        {
+          "attempt": 1,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.0,
+          "input_tokens": 0,
+          "latency_ms": null,
+          "model": "none (rule-based)",
+          "output_tokens": 0,
+          "request_id": "",
+          "stop_reason": ""
+        }
+      ],
+      "total": {
+        "cache_read_tokens": 0,
+        "cache_write_tokens": 0,
+        "cost_usd": 0.0,
+        "input_tokens": 0,
+        "latency_ms": null,
+        "output_tokens": 0
+      }
+    }
+  },
+  "open_questions": [],
+  "regression_scope": [
+    {
+      "evidence": [
+        "F5"
+      ],
+      "reason": "imports shop.inventory",
+      "test": "tests/test_inventory.py::test_release_never_goes_negative"
+    },
+    {
+      "evidence": [
+        "F6"
+      ],
+      "reason": "imports shop.inventory",
+      "test": "tests/test_inventory.py::test_reserve_more_than_available_fails"
+    },
+    {
+      "evidence": [
+        "F7"
+      ],
+      "reason": "imports shop.inventory",
+      "test": "tests/test_inventory.py::test_reserve_reduces_available_stock"
+    }
+  ],
+  "risks": [
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F8"
+      ],
+      "id": "R1",
+      "impact": 3,
+      "likelihood": 5,
+      "title": "Changed behaviour with no direct test (1 definition(s))"
+    }
+  ],
+  "schema_version": 1,
+  "summary": {
+    "change_class": "feature",
+    "in_scope": [
+      "AC-1: Restocking adds the delivered quantity to the SKU's stock and returns the new stock.",
+      "AC-2: A SKU that has never been stocked can be restocked."
+    ],
+    "out_of_scope": [],
+    "text": "Restock deliveries. 1 file(s) changed, classified as feature. 2 acceptance criteria found. Highest risk: Changed behaviour with no direct test (1 definition(s)) (score 15, high)."
+  },
+  "validation": []
+}

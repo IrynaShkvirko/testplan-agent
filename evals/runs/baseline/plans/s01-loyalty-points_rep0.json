@@ -1,0 +1,215 @@
+{
+  "assumptions": [
+    "Tests are written with pytest.",
+    "The repository checkout matches the diff, either before or after the change."
+  ],
+  "cases": [
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F8",
+        "F2",
+        "F5",
+        "shop/loyalty.py:7"
+      ],
+      "existing_coverage": "none",
+      "expected": "A customer earns one point per whole euro they pay for an order.",
+      "id": "TC-1",
+      "level": "unit",
+      "priority": "P0",
+      "requirement": "AC-1",
+      "requirement_reason": "",
+      "risk": "R1",
+      "steps": [
+        "Arrange the state that AC-1 describes",
+        "Exercise NotEnoughPoints (shop/loyalty.py)",
+        "Compare the outcome with the expected result"
+      ],
+      "technique": "equivalence",
+      "title": "AC-1: A customer earns one point per whole euro they pay for an order."
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F9",
+        "F2",
+        "shop/loyalty.py:7"
+      ],
+      "existing_coverage": "none",
+      "expected": "100 points are worth 1 euro off.",
+      "id": "TC-2",
+      "level": "unit",
+      "priority": "P0",
+      "requirement": "AC-2",
+      "requirement_reason": "",
+      "risk": "R1",
+      "steps": [
+        "Arrange the state that AC-2 describes",
+        "Exercise NotEnoughPoints (shop/loyalty.py)",
+        "Compare the outcome with the expected result"
+      ],
+      "technique": "equivalence",
+      "title": "AC-2: 100 points are worth 1 euro off."
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F10",
+        "F2",
+        "shop/loyalty.py:7"
+      ],
+      "existing_coverage": "none",
+      "expected": "Customers can only spend points they have.",
+      "id": "TC-3",
+      "level": "unit",
+      "priority": "P0",
+      "requirement": "AC-3",
+      "requirement_reason": "",
+      "risk": "R1",
+      "steps": [
+        "Arrange the state that AC-3 describes",
+        "Exercise NotEnoughPoints (shop/loyalty.py)",
+        "Compare the outcome with the expected result"
+      ],
+      "technique": "equivalence",
+      "title": "AC-3: Customers can only spend points they have."
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F13",
+        "F6",
+        "shop/loyalty.py:22"
+      ],
+      "existing_coverage": "none",
+      "expected": "Results match what the author intended; surprises become questions",
+      "id": "TC-4",
+      "level": "unit",
+      "priority": "P0",
+      "requirement": "none",
+      "requirement_reason": "no criterion mentions this change and no existing test calls it",
+      "risk": "R2",
+      "steps": [
+        "Call LoyaltyAccount.redeem with typical, empty and extreme inputs",
+        "Record what it returns"
+      ],
+      "technique": "regression",
+      "title": "Characterise the current behaviour of LoyaltyAccount.redeem"
+    }
+  ],
+  "environment_needs": [
+    "Existing fixtures that may be reused: inventory."
+  ],
+  "exit_criteria": [
+    "All P0 and P1 cases have been run and pass.",
+    "Every open question has an answer, or an accepted risk written next to it.",
+    "No failing test is quarantined to make this change pass."
+  ],
+  "meta": {
+    "bundle_sha256": "ce22105c2106f461913bd1dff64a598be05b0078efaae7c13c901e9b9bed3332",
+    "created": "2026-09-01",
+    "generator": "heuristic-baseline",
+    "model": "none (rule-based)",
+    "run": {
+      "attempts": [
+        {
+          "attempt": 1,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.0,
+          "input_tokens": 0,
+          "latency_ms": null,
+          "model": "none (rule-based)",
+          "output_tokens": 0,
+          "request_id": "",
+          "stop_reason": ""
+        }
+      ],
+      "total": {
+        "cache_read_tokens": 0,
+        "cache_write_tokens": 0,
+        "cost_usd": 0.0,
+        "input_tokens": 0,
+        "latency_ms": null,
+        "output_tokens": 0
+      }
+    }
+  },
+  "open_questions": [
+    {
+      "evidence": [
+        "F15"
+      ],
+      "id": "Q1",
+      "kind": "unmapped",
+      "text": "LoyaltyAccount.redeem (shop/loyalty.py) changed but no criterion mentions it; confirm it is in scope."
+    }
+  ],
+  "regression_scope": [],
+  "risks": [
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F7"
+      ],
+      "id": "R1",
+      "impact": 5,
+      "likelihood": 4,
+      "title": "Money and pricing: wrong behaviour in shop/loyalty.py"
+    },
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F11",
+        "F12",
+        "F13"
+      ],
+      "id": "R2",
+      "impact": 3,
+      "likelihood": 5,
+      "title": "Changed behaviour with no direct test (3 definition(s))"
+    },
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F15"
+      ],
+      "id": "R3",
+      "impact": 3,
+      "likelihood": 3,
+      "title": "Requirements misread: vague or unmatched wording"
+    }
+  ],
+  "schema_version": 1,
+  "summary": {
+    "change_class": "feature",
+    "in_scope": [
+      "AC-1: A customer earns one point per whole euro they pay for an order.",
+      "AC-2: 100 points are worth 1 euro off.",
+      "AC-3: Customers can only spend points they have."
+    ],
+    "out_of_scope": [],
+    "text": "Loyalty points. 1 file(s) changed, classified as feature. 3 acceptance criteria found. Highest risk: Money and pricing: wrong behaviour in shop/loyalty.py (score 20, high)."
+  },
+  "validation": []
+}

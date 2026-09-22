@@ -32,6 +32,25 @@ projects (humanize twice, jmespath, prettytable) that introduced a bug a later c
 28 defect labels in all. Every trigger was run against the code and the result recorded with the label; each label
 still needs a person to verify it (`verified_by`) before coverage numbers are trusted.
 
+## Baseline
+
+The rule-based baseline (`evals/runs/baseline/`) is the reference every variant is compared
+with. Coverage per defect (strict = caught; lenient = partial counts half):
+
+| | Defects | Strict | Lenient |
+|---|---|---|---|
+| synthetic | 24 | 46% (11 caught) | 69% |
+| real | 4 | 0% | 12% |
+| all | 28 | 39% | 61% |
+
+It passes every check on the first try (it cites facts by construction) but writes generic
+conditions: it catches defects whose criterion can only be tested with the triggering input,
+and misses almost everything the story does not spell out. On the real commits, which have no
+acceptance criteria, it catches nothing; for r02 it writes no conditions at all.
+
+These grades were made by claude-opus-5 at the maintainer's request (the plans come from the
+rule-based planner, not a model), and are recorded as such in `coverage.json`.
+
 ## Running
 
 ```bash

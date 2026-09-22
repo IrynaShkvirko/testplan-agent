@@ -1,0 +1,215 @@
+{
+  "assumptions": [
+    "Tests are written with pytest.",
+    "The repository checkout matches the diff, either before or after the change."
+  ],
+  "cases": [
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F3",
+        "F2",
+        "shop/api.py:21"
+      ],
+      "existing_coverage": "none",
+      "expected": "GET /orders returns orders in id order, 20 per page by default.",
+      "id": "TC-1",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "AC-1",
+      "requirement_reason": "",
+      "risk": "R1",
+      "steps": [
+        "Arrange the state that AC-1 describes",
+        "Exercise list_orders (shop/api.py)",
+        "Compare the outcome with the expected result"
+      ],
+      "technique": "equivalence",
+      "title": "AC-1: GET /orders returns orders in id order, 20 per page by default."
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F4"
+      ],
+      "existing_coverage": "none",
+      "expected": "The page size can be chosen, up to 50.",
+      "id": "TC-2",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "AC-2",
+      "requirement_reason": "",
+      "risk": "R1",
+      "steps": [
+        "Arrange the state that AC-2 describes",
+        "Exercise the changed behaviour",
+        "Compare the outcome with the expected result"
+      ],
+      "technique": "equivalence",
+      "title": "AC-2: The page size can be chosen, up to 50."
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F4"
+      ],
+      "existing_coverage": "none",
+      "expected": "The behaviour changes exactly where AC-2 says it does",
+      "id": "TC-3",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "AC-2",
+      "requirement_reason": "",
+      "risk": "R1",
+      "steps": [
+        "Run with a value just below 50",
+        "Run with a value exactly at 50",
+        "Run with a value just above 50"
+      ],
+      "technique": "boundary",
+      "title": "AC-2: boundary at 50"
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F5"
+      ],
+      "existing_coverage": "none",
+      "expected": "Pages are numbered from 1.",
+      "id": "TC-4",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "AC-3",
+      "requirement_reason": "",
+      "risk": "R1",
+      "steps": [
+        "Arrange the state that AC-3 describes",
+        "Exercise the changed behaviour",
+        "Compare the outcome with the expected result"
+      ],
+      "technique": "equivalence",
+      "title": "AC-3: Pages are numbered from 1."
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F2",
+        "shop/api.py:21"
+      ],
+      "existing_coverage": "none",
+      "expected": "A clear client error is returned and no state changes",
+      "id": "TC-5",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "none",
+      "requirement_reason": "input validation for a new or changed endpoint is not in the criteria",
+      "risk": "R1",
+      "steps": [
+        "Send a request with a missing field, a wrong type and an empty body"
+      ],
+      "technique": "negative",
+      "title": "GET /orders: malformed or incomplete request"
+    }
+  ],
+  "environment_needs": [
+    "Existing fixtures that may be reused: inventory.",
+    "A test client or running app, with users of each relevant role."
+  ],
+  "exit_criteria": [
+    "All P0 and P1 cases have been run and pass.",
+    "Every open question has an answer, or an accepted risk written next to it.",
+    "No failing test is quarantined to make this change pass."
+  ],
+  "meta": {
+    "bundle_sha256": "276b83f585d8fd623b9d01b5925aa5f926a18d95e2395b8e495efa77aa42b4f9",
+    "created": "2026-09-01",
+    "generator": "heuristic-baseline",
+    "model": "none (rule-based)",
+    "run": {
+      "attempts": [
+        {
+          "attempt": 1,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.0,
+          "input_tokens": 0,
+          "latency_ms": null,
+          "model": "none (rule-based)",
+          "output_tokens": 0,
+          "request_id": "",
+          "stop_reason": ""
+        }
+      ],
+      "total": {
+        "cache_read_tokens": 0,
+        "cache_write_tokens": 0,
+        "cost_usd": 0.0,
+        "input_tokens": 0,
+        "latency_ms": null,
+        "output_tokens": 0
+      }
+    }
+  },
+  "open_questions": [],
+  "regression_scope": [
+    {
+      "evidence": [
+        "F6"
+      ],
+      "reason": "imports shop.api",
+      "test": "tests/test_api.py::test_create_order_returns_total"
+    }
+  ],
+  "risks": [
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F2"
+      ],
+      "id": "R1",
+      "impact": 4,
+      "likelihood": 4,
+      "title": "Contract break for callers or API clients"
+    },
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F7"
+      ],
+      "id": "R2",
+      "impact": 3,
+      "likelihood": 5,
+      "title": "Changed behaviour with no direct test (1 definition(s))"
+    }
+  ],
+  "schema_version": 1,
+  "summary": {
+    "change_class": "feature",
+    "in_scope": [
+      "AC-1: GET /orders returns orders in id order, 20 per page by default.",
+      "AC-2: The page size can be chosen, up to 50.",
+      "AC-3: Pages are numbered from 1."
+    ],
+    "out_of_scope": [],
+    "text": "Order listing. 1 file(s) changed, classified as feature. 3 acceptance criteria found. Highest risk: Contract break for callers or API clients (score 16, high)."
+  },
+  "validation": []
+}

@@ -1,0 +1,280 @@
+{
+  "assumptions": [
+    "Tests are written with pytest.",
+    "The repository checkout matches the diff, either before or after the change."
+  ],
+  "cases": [
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F6",
+        "F3",
+        "shop/api.py:8"
+      ],
+      "existing_coverage": "none",
+      "expected": "Every order has a status: placed, shipped or cancelled.",
+      "id": "TC-1",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "AC-1",
+      "requirement_reason": "",
+      "risk": "R2",
+      "steps": [
+        "Arrange the state that AC-1 describes",
+        "Exercise create_order (shop/api.py)",
+        "Compare the outcome with the expected result"
+      ],
+      "technique": "equivalence",
+      "title": "AC-1: Every order has a status: placed, shipped or cancelled."
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F7",
+        "F3",
+        "shop/api.py:8"
+      ],
+      "existing_coverage": "none",
+      "expected": "New orders start as placed.",
+      "id": "TC-2",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "AC-2",
+      "requirement_reason": "",
+      "risk": "R2",
+      "steps": [
+        "Arrange the state that AC-2 describes",
+        "Exercise create_order (shop/api.py)",
+        "Compare the outcome with the expected result"
+      ],
+      "technique": "equivalence",
+      "title": "AC-2: New orders start as placed."
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F8",
+        "F3",
+        "shop/api.py:8"
+      ],
+      "existing_coverage": "none",
+      "expected": "Orders placed before this change count as placed.",
+      "id": "TC-3",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "AC-3",
+      "requirement_reason": "",
+      "risk": "R2",
+      "steps": [
+        "Arrange the state that AC-3 describes",
+        "Exercise create_order (shop/api.py)",
+        "Compare the outcome with the expected result"
+      ],
+      "technique": "equivalence",
+      "title": "AC-3: Orders placed before this change count as placed."
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F1"
+      ],
+      "existing_coverage": "none",
+      "expected": "No rows are lost or altered; the schema matches before and after a rollback",
+      "id": "TC-4",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "none",
+      "requirement_reason": "migrations are not described by the acceptance criteria",
+      "risk": "R1",
+      "steps": [
+        "Apply the migration to an empty database",
+        "Apply it to a copy of representative data and compare row counts",
+        "Roll it back and check the schema and data are unchanged"
+      ],
+      "technique": "migration",
+      "title": "Migration migrations/0004_add_order_status.sql applies to empty and populated data and can be rolled back"
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F3",
+        "shop/api.py:8"
+      ],
+      "existing_coverage": "none",
+      "expected": "Both calls are refused and nothing changes",
+      "id": "TC-5",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "none",
+      "requirement_reason": "authorisation for a write endpoint is not in the criteria",
+      "risk": "R2",
+      "steps": [
+        "Call without credentials",
+        "Call as a user without the required role"
+      ],
+      "technique": "permission",
+      "title": "POST /orders: caller who is not allowed to do this"
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F3",
+        "shop/api.py:8"
+      ],
+      "existing_coverage": "none",
+      "expected": "The second call is rejected or returns the first result; nothing is done twice",
+      "id": "TC-6",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "none",
+      "requirement_reason": "retries and double submits are not in the criteria",
+      "risk": "R2",
+      "steps": [
+        "Send the request",
+        "Send an identical request again"
+      ],
+      "technique": "idempotency",
+      "title": "POST /orders: the same request sent twice"
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F3",
+        "shop/api.py:8"
+      ],
+      "existing_coverage": "none",
+      "expected": "A clear client error is returned and no state changes",
+      "id": "TC-7",
+      "level": "integration",
+      "priority": "P1",
+      "requirement": "none",
+      "requirement_reason": "input validation for a new or changed endpoint is not in the criteria",
+      "risk": "R3",
+      "steps": [
+        "Send a request with a missing field, a wrong type and an empty body"
+      ],
+      "technique": "negative",
+      "title": "POST /orders: malformed or incomplete request"
+    }
+  ],
+  "environment_needs": [
+    "Existing fixtures that may be reused: inventory.",
+    "A database with representative data, and a copy to roll back on.",
+    "A test client or running app, with users of each relevant role."
+  ],
+  "exit_criteria": [
+    "All P0 and P1 cases have been run and pass.",
+    "Every open question has an answer, or an accepted risk written next to it.",
+    "No failing test is quarantined to make this change pass."
+  ],
+  "meta": {
+    "bundle_sha256": "58cbe6ab3cea5481551553eac8f2f1fc53a7c314b963c86725e3860e18e97bfd",
+    "created": "2026-09-01",
+    "generator": "heuristic-baseline",
+    "model": "none (rule-based)",
+    "run": {
+      "attempts": [
+        {
+          "attempt": 1,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.0,
+          "input_tokens": 0,
+          "latency_ms": null,
+          "model": "none (rule-based)",
+          "output_tokens": 0,
+          "request_id": "",
+          "stop_reason": ""
+        }
+      ],
+      "total": {
+        "cache_read_tokens": 0,
+        "cache_write_tokens": 0,
+        "cost_usd": 0.0,
+        "input_tokens": 0,
+        "latency_ms": null,
+        "output_tokens": 0
+      }
+    }
+  },
+  "open_questions": [],
+  "regression_scope": [
+    {
+      "evidence": [
+        "F9"
+      ],
+      "reason": "calls create_order from shop/api.py",
+      "test": "tests/test_api.py::test_create_order_returns_total"
+    }
+  ],
+  "risks": [
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F4"
+      ],
+      "id": "R1",
+      "impact": 5,
+      "likelihood": 3,
+      "title": "Data loss or migration: wrong behaviour in migrations/0004_add_order_status.sql"
+    },
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F5"
+      ],
+      "id": "R2",
+      "impact": 5,
+      "likelihood": 3,
+      "title": "Money and pricing: wrong behaviour in shop/api.py"
+    },
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F3"
+      ],
+      "id": "R3",
+      "impact": 4,
+      "likelihood": 3,
+      "title": "Contract break for callers or API clients"
+    }
+  ],
+  "schema_version": 1,
+  "summary": {
+    "change_class": "feature",
+    "in_scope": [
+      "AC-1: Every order has a status: placed, shipped or cancelled.",
+      "AC-2: New orders start as placed.",
+      "AC-3: Orders placed before this change count as placed."
+    ],
+    "out_of_scope": [],
+    "text": "Order status. 2 file(s) changed, classified as feature. 3 acceptance criteria found. Highest risk: Data loss or migration: wrong behaviour in migrations/0004_add_order_status.sql (score 15, high)."
+  },
+  "validation": []
+}

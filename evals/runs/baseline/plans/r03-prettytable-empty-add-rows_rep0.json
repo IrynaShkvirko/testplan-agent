@@ -1,0 +1,241 @@
+{
+  "assumptions": [
+    "Tests are written with pytest.",
+    "The repository checkout matches the diff, either before or after the change."
+  ],
+  "cases": [
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F4",
+        "src/prettytable/prettytable.py:1641",
+        "F45",
+        "F46",
+        "F47"
+      ],
+      "existing_coverage": "none",
+      "expected": "Every caller works, or is updated in this change",
+      "id": "TC-1",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "none",
+      "requirement_reason": "signature changed (self, rows: Iterable[RowType]) -> (self, rows: Iterable[RowType], *, divider: bool=False); criteria do not cover callers",
+      "risk": "R1",
+      "steps": [
+        "Find callers of PrettyTable.add_rows (dependents are listed in the evidence)",
+        "Run them against the new signature, including default and keyword arguments"
+      ],
+      "technique": "compatibility",
+      "title": "Existing callers of PrettyTable.add_rows still work after its signature changed"
+    }
+  ],
+  "environment_needs": [
+    "Existing fixtures that may be reused: city_data, city_data_from_csv, city_data_from_mediawiki, col_prettytable, empty_helper_table, field_name_less_table, helper_table, mix_prettytable.",
+    "Cases marked 'now' should run in the existing CI: .github/workflows/labels.yml, .github/workflows/lint.yml."
+  ],
+  "exit_criteria": [
+    "All P0 and P1 cases have been run and pass.",
+    "Every open question has an answer, or an accepted risk written next to it.",
+    "No failing test is quarantined to make this change pass."
+  ],
+  "meta": {
+    "bundle_sha256": "19cd02951f3465b1a98565d8d5d197a0398b150659ea5d4ee5c13ad039aa1b1f",
+    "created": "2025-02-19",
+    "generator": "heuristic-baseline",
+    "model": "none (rule-based)",
+    "run": {
+      "attempts": [
+        {
+          "attempt": 1,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.0,
+          "input_tokens": 0,
+          "latency_ms": null,
+          "model": "none (rule-based)",
+          "output_tokens": 0,
+          "request_id": "",
+          "stop_reason": ""
+        }
+      ],
+      "total": {
+        "cache_read_tokens": 0,
+        "cache_write_tokens": 0,
+        "cost_usd": 0.0,
+        "input_tokens": 0,
+        "latency_ms": null,
+        "output_tokens": 0
+      }
+    }
+  },
+  "open_questions": [
+    {
+      "evidence": [
+        "F50"
+      ],
+      "id": "Q1",
+      "kind": "missing_info",
+      "text": "No acceptance criteria were found in the story. Add them, or this plan can only describe the change and not check it against a requirement."
+    }
+  ],
+  "regression_scope": [
+    {
+      "evidence": [
+        "F5"
+      ],
+      "reason": "calls add_rows from src/prettytable/prettytable.py",
+      "test": "tests/test_prettytable.py::TestBasic::test_add_rows"
+    },
+    {
+      "evidence": [
+        "F6"
+      ],
+      "reason": "calls add_rows from src/prettytable/prettytable.py",
+      "test": "tests/test_prettytable.py::TestWidth::test_table_float_formatting_on_init_wo_columns"
+    },
+    {
+      "evidence": [
+        "F7"
+      ],
+      "reason": "file is named for prettytable.prettytable",
+      "test": "tests/test_prettytable.py::TestAlignment::test_aligned_ascii"
+    },
+    {
+      "evidence": [
+        "F8"
+      ],
+      "reason": "file is named for prettytable.prettytable",
+      "test": "tests/test_prettytable.py::TestAlignment::test_aligned_html"
+    },
+    {
+      "evidence": [
+        "F9"
+      ],
+      "reason": "file is named for prettytable.prettytable",
+      "test": "tests/test_prettytable.py::TestAlignment::test_aligned_latex"
+    },
+    {
+      "evidence": [
+        "F10"
+      ],
+      "reason": "file is named for prettytable.prettytable",
+      "test": "tests/test_prettytable.py::TestAlignment::test_aligned_mediawiki"
+    },
+    {
+      "evidence": [
+        "F11"
+      ],
+      "reason": "file is named for prettytable.prettytable",
+      "test": "tests/test_prettytable.py::TestBasic::test_all_lengths_equal"
+    },
+    {
+      "evidence": [
+        "F12"
+      ],
+      "reason": "file is named for prettytable.prettytable",
+      "test": "tests/test_prettytable.py::TestBasic::test_all_lengths_equal_from_csv"
+    },
+    {
+      "evidence": [
+        "F13"
+      ],
+      "reason": "file is named for prettytable.prettytable",
+      "test": "tests/test_prettytable.py::TestBasic::test_all_lengths_equal_from_db"
+    },
+    {
+      "evidence": [
+        "F14"
+      ],
+      "reason": "file is named for prettytable.prettytable",
+      "test": "tests/test_prettytable.py::TestBasic::test_all_lengths_equal_from_mediawiki"
+    },
+    {
+      "evidence": [
+        "F15"
+      ],
+      "reason": "file is named for prettytable.prettytable",
+      "test": "tests/test_prettytable.py::TestBasic::test_all_lengths_equal_with_float_format"
+    },
+    {
+      "evidence": [
+        "F16"
+      ],
+      "reason": "file is named for prettytable.prettytable",
+      "test": "tests/test_prettytable.py::TestBasic::test_all_lengths_equal_with_hrules_all"
+    },
+    {
+      "evidence": [
+        "F17"
+      ],
+      "reason": "file is named for prettytable.prettytable",
+      "test": "tests/test_prettytable.py::TestBasic::test_all_lengths_equal_with_hrules_none"
+    },
+    {
+      "evidence": [
+        "F18"
+      ],
+      "reason": "file is named for prettytable.prettytable",
+      "test": "tests/test_prettytable.py::TestBasic::test_all_lengths_equal_with_int_format"
+    },
+    {
+      "evidence": [
+        "F19"
+      ],
+      "reason": "file is named for prettytable.prettytable",
+      "test": "tests/test_prettytable.py::TestBasic::test_all_lengths_equal_with_long_title"
+    }
+  ],
+  "risks": [
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F4"
+      ],
+      "id": "R1",
+      "impact": 4,
+      "likelihood": 5,
+      "title": "Contract break for callers or API clients"
+    },
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F45",
+        "F46",
+        "F47"
+      ],
+      "id": "R2",
+      "impact": 3,
+      "likelihood": 5,
+      "title": "Regression in 3 dependent module(s)"
+    }
+  ],
+  "schema_version": 1,
+  "summary": {
+    "change_class": "change",
+    "in_scope": [
+      "Changed file README.md",
+      "Changed file src/prettytable/prettytable.py",
+      "Changed file tests/test_sections.py"
+    ],
+    "out_of_scope": [],
+    "text": "Create divider with add_rows() (#369). 3 file(s) changed, classified as change. 0 acceptance criteria found. Highest risk: Contract break for callers or API clients (score 20, high)."
+  },
+  "validation": [
+    {
+      "code": "risk_without_cases",
+      "message": "high risk R2 has no test condition linked to it",
+      "severity": "warning",
+      "where": "risk R2"
+    }
+  ]
+}

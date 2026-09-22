@@ -1,0 +1,191 @@
+{
+  "assumptions": [
+    "Tests are written with pytest.",
+    "The repository checkout matches the diff, either before or after the change."
+  ],
+  "cases": [
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F4"
+      ],
+      "existing_coverage": "none",
+      "expected": "Amounts are shown in euros with exactly two decimals, e.g. 1234 cents is \"\u20ac12.34\".",
+      "id": "TC-1",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "AC-1",
+      "requirement_reason": "",
+      "risk": "R1",
+      "steps": [
+        "Arrange the state that AC-1 describes",
+        "Exercise the changed behaviour",
+        "Compare the outcome with the expected result"
+      ],
+      "technique": "equivalence",
+      "title": "AC-1: Amounts are shown in euros with exactly two decimals, e.g. 1234 cents is \"\u20ac12.34\"."
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F5"
+      ],
+      "existing_coverage": "none",
+      "expected": "Refunds are negative amounts and are shown with a leading minus, e.g. \"-\u20ac1.50\".",
+      "id": "TC-2",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "AC-2",
+      "requirement_reason": "",
+      "risk": "R1",
+      "steps": [
+        "Arrange the state that AC-2 describes",
+        "Exercise the changed behaviour",
+        "Compare the outcome with the expected result"
+      ],
+      "technique": "equivalence",
+      "title": "AC-2: Refunds are negative amounts and are shown with a leading minus, e.g. \"-\u20ac1.50\"."
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F6",
+        "F2",
+        "shop/money.py:4"
+      ],
+      "existing_coverage": "none",
+      "expected": "Results match what the author intended; surprises become questions",
+      "id": "TC-3",
+      "level": "unit",
+      "priority": "P1",
+      "requirement": "none",
+      "requirement_reason": "no criterion mentions this change and no existing test calls it",
+      "risk": "R2",
+      "steps": [
+        "Call format_eur with typical, empty and extreme inputs",
+        "Record what it returns"
+      ],
+      "technique": "regression",
+      "title": "Characterise the current behaviour of format_eur"
+    }
+  ],
+  "environment_needs": [
+    "Existing fixtures that may be reused: inventory."
+  ],
+  "exit_criteria": [
+    "All P0 and P1 cases have been run and pass.",
+    "Every open question has an answer, or an accepted risk written next to it.",
+    "No failing test is quarantined to make this change pass."
+  ],
+  "meta": {
+    "bundle_sha256": "9bbef54ac4140e3a8b097dbca79212c542c8089879fa04bfee5fd84847794ea6",
+    "created": "2026-09-01",
+    "generator": "heuristic-baseline",
+    "model": "none (rule-based)",
+    "run": {
+      "attempts": [
+        {
+          "attempt": 1,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.0,
+          "input_tokens": 0,
+          "latency_ms": null,
+          "model": "none (rule-based)",
+          "output_tokens": 0,
+          "request_id": "",
+          "stop_reason": ""
+        }
+      ],
+      "total": {
+        "cache_read_tokens": 0,
+        "cache_write_tokens": 0,
+        "cost_usd": 0.0,
+        "input_tokens": 0,
+        "latency_ms": null,
+        "output_tokens": 0
+      }
+    }
+  },
+  "open_questions": [
+    {
+      "evidence": [
+        "F8"
+      ],
+      "id": "Q1",
+      "kind": "unmapped",
+      "text": "AC-2 shares almost no wording with the changed code; it may already hold, live elsewhere or be missing, so confirm where it is built."
+    },
+    {
+      "evidence": [
+        "F9"
+      ],
+      "id": "Q2",
+      "kind": "unmapped",
+      "text": "Format_eur (shop/money.py) changed but no criterion mentions it; confirm it is in scope."
+    }
+  ],
+  "regression_scope": [],
+  "risks": [
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F3"
+      ],
+      "id": "R1",
+      "impact": 5,
+      "likelihood": 3,
+      "title": "Money and pricing: wrong behaviour in shop/money.py"
+    },
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F6"
+      ],
+      "id": "R2",
+      "impact": 3,
+      "likelihood": 4,
+      "title": "Changed behaviour with no direct test (1 definition(s))"
+    },
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F8",
+        "F9"
+      ],
+      "id": "R3",
+      "impact": 3,
+      "likelihood": 3,
+      "title": "Requirements misread: vague or unmatched wording"
+    }
+  ],
+  "schema_version": 1,
+  "summary": {
+    "change_class": "feature",
+    "in_scope": [
+      "AC-1: Amounts are shown in euros with exactly two decimals, e.g. 1234 cents is \"\u20ac12.34\".",
+      "AC-2: Refunds are negative amounts and are shown with a leading minus, e.g. \"-\u20ac1.50\"."
+    ],
+    "out_of_scope": [],
+    "text": "Price formatting. 1 file(s) changed, classified as feature. 2 acceptance criteria found. Highest risk: Money and pricing: wrong behaviour in shop/money.py (score 15, high)."
+  },
+  "validation": []
+}

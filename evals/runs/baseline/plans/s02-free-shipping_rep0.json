@@ -1,0 +1,278 @@
+{
+  "assumptions": [
+    "Tests are written with pytest.",
+    "The repository checkout matches the diff, either before or after the change."
+  ],
+  "cases": [
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F6",
+        "F3",
+        "shop/api.py:8"
+      ],
+      "existing_coverage": "none",
+      "expected": "Orders from 50 euros ship free.",
+      "id": "TC-1",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "AC-1",
+      "requirement_reason": "",
+      "risk": "R1",
+      "steps": [
+        "Arrange the state that AC-1 describes",
+        "Exercise create_order (shop/api.py)",
+        "Compare the outcome with the expected result"
+      ],
+      "technique": "equivalence",
+      "title": "AC-1: Orders from 50 euros ship free."
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F7",
+        "F3",
+        "F4",
+        "shop/api.py:8"
+      ],
+      "existing_coverage": "none",
+      "expected": "Other orders pay 4.99 euros shipping, included in the order total.",
+      "id": "TC-2",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "AC-2",
+      "requirement_reason": "",
+      "risk": "R1",
+      "steps": [
+        "Arrange the state that AC-2 describes",
+        "Exercise create_order (shop/api.py)",
+        "Compare the outcome with the expected result"
+      ],
+      "technique": "equivalence",
+      "title": "AC-2: Other orders pay 4.99 euros shipping, included in the order total."
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F8",
+        "F4",
+        "shop/pricing.py:23"
+      ],
+      "existing_coverage": "none",
+      "expected": "Free shipping depends on the amount the customer pays.",
+      "id": "TC-3",
+      "level": "unit",
+      "priority": "P0",
+      "requirement": "AC-3",
+      "requirement_reason": "",
+      "risk": "R1",
+      "steps": [
+        "Arrange the state that AC-3 describes",
+        "Exercise shipping_cost (shop/pricing.py)",
+        "Compare the outcome with the expected result"
+      ],
+      "technique": "equivalence",
+      "title": "AC-3: Free shipping depends on the amount the customer pays."
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F3",
+        "shop/api.py:8"
+      ],
+      "existing_coverage": "none",
+      "expected": "Both calls are refused and nothing changes",
+      "id": "TC-4",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "none",
+      "requirement_reason": "authorisation for a write endpoint is not in the criteria",
+      "risk": "R1",
+      "steps": [
+        "Call without credentials",
+        "Call as a user without the required role"
+      ],
+      "technique": "permission",
+      "title": "POST /orders: caller who is not allowed to do this"
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F3",
+        "shop/api.py:8"
+      ],
+      "existing_coverage": "none",
+      "expected": "The second call is rejected or returns the first result; nothing is done twice",
+      "id": "TC-5",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "none",
+      "requirement_reason": "retries and double submits are not in the criteria",
+      "risk": "R1",
+      "steps": [
+        "Send the request",
+        "Send an identical request again"
+      ],
+      "technique": "idempotency",
+      "title": "POST /orders: the same request sent twice"
+    },
+    {
+      "automation": "now",
+      "confidence": "medium",
+      "confidence_reason": "rule-based template; a reviewer must supply concrete test data",
+      "evidence": [
+        "F3",
+        "shop/api.py:8"
+      ],
+      "existing_coverage": "none",
+      "expected": "A clear client error is returned and no state changes",
+      "id": "TC-6",
+      "level": "integration",
+      "priority": "P0",
+      "requirement": "none",
+      "requirement_reason": "input validation for a new or changed endpoint is not in the criteria",
+      "risk": "R2",
+      "steps": [
+        "Send a request with a missing field, a wrong type and an empty body"
+      ],
+      "technique": "negative",
+      "title": "POST /orders: malformed or incomplete request"
+    }
+  ],
+  "environment_needs": [
+    "Existing fixtures that may be reused: inventory.",
+    "A test client or running app, with users of each relevant role."
+  ],
+  "exit_criteria": [
+    "All P0 and P1 cases have been run and pass.",
+    "Every open question has an answer, or an accepted risk written next to it.",
+    "No failing test is quarantined to make this change pass."
+  ],
+  "meta": {
+    "bundle_sha256": "2820108cb1e70e6790662a0ee3f3fbda438dfab295fc3a07b1004ad18ca2081f",
+    "created": "2026-09-01",
+    "generator": "heuristic-baseline",
+    "model": "none (rule-based)",
+    "run": {
+      "attempts": [
+        {
+          "attempt": 1,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 0,
+          "cost_usd": 0.0,
+          "input_tokens": 0,
+          "latency_ms": null,
+          "model": "none (rule-based)",
+          "output_tokens": 0,
+          "request_id": "",
+          "stop_reason": ""
+        }
+      ],
+      "total": {
+        "cache_read_tokens": 0,
+        "cache_write_tokens": 0,
+        "cost_usd": 0.0,
+        "input_tokens": 0,
+        "latency_ms": null,
+        "output_tokens": 0
+      }
+    }
+  },
+  "open_questions": [],
+  "regression_scope": [
+    {
+      "evidence": [
+        "F9"
+      ],
+      "reason": "calls create_order from shop/api.py",
+      "test": "tests/test_api.py::test_create_order_returns_total"
+    },
+    {
+      "evidence": [
+        "F10"
+      ],
+      "reason": "imports shop.pricing",
+      "test": "tests/test_pricing.py::test_apply_discount_rejects_percent_over_100"
+    },
+    {
+      "evidence": [
+        "F11"
+      ],
+      "reason": "imports shop.pricing",
+      "test": "tests/test_pricing.py::test_apply_discount_rounds_to_the_nearest_cent"
+    },
+    {
+      "evidence": [
+        "F12"
+      ],
+      "reason": "imports shop.pricing",
+      "test": "tests/test_pricing.py::test_cart_total_applies_coupon"
+    }
+  ],
+  "risks": [
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F5"
+      ],
+      "id": "R1",
+      "impact": 5,
+      "likelihood": 5,
+      "title": "Money and pricing: wrong behaviour in shop/api.py, shop/pricing.py"
+    },
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F3"
+      ],
+      "id": "R2",
+      "impact": 4,
+      "likelihood": 5,
+      "title": "Contract break for callers or API clients"
+    },
+    {
+      "adjustment": {
+        "impact_delta": 0,
+        "likelihood_delta": 0,
+        "reason": ""
+      },
+      "evidence": [
+        "F13"
+      ],
+      "id": "R3",
+      "impact": 3,
+      "likelihood": 5,
+      "title": "Changed behaviour with no direct test (1 definition(s))"
+    }
+  ],
+  "schema_version": 1,
+  "summary": {
+    "change_class": "feature",
+    "in_scope": [
+      "AC-1: Orders from 50 euros ship free.",
+      "AC-2: Other orders pay 4.99 euros shipping, included in the order total.",
+      "AC-3: Free shipping depends on the amount the customer pays."
+    ],
+    "out_of_scope": [],
+    "text": "Free shipping threshold. 2 file(s) changed, classified as feature. 3 acceptance criteria found. Highest risk: Money and pricing: wrong behaviour in shop/api.py, shop/pricing.py (score 25, high)."
+  },
+  "validation": []
+}
